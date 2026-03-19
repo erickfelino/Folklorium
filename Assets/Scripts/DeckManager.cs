@@ -5,10 +5,6 @@ using UnityEngine;
 public class DeckManager : MonoBehaviour
 {
     public List<Card> allCards = new List<Card>();
-    
-    // Deixamos exposto no Inspector para você dizer de quem é essa mão!
-    [SerializeField] private HandManager hand; 
-    
     private int currentIndex = 0;
 
     void Start()
@@ -17,26 +13,25 @@ public class DeckManager : MonoBehaviour
         Card[] cards = Resources.LoadAll<Card>("Cards");
         allCards.AddRange(cards);
 
-        ShuffleDeck(); // Embaralha as cartas antes de comprar!
-
-        for (int i = 0; i < 6; i++)
-        {
-            DrawCard();
-        }
+        ShuffleDeck();
+        
+        // REMOVIDO o loop de comprar 6 cartas daqui. Quem decide comprar é a mão.
     }
 
-    public void DrawCard()
+    // AGORA ESTE MÉTODO RETORNA UMA CARTA ('Card') EM VEZ DE 'void'
+    public Card DrawCard()
     {
         if (allCards.Count == 0 || currentIndex >= allCards.Count)
         {
             Debug.Log("Acabaram as cartas do baralho!");
-            return;
+            return null; // Retorna nulo para avisar que o deck secou
         }
 
         Card nextCard = allCards[currentIndex];
-        hand.AddCardToHand(nextCard);
         currentIndex++;
+        return nextCard; 
     }
+
     private void ShuffleDeck()
     {
         for (int i = 0; i < allCards.Count; i++)

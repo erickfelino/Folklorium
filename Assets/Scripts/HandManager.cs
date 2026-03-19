@@ -1,5 +1,5 @@
 using UnityEngine;
-using DG.Tweening; // <-- A MÁGICA ACONTECE AQUI!
+using DG.Tweening;
 using Folklorium;
 using System.Collections.Generic;
 
@@ -24,6 +24,32 @@ public class HandManager : MonoBehaviour
     private List<Vector3> targetPositions = new List<Vector3>();
     private List<Quaternion> targetRotations = new List<Quaternion>();
 
+    void Start()
+    {
+        DrawInitialHand(4);
+    }
+
+    public void DrawInitialHand(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            DrawCardFromDeck();
+        }
+    }
+
+    public void DrawCardFromDeck()
+    {
+        if (deckManager != null)
+        {
+            Card drawnCard = deckManager.DrawCard();
+            
+            if (drawnCard != null)
+            {
+                AddCardToHand(drawnCard);
+            }
+        }
+    }
+
     public void AddCardToHand(Card cardData)
     {
         GameObject newCard = Instantiate(cardPrefab, handTransform.position, Quaternion.identity, handTransform);
@@ -36,10 +62,8 @@ public class HandManager : MonoBehaviour
             
             if (isEnemyHand)
             {
-                // Desativa o drag para garantir
                 drag.enabled = false;
-                
-                // DESLIGA O COLISOR! Assim o seu mouse atravessa a carta dele e não interage com nada.
+        
                 Collider col = newCard.GetComponent<Collider>();
                 if (col != null) col.enabled = false;
             }
@@ -86,52 +110,38 @@ public class HandManager : MonoBehaviour
             
             float rotationAngle = fanSpread * normalizedPosition;
 
-            // ==========================================
-            // AQUI ESTÁ A CORREÇÃO DA ROTAÇÃO!
-            // ==========================================
             if (isEnemyHand)
             {
-                // Se for inimigo, mantém a carta virada de costas (180 no eixo Z costuma ser o verso, 
-                // ou 90 no X dependendo do seu modelo 3D). Ajuste o eixo Z ou X conforme precisar para ver o verso!
                 targetRotations[i] = Quaternion.Euler(-89.98f, 0f, 180f + rotationAngle); 
             }
             else
             {
-                // Rotação normal do jogador
                 targetRotations[i] = Quaternion.Euler(-89.98f, 0f, rotationAngle);
             }
 
             CardDrag dragScript = cardsInHand[i].GetComponent<CardDrag>();
-            // Se for inimigo, o dragScript.isDragging vai ser sempre false (porque desativamos), então ele sempre anima pro lugar certo!
             if (dragScript != null && !dragScript.isDragging && !dragScript.isHovering)
             {
                 SendCardToHandPosition(i);
             }
         }
     }
-
-    // ==========================================
-    // MÉTODOS DE ANIMAÇÃO COM DOTWEEN
-    // ==========================================
-
-    // 1. Manda a carta para o slot padrão no leque
     public void SendCardToHandPosition(int index)
     {
         GameObject card = cardsInHand[index];
 
         card.transform.DOKill(); // Mata animações anteriores para não bugar
 
-        // Olha que coisa linda: SetEase(Ease.OutBack) faz a carta dar um pulinho elástico!
+        //SetEase(Ease.OutBack) faz a carta dar um pulinho elástico
         card.transform.DOLocalMove(targetPositions[index], animDuration).SetEase(Ease.OutBack);
         card.transform.DOLocalRotateQuaternion(targetRotations[index], animDuration).SetEase(Ease.OutBack);
         card.transform.DOScale(new Vector3(10f, 10f, 10f), animDuration);
     }
 
-    // 2. Faz o Pop-out quando o mouse passa por cima
     public void TriggerHover(GameObject card)
     {
         int index = cardsInHand.IndexOf(card);
-        if (index == -1) return; // Se a carta não tá na mão, ignora
+        if (index == -1) return;
 
         card.transform.DOKill(); 
 
@@ -139,21 +149,20 @@ public class HandManager : MonoBehaviour
         Quaternion hoverRot = Quaternion.Euler(-90f, 0f, 0f);
         Vector3 hoverScale = new Vector3(15f, 15f, 15f);
 
-        card.transform.DOLocalMove(hoverPos, 0.2f).SetEase(Ease.OutCubic); // Um movimento mais suave
+        card.transform.DOLocalMove(hoverPos, 0.2f).SetEase(Ease.OutCubic); // SetEase(Ease.OutCubic) deixa o movimento mais suave
         card.transform.DOLocalRotateQuaternion(hoverRot, 0.2f);
         card.transform.DOScale(hoverScale, 0.2f).SetEase(Ease.OutBack);
     }
 
-    // 3. Cancela o Hover e devolve pra mão
     public void CancelHoverOrDrag(GameObject card)
     {
         int index = cardsInHand.IndexOf(card);
         if (index == -1) return;
 
-        SendCardToHandPosition(index); // Manda de volta pro slot original dela
+        SendCardToHandPosition(index);
     }
 
-    // 4. Encolhe a carta de volta ao tamanho 10 quando você clica para arrastar
+    //Encolhe a carta de volta ao tamanho 10 quando clica para arrastar
     public void TriggerDrag(GameObject card)
     {
         card.transform.DOKill();

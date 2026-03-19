@@ -524,6 +524,10 @@ PrefabInstance:
       propertyPath: turnManager
       value: 
       objectReference: {fileID: 2067252100}
+    - target: {fileID: 687125804048088208, guid: 33e2f2c7b5614954b81fbf0ac231ee36, type: 3}
+      propertyPath: playerManaManager
+      value: 
+      objectReference: {fileID: 258384318}
     - target: {fileID: 736213149886423406, guid: 33e2f2c7b5614954b81fbf0ac231ee36, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3
@@ -566,24 +570,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2991112064174689347, guid: 33e2f2c7b5614954b81fbf0ac231ee36, type: 3}
       propertyPath: m_Name
-      value: Portal
+      value: EndTurnButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33e2f2c7b5614954b81fbf0ac231ee36, type: 3}
---- !u!114 &274865960 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 687125804048088208, guid: 33e2f2c7b5614954b81fbf0ac231ee36, type: 3}
-  m_PrefabInstance: {fileID: 274865959}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcbfc9c4044931f4589a086fe5885b80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &346710769
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,7 +734,7 @@ GameObject:
   - component: {fileID: 428874320}
   - component: {fileID: 428874319}
   m_Layer: 0
-  m_Name: Opponent Manager
+  m_Name: OpponentManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -761,7 +754,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aiHand: {fileID: 1642706679}
   aiMana: {fileID: 81298625}
-  turnManager: {fileID: 2067252100}
 --- !u!4 &428874320
 Transform:
   m_ObjectHideFlags: 0
@@ -1044,14 +1036,6 @@ PrefabInstance:
     - target: {fileID: 6628213575975564434, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
       propertyPath: m_Name
       value: PlayerManaManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 8607100317968622076, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.03
-      objectReference: {fileID: 0}
-    - target: {fileID: 8607100317968622076, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -1.12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1744,7 +1728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 722325079065796185, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
       propertyPath: m_Name
-      value: Enemy Deck Manager
+      value: EnemyDeckManager
       objectReference: {fileID: 0}
     - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
       propertyPath: hand
@@ -1998,14 +1982,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 65887162266256398, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: a96b3ce9fd83f6e48acdc51349f3cdef, type: 2}
-    - target: {fileID: 1184665063165332659, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: c1bc963d30a9a41429d93b12ac5eb55a, type: 2}
     - target: {fileID: 2330570354332048727, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
       propertyPath: maxMana
       value: 0
@@ -2050,21 +2026,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4987495005723751575, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0499649067dec1d4489931f566b654fd, type: 2}
     - target: {fileID: 6628213575975564434, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
       propertyPath: m_Name
       value: EnemyManaManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 8607100317968622076, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.799
-      objectReference: {fileID: 0}
-    - target: {fileID: 8607100317968622076, guid: 70dcb478c99f1454e91933e6d0f3a624, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -1.197
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3771,8 +3735,8 @@ MonoBehaviour:
   deckManager: {fileID: 121888402}
   cardPrefab: {fileID: 478714304680186784, guid: 189fc320ff3e9e74b851cdde00ce7544, type: 3}
   handTransform: {fileID: 1642706680}
-  fanSpread: 0
-  cardSpacing: 0.6
+  fanSpread: 5
+  cardSpacing: 0.5
   verticalSpacing: 0
   depthSpacing: 0
   animDuration: 0.8
@@ -4446,7 +4410,7 @@ GameObject:
   - component: {fileID: 2067252101}
   - component: {fileID: 2067252100}
   m_Layer: 0
-  m_Name: Turn Manager
+  m_Name: TurnManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4466,11 +4430,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerManaManager: {fileID: 258384318}
   enemyManaManager: {fileID: 81298625}
-  playerDeckManager: {fileID: 748154134}
-  enemyDeckManager: {fileID: 121888402}
-  endTurnButton: {fileID: 274865960}
+  playerHandManager: {fileID: 915040655}
+  enemyHandManager: {fileID: 1642706679}
   opponentAI: {fileID: 428874319}
-  isPlayerTurn: 1
 --- !u!4 &2067252101
 Transform:
   m_ObjectHideFlags: 0
@@ -4682,7 +4644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 722325079065796185, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
       propertyPath: m_Name
-      value: Player Deck Manager
+      value: PlayerDeckManager
       objectReference: {fileID: 0}
     - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
       propertyPath: hand

@@ -1,18 +1,20 @@
 using UnityEngine;
-using TMPro; // Para usar o TextMeshPro da UI
+using TMPro;
+using System;
 
 public class ManaManager : MonoBehaviour
 {
-    [Header("Status do Jogador")]
-    public int maxMana = 1; // Começa com 1 cristal no turno 1
+    [Header("Status")]
+    public int maxMana = 1; 
     public int currentMana;
 
     [Header("Interface (UI)")]
-    public TMP_Text manaText; // Arraste o texto da tela aqui!
+    public TMP_Text manaText; 
+
+    public event Action<int> OnManaChanged;
 
     void Start()
     {
-        // Enche a mana logo que o jogo começa
         RefillMana();
     }
 
@@ -20,26 +22,25 @@ public class ManaManager : MonoBehaviour
     {
         currentMana = maxMana;
         UpdateUI();
+        
+        OnManaChanged?.Invoke(currentMana); 
     }
 
-    // A carta vai usar isso para perguntar se pode ser jogada
     public bool HasEnoughMana(int cost)
     {
         return currentMana >= cost;
     }
 
-    // A carta vai usar isso para cobrar o valor depois de cair na mesa
     public void SpendMana(int cost)
     {
         currentMana -= cost;
         UpdateUI();
+        
+        OnManaChanged?.Invoke(currentMana);
     }
 
     private void UpdateUI()
     {
-        if (manaText != null)
-        {
-            manaText.text = $"{currentMana}/{maxMana}";
-        }
+        if (manaText != null) manaText.text = $"{currentMana}/{maxMana}";
     }
 }

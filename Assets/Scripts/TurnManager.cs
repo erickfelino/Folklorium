@@ -1,4 +1,5 @@
 using UnityEngine;
+using System; // IMPORTANTE: Precisamos disso para usar o 'Action'
 using System.Collections;
 
 public class TurnManager : MonoBehaviour
@@ -7,37 +8,39 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private ManaManager playerManaManager;
     [SerializeField] private ManaManager enemyManaManager;
     
+    [Header("Gerenciadores de Mão")]
+    [SerializeField] private HandManager playerHandManager;
+    [SerializeField] private HandManager enemyHandManager;
+
     [Header("Outros Gerenciadores")]
-    [SerializeField] private DeckManager playerDeckManager;
-    [SerializeField] private DeckManager enemyDeckManager;
-    [SerializeField] private EndTurnButton endTurnButton;
-    [SerializeField] private OpponentAI opponentAI; // Referência para a nossa nova IA!
+    [SerializeField] private OpponentAI opponentAI;
     
-    public bool isPlayerTurn = true;
+    public bool IsPlayerTurn { get; private set; } = true;
+    public event Action<bool> OnTurnChanged;
 
     public void StartPlayerTurn()
     {
         Debug.Log("Seu Turno!");
-        isPlayerTurn = true;
+        IsPlayerTurn = true;
         
-        playerDeckManager.DrawCard(); // Compra carta pro jogador
+        playerHandManager.DrawCardFromDeck(); 
 
-        // Aumenta e recarrega SÓ a mana do jogador
         if (playerManaManager.maxMana < 6)
         {
             playerManaManager.maxMana++;
         }
         playerManaManager.RefillMana();
 
-        endTurnButton.SetPlayerTurnVisuals();
+        OnTurnChanged?.Invoke(IsPlayerTurn);
     }
 
     public void EndPlayerTurn()
     {
-        if (!isPlayerTurn) return; 
+        if (!IsPlayerTurn) return; 
         
-        isPlayerTurn = false;
-        endTurnButton.SetOpponentTurnVisuals(); 
+        IsPlayerTurn = false;
+        
+        OnTurnChanged?.Invoke(IsPlayerTurn);
         
         StartCoroutine(SimulateOpponentTurn());
     }
@@ -46,8 +49,7 @@ public class TurnManager : MonoBehaviour
     {
         Debug.Log("Turno do Inimigo!");
         
-        // 1. O INIMIGO COMPRA UMA CARTA!
-        enemyDeckManager.DrawCard();
+        enemyHandManager.DrawCardFromDeck();
 
         if (enemyManaManager.maxMana < 6)
         {
@@ -57,7 +59,7 @@ public class TurnManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f); 
         
-        // CHAMA A IA PARA JOGAR (Ainda com listas vazias por enquanto)
         yield return StartCoroutine(opponentAI.ProcessTurn());
+        StartPlayerTurn();
     }
 }
