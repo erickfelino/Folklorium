@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Folklorium
@@ -25,7 +23,7 @@ namespace Folklorium
             Neutral
         }
 
-        public enum CardRole // Criamos as categorias de zonas aqui
+        public enum CardRole // Categorias de criatura
         {
             Soldier,
             Hero,

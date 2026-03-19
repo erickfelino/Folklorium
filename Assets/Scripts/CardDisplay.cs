@@ -13,7 +13,6 @@ public class CardDisplay : MonoBehaviour
     public TextMeshPro bodyText;
     public TextMeshPro attackTokenText;
     public TextMeshPro lifeTokenText;
-    [Header("Art")]
     public Renderer cardImage;
 
     void Start()
@@ -31,10 +30,6 @@ public class CardDisplay : MonoBehaviour
         attackTokenText.text = cardData.attack.ToString();
         lifeTokenText.text = cardData.life.ToString();
 
-        if (cardData.art != null)
-        {
-            // Pega a textura do Sprite e cola no material do objeto 3D
-            cardImage.material.mainTexture = cardData.art.texture;
-        }
+        if (cardData.art != null) cardImage.material.mainTexture = cardData.art.texture;
     }
 }

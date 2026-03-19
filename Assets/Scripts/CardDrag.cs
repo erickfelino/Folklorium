@@ -158,44 +158,12 @@ public class CardDrag : MonoBehaviour
         {
             if (hit.collider.CompareTag(dropZoneTag) && hit.transform.childCount == 0) 
             {
+                // 1. Paga o custo e tira da mão
                 if (manaManager != null) manaManager.SpendMana(myManaCost);
-                // 1. MARCA COMO JOGADA E TIRA DA MÃO (Isso evita bugs)
-                isPlayed = true;
-                if (handManager != null)
-                {
-                    handManager.RemoveCardFromHand(gameObject);
-                }
-                transform.SetParent(hit.transform);
+                if (handManager != null) handManager.RemoveCardFromHand(gameObject);
 
-                // 2. ESCONDE A ARTE/TEXTOS PARA VIRAR TOKEN
-                foreach(GameObject obj in objectsToHideOnBoard)
-                {
-                    if(obj != null) obj.SetActive(false);
-                }
-
-                foreach(GameObject obj in objectsToShowOnBoard)
-                {
-                    if(obj != null) obj.SetActive(true);
-                }
-                GetComponent<MeshRenderer>().enabled = false; 
-
-                // 3. CALCULA O DESTINO E O TAMANHO DO TOKEN
-                Vector3 finalPos = new Vector3(hit.transform.position.x, hit.transform.position.y + 0.1f, hit.transform.position.z - 0.15f);
-                Vector3 targetScale = hit.transform.localScale;
-                float fatorDeCompensacao = 20f; 
-                Vector3 finalScale = new Vector3(
-                    targetScale.x * fatorDeCompensacao, 
-                    targetScale.z * fatorDeCompensacao, 
-                    handScale.z                         
-                );
-
-                // ==========================================
-                // 4. A MÁGICA DO DOTWEEN (O PULO DO TOKEN)
-                // ==========================================
-                transform.DOKill(); // Mata o lerp do drag
-
-                // O GRANDE SALTO: Vai até a finalPos, subindo 2 metros de altura, 1 vez, durando 0.4 segundos
-                transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1.2f).SetEase(Ease.OutQuad);
+                // 2. Chama a animação unificada! (false = não é o inimigo)
+                TransformIntoTokenAndJump(hit.transform, false);
             }
             else
             {
@@ -207,7 +175,8 @@ public class CardDrag : MonoBehaviour
             ReturnToHand();
         }
 
-        GetComponent<Collider>().enabled = true;
+        // Reativa o collider se ela voltou pra mão
+        if (!isPlayed) GetComponent<Collider>().enabled = true;
 
         foreach (GameObject zone in validZones)
         {
@@ -225,6 +194,47 @@ public class CardDrag : MonoBehaviour
             handManager.CancelHoverOrDrag(this.gameObject);
         }
     }
+
+    public void TransformIntoTokenAndJump(Transform targetZone, bool isEnemy)
+    {
+        isPlayed = true;
+        transform.SetParent(targetZone);
+
+        // Desliga o Collider para o mouse não interferir mais no token
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // Troca os visuais
+        foreach(GameObject obj in objectsToHideOnBoard) if(obj) obj.SetActive(false);
+        foreach(GameObject obj in objectsToShowOnBoard) if(obj) obj.SetActive(true);
+
+        MeshRenderer mesh = GetComponent<MeshRenderer>();
+        if(mesh != null) mesh.enabled = false;
+
+        // Calcula a posição do centro da zona
+        Vector3 finalPos = new Vector3(targetZone.position.x, targetZone.position.y + 0.1f, targetZone.position.z - 0.15f);
+
+        // Se for o oponente jogando, a carta precisa virar 180 graus pra te encarar
+        if (isEnemy)
+        {
+            transform.localRotation = Quaternion.Euler(-89.98f, 0f, 180f);
+        }
+
+        // Calcula aquele Scale que você tinha feito antes!
+        Vector3 targetScale = targetZone.localScale;
+        float fatorDeCompensacao = 20f; 
+        Vector3 finalScale = new Vector3(
+            targetScale.x * fatorDeCompensacao, 
+            targetScale.z * fatorDeCompensacao, 
+            handScale.z                         
+        );
+
+        // O GRANDE SALTO DO DOTWEEN (Posição e Escala juntos!)
+        transform.DOKill(); 
+        transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1.2f).SetEase(Ease.OutQuad);
+        //transform.DOScale(finalScale, 1.2f).SetEase(Ease.OutQuad); Se precisar mudar o tamanho dela ao cair no board no futuro
+    }
+    
     public void SetManagers(HandManager hand, ManaManager mana)
     {
         handManager = hand;
