@@ -1,0 +1,40 @@
+using UnityEngine;
+using TMPro;
+using Folklorium;
+
+
+public class CardDisplay : MonoBehaviour
+{
+    public Card cardData;
+    public TextMeshPro nameText;
+    public TextMeshPro manaText;
+    public TextMeshPro attackText;
+    public TextMeshPro lifeText;
+    public TextMeshPro bodyText;
+    public TextMeshPro attackTokenText;
+    public TextMeshPro lifeTokenText;
+    [Header("Art")]
+    public Renderer cardImage;
+
+    void Start()
+    {
+        UpdateCardDisplay();
+    }
+
+    public void UpdateCardDisplay()
+    {
+        nameText.text = cardData.cardName;
+        bodyText.text  = cardData.cardBody;
+        manaText.text = cardData.mana.ToString();
+        attackText.text = cardData.attack.ToString();
+        lifeText.text = cardData.life.ToString();
+        attackTokenText.text = cardData.attack.ToString();
+        lifeTokenText.text = cardData.life.ToString();
+
+        if (cardData.art != null)
+        {
+            // Pega a textura do Sprite e cola no material do objeto 3D
+            cardImage.material.mainTexture = cardData.art.texture;
+        }
+    }
+}
