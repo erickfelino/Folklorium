@@ -15,7 +15,6 @@ public class CardCombat : MonoBehaviour
     public int currentLife;
     public bool canAttackThisTurn = false; // Controla o enjoo de invocação
     public bool isEnemy; // Para saber se quem controla essa carta é a IA
-    public Transform cardVisuals;
 
     private CardDisplay display;
     private CardDrag cardDrag;
@@ -88,12 +87,6 @@ public class CardCombat : MonoBehaviour
         });
     }
 
-    // ==========================================
-    // REALIZANDO O ATAQUE
-    // ==========================================
-// ==========================================
-    // REALIZANDO O ATAQUE
-    // ==========================================
     public void Attack(CardCombat targetCard)
     {
         if (!canAttackThisTurn) 
@@ -102,40 +95,70 @@ public class CardCombat : MonoBehaviour
             return;
         }
 
-        canAttackThisTurn = false; // Já cansa ela agora para evitar duplo clique
-
-        // Inicia a coreografia de ataque!
+        canAttackThisTurn = false; 
         StartCoroutine(AttackChoreography(targetCard));
     }
 
     private IEnumerator AttackChoreography(CardCombat targetCard)
     {
+
         Vector3 originalPos = transform.position;
 
-        // 1. Vai até o inimigo e ESPERA a viagem terminar (WaitForCompletion)
         yield return transform.DOMove(targetCard.transform.position, 0.15f).WaitForCompletion();
 
-        // 2. Aplica o dano (O TakeDamage agora faz elas tremerem por 0.3s)
         int myDamage = this.currentAttack;
         int enemyDamage = targetCard.currentAttack;
 
         if (targetCard != null) targetCard.TakeDamage(myDamage);
         if (this != null) this.TakeDamage(enemyDamage);
 
-        // 3. A Mágica que você sugeriu: ESPERA o tremor acabar antes de fazer qualquer coisa.
-        // Coloquei 0.35s para dar uma margem de segurança além dos 0.3s do Shake.
         yield return new WaitForSeconds(0.35f);
 
-        // 4. Volta para casa (só inicia a volta se você ainda existir e estiver vivo!)
         if (this != null && this.currentLife > 0)
         {
             transform.DOMove(originalPos, 0.75f);
         }
     }
+    public void Attack(PlayerHealth targetHealth)
+    {
+        if (!canAttackThisTurn) 
+        {
+            Debug.Log("Esta criatura não pode atacar neste turno!");
+            return;
+        }
 
-    // ==========================================
-    // MORTE
-    // ==========================================
+        canAttackThisTurn = false; // Exausta a carta
+        
+        // Chama a nova corrotina específica para o jogador
+        StartCoroutine(AttackChoreographyPlayer(targetHealth)); 
+    }
+
+    private IEnumerator AttackChoreographyPlayer(PlayerHealth targetHealth)
+    {
+
+        Vector3 originalPos = transform.position;
+
+        // 1. Vai até a cara do inimigo (avatar/cristal) e ESPERA a viagem terminar
+        yield return transform.DOMove(targetHealth.transform.position,0.15f).WaitForCompletion();
+
+        // 2. Aplica o dano SOMENTE no jogador (o jogador não bate de volta na carta)
+        int myDamage = this.currentAttack;
+
+        if (targetHealth != null)
+        {
+             targetHealth.PlayerTakeDamage(myDamage);
+        }
+
+        // 3. Espera um pouco para dar o impacto visual (0.35s igual ao outro)
+        yield return new WaitForSeconds(0.35f);
+
+        // 4. Volta para casa (se a carta ainda existir)
+        if (this != null)
+        {
+            transform.DOMove(originalPos, 0.75f);
+        }
+    }
+
     private void Die()
     {
         Debug.Log($"{display.cardData.cardName} foi destruído!");

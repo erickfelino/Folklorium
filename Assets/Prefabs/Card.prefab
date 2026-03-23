@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 7332489879790579819}
   m_Layer: 0
   m_Name: Card
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -184,7 +184,6 @@ MonoBehaviour:
   currentLife: 0
   canAttackThisTurn: 0
   isEnemy: 0
-  cardVisuals: {fileID: 4546801143905943197}
 --- !u!114 &7332489879790579819
 MonoBehaviour:
   m_ObjectHideFlags: 0

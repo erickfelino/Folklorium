@@ -59,26 +59,41 @@ public class CardTargeting : MonoBehaviour
 
         // Dispara um "raio laser" do mouse para dentro da tela para ver em quem soltamos
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // O raio bateu em alguma coisa! É uma carta?
-            CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
-
-            // Se for uma carta E for uma carta inimiga... PORRADA!
-            if (targetCard != null && targetCard.isEnemy)
+            // 1. PRIMEIRO TESTE: O raio bateu na vida do inimigo?
+            if (hit.collider.CompareTag("EnemyHealth"))
             {
-                myCombat.Attack(targetCard);
+                PlayerHealth enemyHealth = hit.collider.GetComponent<PlayerHealth>();
+                
+                if (enemyHealth != null)
+                {
+                    myCombat.Attack(enemyHealth);
+                }
+            }
+            else if (hit.collider.CompareTag("Card"))
+            {
+                CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
+                
+                // Se for uma carta E for uma carta inimiga... PORRADA!
+                if (targetCard != null && targetCard.isEnemy)
+                {
+                    myCombat.Attack(targetCard);
+                    Debug.Log("Atacou uma tropa inimiga!");
+                }
+                else
+                {
+                    Debug.Log("Alvo inválido. Você não pode atacar suas próprias tropas.");
+                }
             }
             else
             {
-                Debug.Log("Alvo inválido.");
+                Debug.Log("Alvo inválido. Você soltou a seta no vazio.");
             }
         }
     }
-
-    // ==========================================
-    // MÁGICA DE CONVERSÃO: Tela (2D) para Mundo (3D)
-    // ==========================================
+    
     private Vector3 GetMouseWorldPosition()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
