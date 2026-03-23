@@ -2,7 +2,6 @@ using UnityEngine;
 using TMPro;
 using Folklorium;
 
-
 public class CardDisplay : MonoBehaviour
 {
     public Card cardData;
@@ -31,5 +30,16 @@ public class CardDisplay : MonoBehaviour
         lifeTokenText.text = cardData.life.ToString();
 
         if (cardData.art != null) cardImage.material.mainTexture = cardData.art.texture;
+    }
+    public void UpdateLifeText(int currentLife)
+    {
+        lifeText.text = currentLife.ToString();
+        lifeTokenText.text = currentLife.ToString();
+
+        // Se a vida for menor que a original, fica vermelho (clássico de card games)
+        Color textColor = (currentLife < cardData.life) ? Color.red : Color.white;
+        
+        if (lifeText != null) lifeText.color = textColor;
+        if (lifeTokenText != null) lifeTokenText.color = textColor;
     }
 }

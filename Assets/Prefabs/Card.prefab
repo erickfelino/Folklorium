@@ -11,9 +11,11 @@ GameObject:
   - component: {fileID: 7009704987705615226}
   - component: {fileID: 4547827132332619198}
   - component: {fileID: 2936392558414966504}
-  - component: {fileID: 3720794332322694452}
   - component: {fileID: 1024970641709342544}
+  - component: {fileID: 3720794332322694452}
   - component: {fileID: 6979178608611238882}
+  - component: {fileID: -7183070062148544145}
+  - component: {fileID: 7332489879790579819}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -99,27 +101,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3720794332322694452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 478714304680186784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d49bd923569cae4a978734030e3a150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardData: {fileID: 11400000, guid: 530391f30bf6a1d4890338c915771f4d, type: 2}
-  nameText: {fileID: 1787412906977359808}
-  manaText: {fileID: 1115985534216706809}
-  attackText: {fileID: 4619863939278788730}
-  lifeText: {fileID: 1053340279518696033}
-  bodyText: {fileID: 2059139286835507127}
-  attackTokenText: {fileID: 6374472301019774749}
-  lifeTokenText: {fileID: 7178499008749331642}
-  cardImage: {fileID: 8514237104500446023}
 --- !u!65 &1024970641709342544
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -141,6 +122,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.056, y: 0.098, z: 0.002}
   m_Center: {x: -0.000025771558, y: 0.000019855794, z: -0.00007567296}
+--- !u!114 &3720794332322694452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478714304680186784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d49bd923569cae4a978734030e3a150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardData: {fileID: 11400000, guid: 530391f30bf6a1d4890338c915771f4d, type: 2}
+  nameText: {fileID: 1787412906977359808}
+  manaText: {fileID: 1115985534216706809}
+  attackText: {fileID: 4619863939278788730}
+  lifeText: {fileID: 1053340279518696033}
+  bodyText: {fileID: 2059139286835507127}
+  attackTokenText: {fileID: 6374472301019774749}
+  lifeTokenText: {fileID: 7178499008749331642}
+  cardImage: {fileID: 8514237104500446023}
 --- !u!114 &6979178608611238882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +168,35 @@ MonoBehaviour:
   isDragging: 0
   dragGlow: {fileID: 3456460787761474699}
   isHovering: 0
+--- !u!114 &-7183070062148544145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478714304680186784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdd82af24b419e847a8ea7bdb061fd6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentAttack: 0
+  currentLife: 0
+  canAttackThisTurn: 0
+  isEnemy: 0
+  cardVisuals: {fileID: 4546801143905943197}
+--- !u!114 &7332489879790579819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478714304680186784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa4a1fa8992600748adb5511abd2a784, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &765816896608683322
 GameObject:
   m_ObjectHideFlags: 0

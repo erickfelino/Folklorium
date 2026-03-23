@@ -66,6 +66,9 @@ public class HandManager : MonoBehaviour
         
                 Collider col = newCard.GetComponent<Collider>();
                 if (col != null) col.enabled = false;
+
+                CardCombat cardCombat = newCard.GetComponent<CardCombat>();
+                cardCombat.isEnemy = true;
             }
         }
         
