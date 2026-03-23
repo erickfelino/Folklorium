@@ -10,6 +10,9 @@ TagManager:
   - EnemyDropZoneSoldier
   - EnemyDropZoneHero
   - EnemyDropZoneCommander
+  - PlayerHealth
+  - EnemyHealth
+  - Card
   layers:
   - Default
   - TransparentFX
