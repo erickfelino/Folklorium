@@ -24,19 +24,6 @@ public class HandManager : MonoBehaviour
     private List<Vector3> targetPositions = new List<Vector3>();
     private List<Quaternion> targetRotations = new List<Quaternion>();
 
-    void Start()
-    {
-        DrawInitialHand(4);
-    }
-
-    public void DrawInitialHand(int amount)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            DrawCardFromDeck();
-        }
-    }
-
     public void DrawCardFromDeck()
     {
         if (deckManager != null)
@@ -66,6 +53,9 @@ public class HandManager : MonoBehaviour
         
                 Collider col = newCard.GetComponent<Collider>();
                 if (col != null) col.enabled = false;
+
+                CardCombat cardCombat = newCard.GetComponent<CardCombat>();
+                cardCombat.isEnemy = true;
             }
         }
         

@@ -16,7 +16,7 @@ MonoBehaviour:
   cardBody: Double Strike
   cardColorGroup: 0
   cardRole: 2
-  mana: 5
+  mana: 6
   attack: 8
   life: 2
   art: {fileID: 21300000, guid: 4736a4b47b22db046873df4f5fc984e6, type: 3}

@@ -16,7 +16,7 @@ MonoBehaviour:
   cardBody: 'Legacy: Summon an 2/2 demon'
   cardColorGroup: 0
   cardRole: 1
-  mana: 5
+  mana: 3
   attack: 4
   life: 5
   art: {fileID: 21300000, guid: 3631f712e58da4649acc487970f4416c, type: 3}

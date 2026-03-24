@@ -21,8 +21,9 @@ public class CardDrag : MonoBehaviour
     private Vector3 handScale; 
     public GameObject[] objectsToHideOnBoard; 
     public GameObject[] objectsToShowOnBoard;
-    private bool isPlayed = false;
+    public bool isPlayed { get; private set; } = false;
     public bool isDragging = false;
+    public static bool isAnyCardDragging = false;
 
     [Header("Efeitos Visuais")]
     public GameObject dragGlow; 
@@ -69,13 +70,10 @@ public class CardDrag : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // GATILHOS DO MOUSE COM DOTWEEN
-    // ==========================================
-
     void OnMouseEnter()
     {
-        if (!isDragging && !isPlayed)
+        // Adicionamos a checagem do !isAnyCardDragging aqui!
+        if (!isDragging && !isPlayed && !isAnyCardDragging)
         {
             isHovering = true;
             // AVISA O HAND MANAGER PRA FAZER A CARTA SALTAR E CRESCER
@@ -109,8 +107,9 @@ public class CardDrag : MonoBehaviour
         }
 
         isDragging = true;
+        isAnyCardDragging = true; // TRAVA O HOVER DAS OUTRAS CARTAS!
         isHovering = false; 
-        if (dragGlow != null) dragGlow.SetActive(true); 
+        if (dragGlow != null) dragGlow.SetActive(true);
 
         // AVISA O HAND MANAGER PRA ENCOLHER A CARTA RAPIDINHO
         handManager.TriggerDrag(this.gameObject);
@@ -147,14 +146,20 @@ public class CardDrag : MonoBehaviour
         if (isPlayed || !isDragging) return;
 
         isDragging = false;
+        isAnyCardDragging = false; // DESTRAVA O HOVER DAS OUTRAS CARTAS!
         if (dragGlow != null) dragGlow.SetActive(false); 
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
+        // Desliga o collider desta carta temporariamente para o raio não bater nela mesma
         GetComponent<Collider>().enabled = false;
 
-        if (Physics.Raycast(ray, out hit))
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        // A MÁGICA ACONTECE AQUI: RaycastAll pega TUDO que estiver embaixo do mouse
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+        bool placedCard = false;
+
+        // Vamos checar tudo o que o raio furou
+        foreach (RaycastHit hit in hits)
         {
             if (hit.collider.CompareTag(dropZoneTag) && hit.transform.childCount == 0) 
             {
@@ -164,13 +169,14 @@ public class CardDrag : MonoBehaviour
 
                 // 2. Chama a animação unificada! (false = não é o inimigo)
                 TransformIntoTokenAndJump(hit.transform, false);
-            }
-            else
-            {
-                ReturnToHand();
+                
+                placedCard = true; // Avisa que conseguimos jogar a carta
+                break; // Para de procurar, já achamos a zona!
             }
         }
-        else
+
+        // Se olhamos tudo embaixo do mouse e não tinha nenhuma zona válida vazia...
+        if (!placedCard)
         {
             ReturnToHand();
         }
@@ -200,9 +206,7 @@ public class CardDrag : MonoBehaviour
         isPlayed = true;
         transform.SetParent(targetZone);
 
-        // Desliga o Collider para o mouse não interferir mais no token
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        GetComponent<Collider>().enabled = true;
 
         // Troca os visuais
         foreach(GameObject obj in objectsToHideOnBoard) if(obj) obj.SetActive(false);
