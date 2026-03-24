@@ -5,18 +5,15 @@ using System;
 public class ManaManager : MonoBehaviour
 {
     [Header("Status")]
-    public int maxMana = 1; 
-    public int currentMana;
+    public int maxMana = 0; // Agora todo mundo começa com 0!
+    public int currentMana = 0;
 
     [Header("Interface (UI)")]
     public TMP_Text manaText; 
 
     public event Action<int> OnManaChanged;
 
-    void Start()
-    {
-        RefillMana();
-    }
+    // REMOVEMOS O Start() DAQUI! Ele não dita mais as regras.
 
     public void RefillMana()
     {
@@ -39,7 +36,8 @@ public class ManaManager : MonoBehaviour
         OnManaChanged?.Invoke(currentMana);
     }
 
-    private void UpdateUI()
+    // Transformei em 'public' para o TurnManager poder atualizar a UI no Start do jogo
+    public void UpdateUI() 
     {
         if (manaText != null) manaText.text = $"{currentMana}/{maxMana}";
     }

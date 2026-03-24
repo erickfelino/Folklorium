@@ -1,4 +1,6 @@
 using UnityEngine;
+using Folklorium; // Para acessar a classe Card
+using static Folklorium.Card; // Para acessar os CardRoles (Soldier, Hero, Commander)
 
 [RequireComponent(typeof(CardCombat))]
 [RequireComponent(typeof(CardDrag))]
@@ -17,14 +19,11 @@ public class CardTargeting : MonoBehaviour
         cardDrag = GetComponent<CardDrag>();
         mainCamera = Camera.main;
         
-        // Encontra o Manager da seta na cena.
-        // Como é um elemento único de UI, FindFirstObjectByType é seguro e rápido.
         arrow = Object.FindFirstObjectByType<TargetingArrow>();
     }
 
     void OnMouseDown()
     {
-        // Segurança: Só podemos desenhar a seta se a carta for NOSSA e não estiver exausta.
         if (myCombat.isEnemy || !myCombat.canAttackThisTurn || !cardDrag.isPlayed) 
         {
             Debug.Log("Esta carta não pode atacar agora.");
@@ -39,13 +38,8 @@ public class CardTargeting : MonoBehaviour
     {
         if (!isDragging || arrow == null) return;
 
-        // Ponto A: O centro da nossa carta
         Vector3 startPoint = transform.position;
-
-        // Ponto B: A posição do mouse convertida para o mundo 3D
         Vector3 endPoint = GetMouseWorldPosition();
-
-        // Manda o Ator Visual desenhar!
         arrow.UpdateArrow(startPoint, endPoint);
     }
 
@@ -54,59 +48,96 @@ public class CardTargeting : MonoBehaviour
         if (!isDragging) return;
         isDragging = false;
 
-        // Esconde a seta assim que soltamos o clique
         if (arrow != null) arrow.ShowArrow(false);
 
-        // Dispara um "raio laser" do mouse para dentro da tela para ver em quem soltamos
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // 1. PRIMEIRO TESTE: O raio bateu na vida do inimigo?
+            // O RADAR: Lemos a mesa do inimigo uma vez só antes de perguntar ao juiz
+            bool enemyHasSoldiers = CheckIfEnemyHasRole(CardRole.Soldier);
+            bool enemyHasHeroes = CheckIfEnemyHasRole(CardRole.Hero);
+            bool enemyHasCommanders = CheckIfEnemyHasRole(CardRole.Commander);
+            
+            CardRole myRole = GetComponent<CardDisplay>().cardData.cardRole;
+
             if (hit.collider.CompareTag("EnemyHealth"))
             {
                 PlayerHealth enemyHealth = hit.collider.GetComponent<PlayerHealth>();
-                
                 if (enemyHealth != null)
                 {
-                    myCombat.Attack(enemyHealth);
+                    // PERGUNTA AO JUIZ GLOBAL!
+                    if (CombatRules.CanAttackPlayer(myRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders))
+                    {
+                        myCombat.Attack(enemyHealth);
+                    }
+                    else
+                    {
+                        Debug.Log("ATAQUE BLOQUEADO pelas regras de combate!");
+                    }
                 }
             }
             else if (hit.collider.CompareTag("Card"))
             {
                 CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
-                
-                // Se for uma carta E for uma carta inimiga... PORRADA!
                 if (targetCard != null && targetCard.isEnemy)
                 {
-                    myCombat.Attack(targetCard);
-                    Debug.Log("Atacou uma tropa inimiga!");
+                    CardRole targetRole = targetCard.GetComponent<CardDisplay>().cardData.cardRole;
+
+                    // PERGUNTA AO JUIZ GLOBAL!
+                    if (CombatRules.CanAttackCard(myRole, targetRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders))
+                    {
+                        myCombat.Attack(targetCard);
+                    }
+                    else
+                    {
+                        Debug.Log("ATAQUE BLOQUEADO: Você deve atacar a linha de frente apropriada primeiro!");
+                    }
                 }
-                else
-                {
-                    Debug.Log("Alvo inválido. Você não pode atacar suas próprias tropas.");
-                }
-            }
-            else
-            {
-                Debug.Log("Alvo inválido. Você soltou a seta no vazio.");
             }
         }
     }
-    
+
+    // =========================================================
+    // O NOVO RADAR ANTI-FANTASMAS
+    // =========================================================
+    private bool CheckIfEnemyHasRole(CardRole roleToCheck)
+    {
+        // 1. FindObjectsInactive.Exclude garante que ignoramos cartas que foram desativadas (ex: durante a animação de morte)
+        CardCombat[] allCards = Object.FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        
+        foreach (CardCombat card in allCards)
+        {
+            // 2. Pegamos o CardDrag para saber se a carta já caiu na mesa
+            CardDrag drag = card.GetComponent<CardDrag>();
+            bool isOnBoard = (drag != null && drag.isPlayed);
+
+            // 3. A carta SÓ conta se for Inimiga, estiver Viva E estiver na Mesa!
+            if (card.isEnemy && card.currentLife > 0 && isOnBoard)
+            {
+                CardRole role = card.GetComponent<CardDisplay>().cardData.cardRole;
+                if (role == roleToCheck)
+                {
+                    // Se o bug acontecer de novo, olhe o Console. Ele vai te dizer exatamente O NOME da carta fantasma!
+                    Debug.Log($"[Radar] Bloqueio ativo! O inimigo ainda tem um {roleToCheck} protegendo a mesa: {card.gameObject.name} (Vida: {card.currentLife})");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // ==========================================
+    // MÁGICA DE CONVERSÃO
+    // ==========================================
     private Vector3 GetMouseWorldPosition()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        
-        // Criamos um "chão invisível" infinito na exata altura da carta (eixo Y)
         Plane groundPlane = new Plane(Vector3.up, transform.position); 
-        
-        // Calculamos onde o raio do mouse cruza com esse chão invisível
         if (groundPlane.Raycast(ray, out float distance))
         {
-            return ray.GetPoint(distance); // Retorna a coordenada 3D exata!
+            return ray.GetPoint(distance); 
         }
-        
-        return transform.position; // Fallback de segurança
+        return transform.position; 
     }
 }

@@ -82,6 +82,7 @@ public class CardCombat : MonoBehaviour
         {
             if (currentLife <= 0)
             {
+                currentLife = 0;
                 Die();
             }
         });

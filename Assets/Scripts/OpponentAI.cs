@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // Precisamos disso para a IA poder "ordenar" a mão por custo de mana
+using System.Linq; 
 using Folklorium;
 
 public class OpponentAI : MonoBehaviour
@@ -22,8 +22,6 @@ public class OpponentAI : MonoBehaviour
 
         Debug.Log("IA: Fim das jogadas. Passo o turno.");
         yield return new WaitForSeconds(1f);
-        
-        // DICA: Aqui você pode chamar o TurnManager.Instance.EndTurn() se quiser que a IA passe o turno sozinha!
     }
 
     // ==========================================
@@ -31,11 +29,9 @@ public class OpponentAI : MonoBehaviour
     // ==========================================
     private IEnumerator PlayCardsPhase()
     {
-        // 1. Pega as cartas da mão e ORDENA da mais cara para a mais barata
         List<GameObject> cardsInHand = new List<GameObject>(aiHand.cardsInHand);
         cardsInHand.Sort((a, b) => b.GetComponent<CardDisplay>().cardData.mana.CompareTo(a.GetComponent<CardDisplay>().cardData.mana));
 
-        // 2. Tenta jogar o que der
         foreach (GameObject cardObj in cardsInHand)
         {
             Card cardData = cardObj.GetComponent<CardDisplay>().cardData;
@@ -56,7 +52,7 @@ public class OpponentAI : MonoBehaviour
                     {
                         dragScript.TransformIntoTokenAndJump(emptyZone.transform, true);
                         
-                        // IMPORTANTE: Marca a carta como sendo do inimigo IMEDIATAMENTE!
+                        // Marca a carta como sendo do inimigo IMEDIATAMENTE!
                         CardCombat combatScript = cardObj.GetComponent<CardCombat>();
                         if (combatScript != null)
                         {
@@ -64,7 +60,6 @@ public class OpponentAI : MonoBehaviour
                         }
                     }
 
-                    // Espera a carta cair na mesa antes de jogar a próxima
                     yield return new WaitForSeconds(1.2f); 
                 }
             }
@@ -72,67 +67,133 @@ public class OpponentAI : MonoBehaviour
     }
 
     // ==========================================
-    // FASE 2: COMBATE (Lógica de Troca Inteligente vs Aggro)
+    // FASE 2: COMBATE COM INTELIGÊNCIA AVANÇADA
     // ==========================================
     private IEnumerator AttackPhase()
     {
-        // 1. Mapeia o campo de batalha inteiro
-        CardCombat[] allCardsOnBoard = FindObjectsByType<CardCombat>(FindObjectsSortMode.None);
-        
-        List<CardCombat> aiCards = new List<CardCombat>();
-        List<CardCombat> playerCards = new List<CardCombat>();
+        // 1. Acha as vidas na mesa
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("PlayerHealth")?.GetComponent<PlayerHealth>();
+        PlayerHealth aiHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
 
-        foreach (CardCombat card in allCardsOnBoard)
-        {
-            if (card.isEnemy && card.canAttackThisTurn && card.currentLife > 0)
-            {
-                aiCards.Add(card); // Soldados da IA prontos pra guerra
-            }
-            else if (!card.isEnemy && card.GetComponent<CardDrag>().isPlayed && card.currentLife > 0)
-            {
-                playerCards.Add(card); // Soldados do Jogador
-            }
-        }
+        // 2. Pega as cartas da IA que estão vivas e prontas para atacar
+        CardCombat[] allCardsOnBoard = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        List<CardCombat> aiCards = allCardsOnBoard.Where(c => c.isEnemy && c.canAttackThisTurn && c.currentLife > 0).ToList();
 
-        // Encontra o alvo da vida do Jogador
-        GameObject playerHealthObj = GameObject.FindGameObjectWithTag("PlayerHealth");
-        PlayerHealth playerHealth = playerHealthObj != null ? playerHealthObj.GetComponent<PlayerHealth>() : null;
-
-        // 2. A IA ataca com cada carta que ela tem
         foreach (CardCombat aiCard in aiCards)
         {
-            if (aiCard == null || aiCard.currentLife <= 0) continue; // Pode ter morrido num ataque anterior
+            if (aiCard == null || aiCard.currentLife <= 0) continue; 
 
-            bool foundGoodTrade = false;
+            // -----------------------------------------------------
+            // O RADAR: Lê a mesa do jogador a cada ataque (pois a mesa muda)
+            // -----------------------------------------------------
+            List<CardCombat> playerCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(c => !c.isEnemy && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0).ToList();
 
-            // Tenta achar uma "Troca Favorável"
-            foreach (CardCombat playerCard in playerCards)
+            bool pHasSoldiers = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == Card.CardRole.Soldier);
+            bool pHasHeroes = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == Card.CardRole.Hero);
+            bool pHasCommanders = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == Card.CardRole.Commander);
+
+            Card.CardRole myRole = aiCard.GetComponent<CardDisplay>().cardData.cardRole;
+
+            // -----------------------------------------------------
+            // O JUIZ: Usa o CombatRules.cs para saber quem a IA pode atacar
+            // -----------------------------------------------------
+            bool canAttackFace = CombatRules.CanAttackPlayer(myRole, pHasSoldiers, pHasHeroes, pHasCommanders);
+
+            List<CardCombat> validTargets = playerCards.Where(pCard =>
             {
-                if (playerCard == null || playerCard.currentLife <= 0) continue;
+                Card.CardRole targetRole = pCard.GetComponent<CardDisplay>().cardData.cardRole;
+                return CombatRules.CanAttackCard(myRole, targetRole, pHasSoldiers, pHasHeroes, pHasCommanders);
+            }).ToList();
 
-                // LÓGICA DE GÊNIO: Se o meu ataque mata ele, E a vida dele NÃO me mata... é uma troca perfeita!
-                if (aiCard.currentAttack >= playerCard.currentLife && aiCard.currentLife > playerCard.currentAttack)
+            // -----------------------------------------------------
+            // CÁLCULO DE AMEAÇA (A IA sabe se vai ganhar ou perder?)
+            // -----------------------------------------------------
+            int myTotalFaceDamage = CalculatePotentialFaceDamage(aiCards, pHasSoldiers, pHasHeroes, pHasCommanders);
+            int enemyTotalDamage = playerCards.Sum(c => c.currentAttack); 
+
+            bool iHaveLethal = playerHealth != null && myTotalFaceDamage >= playerHealth.currentHealth;
+            bool enemyHasLethal = aiHealth != null && enemyTotalDamage >= aiHealth.currentHealth;
+
+            bool attacked = false;
+
+            // =====================================================
+            // ÁRVORE DE DECISÃO DA IA
+            // =====================================================
+
+            // MODO 1: LETAL (Ganhar o jogo)
+            if (iHaveLethal && canAttackFace && playerHealth != null)
+            {
+                Debug.Log($"IA [LETAL]: {aiCard.name} ataca o Jogador para vencer!");
+                aiCard.Attack(playerHealth);
+                attacked = true;
+            }
+            // MODO 2: DEFESA (Sobreviver custe o que custar)
+            else if (enemyHasLethal && validTargets.Count > 0)
+            {
+                CardCombat biggestThreat = validTargets.OrderByDescending(c => c.currentAttack).FirstOrDefault();
+                Debug.Log($"IA [DEFESA]: {aiCard.name} ataca {biggestThreat.name} para não morrer!");
+                aiCard.Attack(biggestThreat);
+                attacked = true;
+            }
+            // MODO 3: PADRÃO / AGGRO / KAMIKAZE
+            else
+            {
+                // Tenta achar a Troca Perfeita (Mata o inimigo e sobrevive)
+                CardCombat bestTrade = validTargets
+                    .Where(p => aiCard.currentAttack >= p.currentLife && aiCard.currentLife > p.currentAttack)
+                    .OrderByDescending(p => p.currentAttack) 
+                    .FirstOrDefault();
+
+                if (bestTrade != null)
                 {
-                    Debug.Log($"IA: Troca favorável encontrada! {aiCard.name} vai destruir {playerCard.name}");
-                    aiCard.Attack(playerCard);
-                    foundGoodTrade = true;
-                    
-                    // Espera a coreografia do DOTween acabar antes de dar a ordem pro próximo lacaio
-                    yield return new WaitForSeconds(1.5f); 
-                    break; // Sai do loop de busca de alvos e vai para o próximo lacaio da IA
+                    Debug.Log($"IA [TROCA]: {aiCard.name} vai destruir {bestTrade.name} de forma segura.");
+                    aiCard.Attack(bestTrade);
+                    attacked = true;
+                }
+                // Se não tem troca boa, mas o caminho pro jogador está livre, BATE NA CARA!
+                else if (canAttackFace && playerHealth != null)
+                {
+                    Debug.Log($"IA [AGGRO]: {aiCard.name} bate direto na vida do Jogador.");
+                    aiCard.Attack(playerHealth);
+                    attacked = true;
+                }
+                // Se o caminho tá bloqueado e não tem troca boa, se sacrifica na carta mais forte que puder bater
+                else if (validTargets.Count > 0)
+                {
+                    CardCombat kamikazeTarget = validTargets.OrderByDescending(p => p.currentAttack).First();
+                    Debug.Log($"IA [KAMIKAZE]: Caminho bloqueado. {aiCard.name} ataca {kamikazeTarget.name}.");
+                    aiCard.Attack(kamikazeTarget);
+                    attacked = true;
                 }
             }
 
-            // Se a IA olhou todas as cartas e não achou nenhuma troca boa... VAI DIRETO NA CARA!
-            if (!foundGoodTrade && playerHealth != null)
-            {
-                Debug.Log($"IA: Sem trocas boas. {aiCard.name} vai atacar direto a Vida do Jogador!");
-                aiCard.Attack(playerHealth);
-                yield return new WaitForSeconds(1.5f);
-            }
+            if (attacked) yield return new WaitForSeconds(1.5f);
         }
     }
 
+    // Método auxiliar para calcular se a IA tem dano suficiente para ganhar o jogo neste turno
+    private int CalculatePotentialFaceDamage(List<CardCombat> aiCards, bool pSoldiers, bool pHeroes, bool pCommanders)
+    {
+        int totalDamage = 0;
+        foreach(var c in aiCards)
+        {
+            if (c.currentLife > 0 && c.canAttackThisTurn)
+            {
+                Card.CardRole role = c.GetComponent<CardDisplay>().cardData.cardRole;
+                // Usa o juiz estático aqui também!
+                if (CombatRules.CanAttackPlayer(role, pSoldiers, pHeroes, pCommanders))
+                {
+                    totalDamage += c.currentAttack;
+                }
+            }
+        }
+        return totalDamage;
+    }
+
+    // ==========================================
+    // MÉTODOS DE ZONAS
+    // ==========================================
     private string GetEnemyZoneTag(Card.CardRole role)
     {
         switch (role)
