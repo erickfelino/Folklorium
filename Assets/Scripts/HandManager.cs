@@ -26,6 +26,7 @@ public class HandManager : MonoBehaviour
 
     public void DrawCardFromDeck()
     {
+        Debug.Log("comprando um card");
         if (deckManager != null)
         {
             Card drawnCard = deckManager.DrawCard();
@@ -46,7 +47,6 @@ public class HandManager : MonoBehaviour
         if (drag != null)
         {
             drag.SetManagers(this, myManaManager); 
-            
             if (isEnemyHand)
             {
                 drag.enabled = false;

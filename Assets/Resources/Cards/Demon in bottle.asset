@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Demon in bottle
   m_EditorClassIdentifier: 
   cardName: Demon in bottle
-  cardBody: 'Legacy: Summon an 2/2 demon'
+  cardBody: 'Legado: Invoque um pote 2/2'
   cardColorGroup: 0
   cardRole: 1
   mana: 3
   attack: 4
   life: 5
   art: {fileID: 21300000, guid: 3631f712e58da4649acc487970f4416c, type: 3}
+  damageValue: 0
+  effects: []

@@ -20,6 +20,25 @@ public class TurnManager : MonoBehaviour
     
     public bool isPlayerTurn { get; private set; }
     public event Action<bool> OnTurnChanged;
+    private static int pendingLocks = 0;
+    // O jogo continua lendo isso como um bool para não quebrar o seu OpponentAI!
+    public static bool isResolvingEffect 
+    {
+        get { return pendingLocks > 0; }
+    }
+
+    // Tranca a porta (+1)
+    public static void LockTurn() 
+    { 
+        pendingLocks++; 
+    }
+
+    // Destranca a porta (-1)
+    public static void UnlockTurn() 
+    { 
+        pendingLocks--; 
+        if (pendingLocks < 0) pendingLocks = 0; 
+    }
 
     private void Start()
     {

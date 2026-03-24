@@ -48,8 +48,55 @@ public class EffectTargetManager : MonoBehaviour
     }
 
     // A carta chama isso aqui quando cai na mesa!
+    // A carta chama isso aqui quando cai na mesa!
     public void StartTargeting(CardCombat source, Card cardData, CardEffect effect)
     {
+        // =========================================================
+        // RADAR INTELIGENTE: Precisa mesmo de seta?
+        // =========================================================
+        PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
+        
+        // 1. O efeito PERMITE bater na torre inimiga?
+        bool canTargetEnemyPlayer = enemyHealth != null && effect.IsValidTarget(source, null, enemyHealth);
+
+        // 2. Existe ALGUMA carta viva na mesa que também seja um alvo válido?
+        bool hasValidCardTarget = false;
+        CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        
+        foreach (var c in allCards)
+        {
+            if (c != null && c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0)
+            {
+                if (effect.IsValidTarget(source, c, null))
+                {
+                    hasValidCardTarget = true;
+                    break; // Achou pelo menos uma carta, então VAI PRECISAR da seta para você escolher!
+                }
+            }
+        }
+
+        // 3. O VEREDITO: Se pode bater na torre E NÃO PODE bater em mais nada... AUTO-FIRE!
+        if (canTargetEnemyPlayer && !hasValidCardTarget)
+        {
+            Debug.Log($"Auto-Target: {cardData.cardName} atirou o efeito direto na Torre Inimiga!");
+            
+            CardEffectContext context = new CardEffectContext
+            {
+                source = source,
+                targetCard = null,
+                targetPlayer = enemyHealth, // Alvo definido automaticamente!
+                isEnemySource = source.isEnemy
+            };
+            
+            effect.Execute(context);
+            return; // Sai da função! Não tranca o turno e não abre a seta.
+        }
+        // =========================================================
+
+        // Se chegou aqui, é porque tem mais de um alvo possível (ex: Torre OU um lacaio).
+        // Então o jogo tranca e pede a sua ajuda com a seta.
+        TurnManager.LockTurn(); // 🔒 TRANCA A PORTA
+
         currentSource = source;
         currentCardData = cardData;
         currentPendingEffect = effect;
@@ -99,7 +146,6 @@ public class EffectTargetManager : MonoBehaviour
                     targetPlayer = targetPlayer,
                     isEnemySource = currentSource.isEnemy
                 };
-
                 ExecuteAndFinish(context);
             }
             else
@@ -116,10 +162,15 @@ public class EffectTargetManager : MonoBehaviour
         if (arrow != null) arrow.ShowArrow(false);
 
         // Dispara os efeitos da carta com o contexto preenchido com o alvo!
-        CardEffectExecutor.ExecuteEffects(currentCardData, context, EffectTriggerType.OnPlay);
+        if (currentPendingEffect != null)
+        {
+            currentPendingEffect.Execute(context);
+        }
         
         // Limpa a memória
         currentSource = null; currentCardData = null; currentPendingEffect = null;
+
+        TurnManager.UnlockTurn();
     }
 
     private Vector3 GetMouseWorldPosition()

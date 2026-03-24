@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Corpo Seco
   m_EditorClassIdentifier: 
   cardName: Corpo Seco
-  cardBody: 'Battlecry: Deal 1 damage'
+  cardBody: 'Ordem: Cause 1 de dano a base inimiga'
   cardColorGroup: 0
   cardRole: 0
   mana: 1
   attack: 1
-  life: 2
+  life: 1
   art: {fileID: 21300000, guid: 863002b99762a7749824c7886fb593a8, type: 3}
+  damageValue: 1
   effects:
-  - {fileID: 11400000, guid: d8c21618d6c428341ba866db93749eda, type: 2}
+  - {fileID: 11400000, guid: fae3465cd701f304bbc7825817a2b981, type: 2}

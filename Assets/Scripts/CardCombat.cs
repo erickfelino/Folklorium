@@ -15,6 +15,7 @@ public class CardCombat : MonoBehaviour
     public int currentLife;
     public bool canAttackThisTurn = false; // Controla o enjoo de invocação
     public bool isEnemy; // Para saber se quem controla essa carta é a IA
+    public bool isDead = false; // Impede que a carta "morra" duas vezes
 
     private CardDisplay display;
     private CardDrag cardDrag;
@@ -22,23 +23,37 @@ public class CardCombat : MonoBehaviour
     // A MESA PODE OUVIR ESSE EVENTO PARA SABER QUANDO UMA CARTA MORRE!
     public event Action<CardCombat> OnDeath;
 
-    private void TriggerEffects(EffectTriggerType trigger,CardCombat targetCard = null,PlayerHealth targetPlayer = null)
+    private void TriggerEffects(EffectTriggerType targetTrigger, CardCombat targetCard = null, PlayerHealth targetPlayer = null)
     {
-        if (display == null || display.cardData == null) return;
+        if (display == null || display.cardData == null || display.cardData.effects == null) return;
 
-        CardEffectContext context = new CardEffectContext
+        foreach (var effect in display.cardData.effects)
         {
-            source = this,
-            targetCard = targetCard,
-            targetPlayer = targetPlayer,
-            isEnemySource = this.isEnemy
-        };
+            if (effect != null && effect.trigger == targetTrigger)
+            {
+                if (effect.requiresTarget && targetCard == null && targetPlayer == null)
+                {
 
-        CardEffectExecutor.ExecuteEffects(
-            display.cardData,
-            context,
-            trigger
-        );
+                    if (this.isEnemy)
+                    {
+                        OpponentAI ai = FindFirstObjectByType<OpponentAI>();
+                        if (ai != null) ai.StartCoroutine(ai.ResolveAITargetingCoroutine(this, display.cardData, effect));
+                    }
+                    else
+                    {
+                        EffectTargetManager.Instance.StartTargeting(this, display.cardData, effect);
+                    }
+                }
+                else
+                {
+                    CardEffectContext context = new CardEffectContext
+                    {
+                        source = this, targetCard = targetCard, targetPlayer = targetPlayer, isEnemySource = this.isEnemy
+                    };
+                    effect.Execute(context); 
+                }
+            }
+        }
     }
 
     void Start()
@@ -93,6 +108,8 @@ public class CardCombat : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         currentLife -= damage;
         display.UpdateLifeText(currentLife);
         TriggerEffects(EffectTriggerType.OnDamaged);
@@ -136,7 +153,7 @@ public class CardCombat : MonoBehaviour
 
         yield return new WaitForSeconds(0.35f);
 
-        if (this != null && this.currentLife > 0)
+        if (this != null)
         {
             transform.DOMove(originalPos, 0.75f);
         }
@@ -182,16 +199,31 @@ public class CardCombat : MonoBehaviour
         }
     }
 
+// Transformamos a morte numa Corrotina elegante!
     private void Die()
+    {
+        isDead = true;
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
     {
         Debug.Log($"{display.cardData.cardName} foi destruído!");
 
+        // 1. Desliga o colisor para não sofrer novos ataques enquanto agoniza
+        Collider col = GetComponent<Collider>(); 
+        if (col != null) col.enabled = false;
+
+        // 2. Aciona o OnDeath (que pode ativar a Seta e ligar o Sinal Vermelho internamente)
         TriggerEffects(EffectTriggerType.OnDeath);
-        
-        OnDeath?.Invoke(this); // Grita no rádio que morreu
-        
-        // Mata qualquer animação do DOTween rodando nela antes de destruir
+
+        OnDeath?.Invoke(this); 
         transform.DOKill(); 
+
+        // 3. O FANTASMA: Se o TriggerEffects ligou o Sinal Vermelho, a carta "pausa" a própria morte aqui!
+        yield return new WaitUntil(() => !TurnManager.isResolvingEffect);
+
+        // 4. Sinal Verde! O Efeito resolveu. A carta pode desaparecer em paz.
         Destroy(gameObject);
     }
 }

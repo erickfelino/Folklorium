@@ -15,10 +15,19 @@ public class OpponentAI : MonoBehaviour
         Debug.Log("IA: Começando o meu turno...");
         yield return new WaitForSeconds(1f);
 
+        // 👇 GARANTIA 1: Não começa a jogar cartas se houver algum efeito de início de turno resolvendo
+        yield return new WaitUntil(() => !TurnManager.isResolvingEffect);
+
         // A IA pensa como um jogador real: primeiro joga as cartas, depois ataca!
         yield return StartCoroutine(PlayCardsPhase());
         
+        // 👇 GARANTIA 2: Não começa a atacar enquanto as cartas recém-jogadas estiverem disparando Gritos de Guerra (OnPlay)
+        yield return new WaitUntil(() => !TurnManager.isResolvingEffect);
+
         yield return StartCoroutine(AttackPhase());
+
+        // 👇 GARANTIA 3: Não passa o turno enquanto as mortes/efeitos do último ataque não terminarem
+        yield return new WaitUntil(() => !TurnManager.isResolvingEffect);
 
         yield return new WaitForSeconds(1f);
     }
@@ -33,6 +42,7 @@ public class OpponentAI : MonoBehaviour
 
         foreach (GameObject cardObj in cardsInHand)
         {
+            yield return new WaitUntil(() => !TurnManager.isResolvingEffect);
             Card cardData = cardObj.GetComponent<CardDisplay>().cardData;
             
             if (cardData.mana <= aiMana.currentMana)
@@ -82,6 +92,8 @@ public class OpponentAI : MonoBehaviour
         foreach (CardCombat aiCard in aiCards)
         {
             if (aiCard == null || aiCard.currentLife <= 0) continue; 
+
+            yield return new WaitUntil(() => !TurnManager.isResolvingEffect);
 
             // -----------------------------------------------------
             // O RADAR: Lê a mesa do jogador a cada ataque (pois a mesa muda)
@@ -219,8 +231,8 @@ public class OpponentAI : MonoBehaviour
     // ==========================================
     public IEnumerator ResolveAITargetingCoroutine(CardCombat source, Card cardData, CardEffect effect)
     {
-        // 👇 O SEGREDO DO GAME FEEL: Espera a carta bater na mesa! 
-        // (Ajuste esse 0.8f para bater certinho com o tempo da sua animação de pulo)
+
+        TurnManager.LockTurn();
         yield return new WaitForSeconds(1.5f);
 
         PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("PlayerHealth")?.GetComponent<PlayerHealth>();
@@ -244,7 +256,7 @@ public class OpponentAI : MonoBehaviour
 
         bool canTargetPlayer = effect.IsValidTarget(source, null, playerHealth);
 
-        CardEffectContext context = new CardEffectContext { source = source, isEnemySource = true };
+        CardEffectContext context = new CardEffectContext { source = source,playerHand = aiHand, isEnemySource = true };
         bool foundTarget = false;
 
         // 👇 O CÉREBRO NOVO (Passo 2) 👇
@@ -280,12 +292,15 @@ public class OpponentAI : MonoBehaviour
         // 3. Executa o efeito!
         if (foundTarget)
         {
-            CardEffectExecutor.ExecuteEffects(cardData, context, EffectTriggerType.OnPlay);
+            // 👇 Executa apenas o efeito específico que pediu a mira, independente de ser OnPlay, OnDeath, etc.
+            effect.Execute(context);
         }
         else
         {
             // Se a mesa estiver vazia e a mágica exigir um lacaio inimigo, o efeito falha silenciosamente.
             Debug.Log($"IA [MÁGICA]: {cardData.cardName} entrou em campo, mas não havia alvos válidos para o efeito.");
         }
+
+        TurnManager.UnlockTurn();
     }
 }

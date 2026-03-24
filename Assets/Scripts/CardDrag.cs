@@ -254,6 +254,7 @@ public class CardDrag : MonoBehaviour
         CardEffectContext context = new CardEffectContext
         {
             source = combat,
+            playerHand = handManager,
             isEnemySource = combat.isEnemy
         };
 

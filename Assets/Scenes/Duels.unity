@@ -2247,6 +2247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 12
   currentHealth: 0
+  isEnemy: 0
   healthText: {fileID: 845770885}
 --- !u!65 &1085289909
 BoxCollider:
@@ -4162,6 +4163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 12
   currentHealth: 0
+  isEnemy: 1
   healthText: {fileID: 1590556639}
 --- !u!65 &1594124477
 BoxCollider:

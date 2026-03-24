@@ -8,6 +8,7 @@ namespace Folklorium
     public class Card : ScriptableObject
     {
         public string cardName;
+        [TextArea]
         public string cardBody;
         public CardType cardColorGroup;
         public CardRole cardRole;
@@ -15,6 +16,7 @@ namespace Folklorium
         public int attack;
         public int life;
         public Sprite art;
+        public int damageValue;
 
         public List<CardEffect> effects = new List<CardEffect>();
 
