@@ -30,6 +30,7 @@ public class CardDisplay : MonoBehaviour
         lifeTokenText.text = cardData.life.ToString();
 
         if (cardData.art != null) cardImage.material.mainTexture = cardData.art.texture;
+        gameObject.name = cardData.cardName;
     }
     public void UpdateLifeText(int currentLife)
     {

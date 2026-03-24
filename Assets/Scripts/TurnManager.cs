@@ -18,7 +18,7 @@ public class TurnManager : MonoBehaviour
     [Header("Outros Gerenciadores")]
     [SerializeField] private OpponentAI opponentAI;
     
-    public bool IsPlayerTurn { get; private set; }
+    public bool isPlayerTurn { get; private set; }
     public event Action<bool> OnTurnChanged;
 
     private void Start()
@@ -50,13 +50,13 @@ public class TurnManager : MonoBehaviour
         if (playerGoesFirst)
         {
             Debug.Log("O Jogador ganhou no cara ou coroa! Você começa.");
-            IsPlayerTurn = true;
+            isPlayerTurn = true;
             StartPlayerTurn();
         }
         else
         {
             Debug.Log("A IA ganhou no cara ou coroa! Ela começa.");
-            IsPlayerTurn = false;
+            isPlayerTurn = false;
             StartCoroutine(SimulateOpponentTurn());
         }
     }
@@ -93,8 +93,8 @@ public class TurnManager : MonoBehaviour
 
     public void StartPlayerTurn()
     {
-        IsPlayerTurn = true;
-        OnTurnChanged?.Invoke(IsPlayerTurn);
+        isPlayerTurn = true;
+        OnTurnChanged?.Invoke(isPlayerTurn);
 
         Debug.Log("Seu Turno!");
         
@@ -109,18 +109,18 @@ public class TurnManager : MonoBehaviour
 
     public void EndPlayerTurn()
     {
-        if (!IsPlayerTurn) return; 
+        if (!isPlayerTurn) return; 
         
-        IsPlayerTurn = false;
-        OnTurnChanged?.Invoke(IsPlayerTurn);
+        isPlayerTurn = false;
+        OnTurnChanged?.Invoke(isPlayerTurn);
         
         StartCoroutine(SimulateOpponentTurn());
     }
 
     private IEnumerator SimulateOpponentTurn()
     {
-        IsPlayerTurn = false;
-        OnTurnChanged?.Invoke(IsPlayerTurn);
+        isPlayerTurn = false;
+        OnTurnChanged?.Invoke(isPlayerTurn);
 
         Debug.Log("Turno do Inimigo!");
         

@@ -23,6 +23,28 @@ public class TargetingArrow : MonoBehaviour
         if (lineRenderer != null) lineRenderer.enabled = show;
     }
 
+    // Adicione esta função dentro do seu TargetingArrow.cs
+
+    public void SetColor(Color newColor)
+    {
+        // Se você usa LineRenderer:
+        LineRenderer line = GetComponent<LineRenderer>();
+        if (line != null)
+        {
+            line.startColor = newColor;
+            line.endColor = newColor;
+            
+            // Se a sua seta tem um material específico que brilha (Emission), 
+            // talvez precise mudar a cor do material também:
+            // line.material.color = newColor;
+            // line.material.SetColor("_EmissionColor", newColor); 
+        }
+
+        // Se você tem um Sprite na ponta da seta (o triângulo), mude a cor dele também!
+        // SpriteRenderer tip = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        // if (tip != null) tip.color = newColor;
+    }
+
     public void UpdateArrow(Vector3 startPoint, Vector3 endPoint)
     {
         if (lineRenderer == null || !lineRenderer.enabled) return;

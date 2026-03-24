@@ -20,7 +20,6 @@ public class OpponentAI : MonoBehaviour
         
         yield return StartCoroutine(AttackPhase());
 
-        Debug.Log("IA: Fim das jogadas. Passo o turno.");
         yield return new WaitForSeconds(1f);
     }
 
@@ -47,17 +46,18 @@ public class OpponentAI : MonoBehaviour
                     aiMana.SpendMana(cardData.mana);
                     aiHand.RemoveCardFromHand(cardObj);
 
+                    //AVISA QUE É INIMIGO ANTES DE PULAR!
+                    CardCombat combatScript = cardObj.GetComponent<CardCombat>();
+                    if (combatScript != null)
+                    {
+                        combatScript.isEnemy = true;
+                    }
+
+                    //DEPOIS PULA PARA A MESA (Isso vai disparar os efeitos)
                     CardDrag dragScript = cardObj.GetComponent<CardDrag>();
                     if (dragScript != null)
                     {
                         dragScript.TransformIntoTokenAndJump(emptyZone.transform, true);
-                        
-                        // Marca a carta como sendo do inimigo IMEDIATAMENTE!
-                        CardCombat combatScript = cardObj.GetComponent<CardCombat>();
-                        if (combatScript != null)
-                        {
-                            combatScript.isEnemy = true;
-                        }
                     }
 
                     yield return new WaitForSeconds(1.2f); 
@@ -213,5 +213,79 @@ public class OpponentAI : MonoBehaviour
             if (zone.transform.childCount == 0) return zone;
         }
         return null;
+    }
+    // ==========================================
+    // FASE 3: ESCOLHA DE ALVOS PARA EFEITOS (MÁGICAS)
+    // ==========================================
+    public IEnumerator ResolveAITargetingCoroutine(CardCombat source, Card cardData, CardEffect effect)
+    {
+        // 👇 O SEGREDO DO GAME FEEL: Espera a carta bater na mesa! 
+        // (Ajuste esse 0.8f para bater certinho com o tempo da sua animação de pulo)
+        yield return new WaitForSeconds(1.5f);
+
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("PlayerHealth")?.GetComponent<PlayerHealth>();
+        PlayerHealth aiHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
+
+        CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        List<CardCombat> validCardTargets = new List<CardCombat>();
+
+        // 1. Acha todos os alvos válidos na mesa usando as regras do PRÓPRIO efeito!
+        foreach (var c in allCards)
+        {
+            // Só olha cartas que já estão na mesa e vivas
+            if (c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0)
+            {
+                if (effect.IsValidTarget(source, c, null))
+                {
+                    validCardTargets.Add(c);
+                }
+            }
+        }
+
+        bool canTargetPlayer = effect.IsValidTarget(source, null, playerHealth);
+
+        CardEffectContext context = new CardEffectContext { source = source, isEnemySource = true };
+        bool foundTarget = false;
+
+        // 👇 O CÉREBRO NOVO (Passo 2) 👇
+
+        // Filtra quem é quem dentro dos alvos que o Efeito permitiu
+        List<CardCombat> enemiesToAI = validCardTargets.Where(c => !c.isEnemy).ToList(); // Cartas do JOGADOR
+        List<CardCombat> alliesToAI = validCardTargets.Where(c => c.isEnemy).ToList();   // Cartas da IA
+
+        // Prioridade 1: Tem lacaio do jogador dando sopa? Atira no mais forte!
+        if (enemiesToAI.Count > 0)
+        {
+            CardCombat chosenCard = enemiesToAI.OrderByDescending(c => c.currentAttack).First();
+            context.targetCard = chosenCard;
+            foundTarget = true;
+            Debug.Log($"IA [MÁGICA]: {cardData.cardName} focou no lacaio inimigo {chosenCard.name}.");
+        }
+        // Prioridade 2: Não tem lacaio, mas o Efeito deixa bater direto na vida do jogador? Fogo na cara!
+        else if (canTargetPlayer)
+        {
+            context.targetPlayer = playerHealth;
+            foundTarget = true;
+            Debug.Log($"IA [MÁGICA]: {cardData.cardName} atirou o efeito direto na vida do Jogador.");
+        }
+        // Prioridade 3: Só sobrou aliado como alvo válido? (Isso vai ser PERFEITO para feitiços de Buff/Cura no futuro)
+        else if (alliesToAI.Count > 0)
+        {
+            CardCombat chosenCard = alliesToAI.OrderByDescending(c => c.currentAttack).First();
+            context.targetCard = chosenCard;
+            foundTarget = true;
+            Debug.Log($"IA [MÁGICA - BUFF/FORÇADO]: {cardData.cardName} alvejou a própria carta {chosenCard.name}.");
+        }
+
+        // 3. Executa o efeito!
+        if (foundTarget)
+        {
+            CardEffectExecutor.ExecuteEffects(cardData, context, EffectTriggerType.OnPlay);
+        }
+        else
+        {
+            // Se a mesa estiver vazia e a mágica exigir um lacaio inimigo, o efeito falha silenciosamente.
+            Debug.Log($"IA [MÁGICA]: {cardData.cardName} entrou em campo, mas não havia alvos válidos para o efeito.");
+        }
     }
 }

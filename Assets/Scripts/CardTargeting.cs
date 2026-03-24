@@ -31,7 +31,11 @@ public class CardTargeting : MonoBehaviour
         }
 
         isDragging = true;
-        if (arrow != null) arrow.ShowArrow(true);
+        if (arrow != null) 
+        {
+            arrow.SetColor(Color.red); // <--- ADICIONE ESTA LINHA!
+            arrow.ShowArrow(true);
+        }
     }
 
     void OnMouseDrag()

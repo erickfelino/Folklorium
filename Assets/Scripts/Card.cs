@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Folklorium
@@ -13,6 +15,8 @@ namespace Folklorium
         public int attack;
         public int life;
         public Sprite art;
+
+        public List<CardEffect> effects = new List<CardEffect>();
 
         public enum CardType
         {

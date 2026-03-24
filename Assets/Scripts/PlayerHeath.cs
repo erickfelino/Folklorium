@@ -7,6 +7,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Configurações de Vida")]
     public int maxHealth = 12; // Vida inicial padrão
     public int currentHealth;
+    [Header("Configurações do Jogador")]
+    public bool isEnemy;
 
     [Header("Interface")]
     public TMP_Text healthText; // Arraste o texto da vida aqui no Inspector

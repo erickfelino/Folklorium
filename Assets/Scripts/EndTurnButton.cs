@@ -48,7 +48,7 @@ public class EndTurnButton : MonoBehaviour
 
     private void UpdateManaVisuals(int currentMana)
     {
-        if (!turnManager.IsPlayerTurn) return;
+        if (!turnManager.isPlayerTurn) return;
 
         if (currentMana <= 0)
         {
@@ -81,7 +81,7 @@ public class EndTurnButton : MonoBehaviour
 
     void OnMouseEnter()
     {
-        if (turnManager.IsPlayerTurn) canSelectGlow.SetActive(true);
+        if (turnManager.isPlayerTurn) canSelectGlow.SetActive(true);
     }
 
     void OnMouseExit()
@@ -91,7 +91,7 @@ public class EndTurnButton : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (turnManager.IsPlayerTurn)
+        if (turnManager.isPlayerTurn)
         {
             canSelectGlow.SetActive(false); 
             turnManager.EndPlayerTurn();

@@ -12,6 +12,7 @@ public class CardDrag : MonoBehaviour
     private Color originalZoneColor;
     private Plane dragPlane; 
     private HandManager handManager;
+    private TurnManager turnManager;
 
     [Header("Mana")]
     private ManaManager manaManager;
@@ -32,6 +33,7 @@ public class CardDrag : MonoBehaviour
     void Start()
     {
         Card cardData = GetComponent<CardDisplay>().cardData;
+        turnManager = FindFirstObjectByType<TurnManager>();
         myManaCost = cardData.mana;
         SetupCardRules(cardData);
 
@@ -97,6 +99,7 @@ public class CardDrag : MonoBehaviour
     void OnMouseDown()
     {
         if (isPlayed) return;
+        if (turnManager != null && !turnManager.isPlayerTurn) return;
 
         if (manaManager != null && !manaManager.HasEnoughMana(myManaCost))
         {
@@ -206,7 +209,11 @@ public class CardDrag : MonoBehaviour
         isPlayed = true;
         transform.SetParent(targetZone);
 
+        // Dentro de TransformIntoTokenAndJump...
         GetComponent<Collider>().enabled = true;
+
+        // 👇 Troque o TriggerOnPlayEffects() antigo por este aqui:
+        ResolveOnPlayEffects();
 
         // Troca os visuais
         foreach(GameObject obj in objectsToHideOnBoard) if(obj) obj.SetActive(false);
@@ -237,6 +244,67 @@ public class CardDrag : MonoBehaviour
         transform.DOKill(); 
         transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1.2f).SetEase(Ease.OutQuad);
         //transform.DOScale(finalScale, 1.2f).SetEase(Ease.OutQuad); Se precisar mudar o tamanho dela ao cair no board no futuro
+    }
+
+    private void TriggerOnPlayEffects()
+    {
+        CardCombat combat = GetComponent<CardCombat>();
+        Card data = GetComponent<CardDisplay>().cardData;
+
+        CardEffectContext context = new CardEffectContext
+        {
+            source = combat,
+            isEnemySource = combat.isEnemy
+        };
+
+        CardEffectExecutor.ExecuteEffects(
+            data,
+            context,
+            EffectTriggerType.OnPlay
+        );
+    }
+
+    private void ResolveOnPlayEffects()
+    {
+        Card data = GetComponent<CardDisplay>().cardData;
+        CardCombat combat = GetComponent<CardCombat>();
+
+        CardEffect effectThatNeedsTarget = null;
+
+        if (data.effects != null)
+        {
+            foreach (var effect in data.effects)
+            {
+                if (effect != null && effect.trigger == EffectTriggerType.OnPlay && effect.requiresTarget)
+                {
+                    effectThatNeedsTarget = effect;
+                    break; 
+                }
+            }
+        }
+
+        if (effectThatNeedsTarget != null)
+        {
+            // A BIFURCAÇÃO MÁGICA
+            if (combat.isEnemy)
+            {
+                OpponentAI ai = FindFirstObjectByType<OpponentAI>();
+                if (ai != null)
+                {
+                    // 👇 ATUALIZE ESTA LINHA: Agora iniciamos a Coroutine!
+                    ai.StartCoroutine(ai.ResolveAITargetingCoroutine(combat, data, effectThatNeedsTarget));
+                }
+            }
+            else
+            {
+                // Se é o JOGADOR, acende a Seta Azul e espera o clique!
+                EffectTargetManager.Instance.StartTargeting(combat, data, effectThatNeedsTarget);
+            }
+        }
+        else
+        {
+            TriggerOnPlayEffects(); 
+        }
     }
     
     public void SetManagers(HandManager hand, ManaManager mana)

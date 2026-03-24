@@ -22,6 +22,25 @@ public class CardCombat : MonoBehaviour
     // A MESA PODE OUVIR ESSE EVENTO PARA SABER QUANDO UMA CARTA MORRE!
     public event Action<CardCombat> OnDeath;
 
+    private void TriggerEffects(EffectTriggerType trigger,CardCombat targetCard = null,PlayerHealth targetPlayer = null)
+    {
+        if (display == null || display.cardData == null) return;
+
+        CardEffectContext context = new CardEffectContext
+        {
+            source = this,
+            targetCard = targetCard,
+            targetPlayer = targetPlayer,
+            isEnemySource = this.isEnemy
+        };
+
+        CardEffectExecutor.ExecuteEffects(
+            display.cardData,
+            context,
+            trigger
+        );
+    }
+
     void Start()
     {
         // 1. Procuramos o gerente de turno com segurança
@@ -76,6 +95,7 @@ public class CardCombat : MonoBehaviour
     {
         currentLife -= damage;
         display.UpdateLifeText(currentLife);
+        TriggerEffects(EffectTriggerType.OnDamaged);
 
         // Feedback de dano: a carta treme e SÓ DEPOIS checa se morreu
         transform.DOShakePosition(0.3f, 0.2f, 10, 90f).OnComplete(() => 
@@ -112,6 +132,7 @@ public class CardCombat : MonoBehaviour
 
         if (targetCard != null) targetCard.TakeDamage(myDamage);
         if (this != null) this.TakeDamage(enemyDamage);
+        TriggerEffects(EffectTriggerType.OnAttack, targetCard);
 
         yield return new WaitForSeconds(0.35f);
 
@@ -147,7 +168,8 @@ public class CardCombat : MonoBehaviour
 
         if (targetHealth != null)
         {
-             targetHealth.PlayerTakeDamage(myDamage);
+            targetHealth.PlayerTakeDamage(myDamage);
+            TriggerEffects(EffectTriggerType.OnAttack, null, targetHealth);
         }
 
         // 3. Espera um pouco para dar o impacto visual (0.35s igual ao outro)
@@ -163,6 +185,8 @@ public class CardCombat : MonoBehaviour
     private void Die()
     {
         Debug.Log($"{display.cardData.cardName} foi destruído!");
+
+        TriggerEffects(EffectTriggerType.OnDeath);
         
         OnDeath?.Invoke(this); // Grita no rádio que morreu
         
