@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Card Heal
   m_EditorClassIdentifier: 
   trigger: 0
-  requiresTarget: 0
-  validTargets: 0
-  description: 
+  requiresTarget: 1
+  validTargets: 1
+  description: Heal one ally card

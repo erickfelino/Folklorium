@@ -15,10 +15,11 @@ MonoBehaviour:
   cardName: Saci
   cardBody: "\xCDmpeto"
   cardColorGroup: 0
-  cardRole: 0
-  mana: 4
-  attack: 5
+  cardRole: 1
+  mana: 3
+  attack: 3
   life: 2
   art: {fileID: 21300000, guid: 418c9abefae407d47a70aa3358586dc6, type: 3}
-  damageValue: 3
-  effects: []
+  damageValue: -3
+  effects:
+  - {fileID: 11400000, guid: 31f8affeecc7d3b46a152ab473cb2fc9, type: 2}

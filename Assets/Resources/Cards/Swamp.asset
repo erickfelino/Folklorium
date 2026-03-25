@@ -20,4 +20,6 @@ MonoBehaviour:
   attack: 2
   life: 1
   art: {fileID: 21300000, guid: 6a5b81e63a438804fa3ec8090814c218, type: 3}
-  effects: []
+  damageValue: 1
+  effects:
+  - {fileID: 11400000, guid: 4b894bf942d15f047b14fa240fb0cd1c, type: 2}

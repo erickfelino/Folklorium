@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Cuca
+  m_Name: Lobisomem
   m_EditorClassIdentifier: 
-  cardName: Cuca
-  cardBody: 'Legacy: Summon 1 pot for the enemy'
-  cardColorGroup: 4
+  cardName: Lobisomem
+  cardBody: 'Order: Draw 2 cards'
+  cardColorGroup: 0
   cardRole: 1
   mana: 4
-  attack: 2
-  life: 4
-  art: {fileID: 21300000, guid: 8b009af50696b4e4fb09543b185c4fd3, type: 3}
+  attack: 4
+  life: 2
+  art: {fileID: 21300000, guid: 73ebe44ed65a47745a062790fe70ead6, type: 3}
   damageValue: 2
   effects:
-  - {fileID: 11400000, guid: 08ab53a2dc96b80409016a0fee48cc41, type: 2}
+  - {fileID: 11400000, guid: 4b894bf942d15f047b14fa240fb0cd1c, type: 2}

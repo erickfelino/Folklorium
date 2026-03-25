@@ -23,7 +23,9 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damageAmount;
         
         // Garante que a vida não fique negativa
-        if (currentHealth < 0) currentHealth = 0; 
+        if (currentHealth < 0) currentHealth = 0;
+        // Garante que a vida não fique acima de 12
+        if (currentHealth > 12) currentHealth = 12;
 
         UpdateHealthUI();
 
