@@ -1,18 +1,31 @@
 using UnityEngine;
-using Folklorium; // Lembre-se do namespace para achar a classe Card!
+using Folklorium; 
 
 public static class CardEffectExecutor
 {
-    public static void ExecuteEffects(Card cardData, CardEffectContext context, EffectTriggerType currentTrigger)
+    public static void ExecuteEffects(CardData cardData, CardEffectContext context, EffectTriggerType currentTrigger)
     {
         if (cardData.effects == null || cardData.effects.Count == 0) return;
 
-        foreach (var effect in cardData.effects)
+        // Iteramos sobre a nova classe 'EffectEntry'
+        foreach (EffectEntry entry in cardData.effects)
         {
-            // Só executa se o efeito existir E se o gatilho dele for igual ao momento atual!
-            if (effect != null && effect.trigger == currentTrigger)
+            // Verificamos se a entrada existe, se o SO foi "linkado" e se o gatilho bate
+            if (entry != null && entry.effectSO != null && entry.trigger == currentTrigger)
             {
-                effect.Execute(context);
+                // 👇 A MUDANÇA CONCEITUAL DO NÍVEL 3 + POLIMORFISMO 👇
+                // Extraímos o molde (effectSO) e os dados da carta (parameters)
+                CardEffect effectSO = entry.effectSO;
+                EffectData rawData = entry.parameters;
+
+                // Pedimos para o efeito fabricar a ação enviando O CONTEXTO e OS DADOS!
+                GameAction action = effectSO.CreateAction(context, rawData);
+                
+                // Se o efeito retornou um ticket válido, jogamos pro Gerente!
+                if (action != null)
+                {
+                    ActionSystem.Instance.AddAction(action);
+                }
             }
         }
     }

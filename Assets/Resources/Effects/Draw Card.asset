@@ -15,4 +15,5 @@ MonoBehaviour:
   trigger: 0
   requiresTarget: 0
   validTargets: 0
-  description: Draw a number of cards
+  description: Compra de card quando jogado
+  cardsToDraw: 1

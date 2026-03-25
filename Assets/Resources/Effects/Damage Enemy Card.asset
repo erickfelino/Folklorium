@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96b908afbf3951644b9fb4061bfcd5a0, type: 3}
-  m_Name: Card Heal
+  m_Script: {fileID: 11500000, guid: cae11c6a3056f9b45997ff8236d7eb84, type: 3}
+  m_Name: Damage Enemy Card
   m_EditorClassIdentifier: 
-  trigger: 0
+  trigger: 3
   requiresTarget: 1
-  validTargets: 1
-  description: Heal one ally card
+  validTargets: 0
+  description: Dano em card inimigo quando morre

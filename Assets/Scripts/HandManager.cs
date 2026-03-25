@@ -29,7 +29,7 @@ public class HandManager : MonoBehaviour
         Debug.Log("comprando um card");
         if (deckManager != null)
         {
-            Card drawnCard = deckManager.DrawCard();
+            CardData drawnCard = deckManager.DrawCard();
             
             if (drawnCard != null)
             {
@@ -38,7 +38,7 @@ public class HandManager : MonoBehaviour
         }
     }
 
-    public void AddCardToHand(Card cardData)
+    public void AddCardToHand(CardData cardData)
     {
         GameObject newCard = Instantiate(cardPrefab, handTransform.position, Quaternion.identity, handTransform);
         newCard.transform.localScale = new Vector3(10f, 10f, 10f);

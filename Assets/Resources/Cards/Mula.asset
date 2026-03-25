@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mula
   m_EditorClassIdentifier: 
   cardName: "Mula-Sem-Cabe\xE7a"
-  cardBody: Double Strike
+  cardBody: "Ordem: D\xEA 6 de dano a um lacaio"
   cardColorGroup: 0
   cardRole: 2
   mana: 6

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Folklorium; // 👇 Avisamos para ele olhar o nosso namespace!
 
 // 1. As categorias de alvos possíveis
 public enum ValidTargetType
@@ -13,7 +14,7 @@ public enum ValidTargetType
 
 public abstract class CardEffect : ScriptableObject
 {
-    public EffectTriggerType trigger;
+    // 👇 APAGAMOS O 'trigger' DAQUI! Agora quem manda no gatilho é o CardData lá no Inspector.
 
     [Header("Configuração de Alvo")]
     public bool requiresTarget = false;
@@ -21,10 +22,12 @@ public abstract class CardEffect : ScriptableObject
 
     [TextArea]
     public string description;
+    public abstract System.Type GetDataType();
 
-    public abstract void Execute(CardEffectContext context);
+    // A assinatura nova exige o EffectData!
+    public abstract GameAction CreateAction(CardEffectContext context, EffectData rawData);
 
-    // 2. A MÁGICA (Problema 3 resolvido): O Efeito valida o alvo!
+    // 2. A MÁGICA: O Efeito valida o alvo!
     public virtual bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer)
     {
         if (!requiresTarget) return false;
@@ -48,7 +51,7 @@ public abstract class CardEffect : ScriptableObject
         {
             bool targetIsAIHealth = targetPlayer.CompareTag("EnemyHealth"); 
             
-            // 👇 A MÁGICA DA PERSPECTIVA AQUI 👇
+            // A MÁGICA DA PERSPECTIVA AQUI
             // Se quem lançou a magia for a IA (source.isEnemy), o inimigo é o Avatar que NÃO tem a tag da IA.
             // Se quem lançou for você (!source.isEnemy), o inimigo é quem tem a tag da IA.
             bool isEnemyPlayer = source.isEnemy ? !targetIsAIHealth : targetIsAIHealth;

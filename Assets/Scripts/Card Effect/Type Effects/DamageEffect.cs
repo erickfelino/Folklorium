@@ -3,20 +3,25 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Card Effects/Damage Effect")]
 public class DamageEffect : CardEffect
 {
-    public override void Execute(CardEffectContext context)
+    public override System.Type GetDataType()
     {
-        int damage = context.source.GetComponent<CardDisplay>().cardData.damageValue;
+        return typeof(DamageEffectData);
+    }
 
-        if (context.targetCard != null)
+    public override GameAction CreateAction(CardEffectContext context, EffectData rawData)
+    {
+        // 1. Lemos a caixa misteriosa (rawData) e checamos se ela é uma caixa de Dano
+        if (rawData is DamageEffectData damageData)
         {
-            context.targetCard.TakeDamage(damage);
-            return;
+            // 2. Pegamos o valor que você configurou lá no Inspector da carta!
+            int damageToDeal = damageData.damage;
+
+            // 3. Cospe o ticket pronto
+            return new DamageAction(context.source, context.targetCard, context.targetPlayer, damageToDeal);
         }
 
-        if (context.targetPlayer != null)
-        {
-            context.targetPlayer.PlayerTakeDamage(damage);
-            return;
-        }
+        // Sistema anti-falhas: se o designer arrastou o efeito de dano, mas escolheu "BuffData" na Unity
+        Debug.LogError($"[DamageEffect] ERRO: A carta '{context.source.name}' tentou usar o DamageEffect, mas os dados passados não são DamageEffectData!");
+        return null;
     }
 }

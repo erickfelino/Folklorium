@@ -1,15 +1,15 @@
 using UnityEngine;
-using TMPro; // Usando TextMeshPro para o texto da vida
-using DG.Tweening; // Para a nossa tremedeira de dano!
+using TMPro; 
+using DG.Tweening; 
 
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Configurações de Vida")]
-    public int maxHealth = 12; // Vida inicial padrão
+    public int maxHealth = 12; 
     public int currentHealth;
 
     [Header("Interface")]
-    public TMP_Text healthText; // Arraste o texto da vida aqui no Inspector
+    public TMP_Text healthText; 
 
     void Start()
     {
@@ -17,25 +17,35 @@ public class PlayerHealth : MonoBehaviour
         UpdateHealthUI();
     }
 
-    // Método que as cartas vão chamar quando atacarem!
-    public void PlayerTakeDamage(int damageAmount)
+    // ==========================================
+    // API DE ESTADO (NÍVEL 3) - O Repositório Ignorante
+    // ==========================================
+    public void ApplyRawStateChange(int healthChange)
     {
-        currentHealth -= damageAmount;
+        currentHealth += healthChange;
         
-        // Garante que a vida não fique negativa
+        // Garante os limites da vida usando a variável maxHealth (em vez de 12 fixo)
         if (currentHealth < 0) currentHealth = 0;
-        // Garante que a vida não fique acima de 12
-        if (currentHealth > 12) currentHealth = 12;
+        if (currentHealth > maxHealth) currentHealth = maxHealth;
 
         UpdateHealthUI();
 
-        transform.DOShakePosition(0.3f, 0.2f, 10, 90f).OnComplete(() => 
+        // Se o número for negativo, significa que foi DANO. Então a gente treme!
+        if (healthChange < 0)
         {
-            if (currentHealth <= 0)
+            transform.DOShakePosition(0.3f, 0.2f, 10, 90f).OnComplete(() => 
             {
-                Die();
-            }
-        });
+                if (currentHealth <= 0)
+                {
+                    Die();
+                }
+            });
+        }
+        // Se for positivo, é CURA. No futuro você pode colocar um efeito visual (verde) aqui!
+        else if (healthChange > 0)
+        {
+            // Efeito visual de cura futuramente...
+        }
     }
 
     private void UpdateHealthUI()
@@ -49,6 +59,5 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log(gameObject.name + " foi Derrotado! FIM DE JOGO!");
-        // Aqui você chamará a tela de Vitória/Derrota no futuro
     }
 }

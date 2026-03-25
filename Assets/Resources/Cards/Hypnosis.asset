@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hypnosis
   m_EditorClassIdentifier: 
   cardName: Hypnosis
-  cardBody: "Legado: D\xEA 1 de dano em um lacaio inimigo"
+  cardBody: "Legado: D\xEA 2 de dano em um lacaio inimigo"
   cardColorGroup: 0
   cardRole: 0
   mana: 2

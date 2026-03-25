@@ -7,7 +7,7 @@ public class EffectTargeting : MonoBehaviour
 {
     private TargetingArrow arrow;
     private CardCombat myCombat;
-    private Card myCardData;
+    private CardData myCardData;
     private Camera mainCamera;
 
     private bool isWaitingForTarget = false;
@@ -20,13 +20,11 @@ public class EffectTargeting : MonoBehaviour
         arrow = Object.FindFirstObjectByType<TargetingArrow>();
     }
 
-    // O CardDrag vai chamar isso aqui!
     public void StartTargeting()
     {
         isWaitingForTarget = true;
         if (arrow != null) arrow.ShowArrow(true);
         
-        // Opcional: Você pode colocar um som aqui ou fazer a carta brilhar!
         Debug.Log("Escolha um alvo para o efeito da carta!");
     }
 
@@ -34,14 +32,12 @@ public class EffectTargeting : MonoBehaviour
     {
         if (!isWaitingForTarget) return;
 
-        // 1. A seta segue o mouse o tempo todo
         if (arrow != null)
         {
             Vector3 endPoint = GetMouseWorldPosition();
             arrow.UpdateArrow(transform.position, endPoint);
         }
 
-        // 2. Quando o jogador CLICAR (botão esquerdo), disparamos o tiro!
         if (Input.GetMouseButtonDown(0))
         {
             TrySelectTarget();
@@ -60,17 +56,15 @@ public class EffectTargeting : MonoBehaviour
                 isEnemySource = myCombat.isEnemy
             };
 
-            // Se clicou num LACAIO INIMIGO
             if (hit.collider.CompareTag("Card"))
             {
                 CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
-                if (targetCard != null && targetCard.isEnemy) // Garante que é inimigo
+                if (targetCard != null && targetCard.isEnemy) 
                 {
                     context.targetCard = targetCard;
                     ExecuteAndFinish(context);
                 }
             }
-            // Se clicou no JOGADOR INIMIGO (Torre/Avatar)
             else if (hit.collider.CompareTag("EnemyHealth"))
             {
                 PlayerHealth targetPlayer = hit.collider.GetComponent<PlayerHealth>();
@@ -83,20 +77,19 @@ public class EffectTargeting : MonoBehaviour
             else
             {
                 Debug.Log("Alvo inválido. Clique em um inimigo!");
-                // Fica esperando clicar num alvo certo. Não desliga a seta.
             }
         }
     }
 
     private void ExecuteAndFinish(CardEffectContext context)
     {
-        // 1. Desliga a mira
         isWaitingForTarget = false;
         if (arrow != null) arrow.ShowArrow(false);
 
-        // 2. Executa a Mágica!
+        // O CardEffectExecutor já foi atualizado para gerar GameActions!
+        // Então chamar ele aqui já garante que o fluxo vá para o ActionSystem.
         CardEffectExecutor.ExecuteEffects(myCardData, context, EffectTriggerType.OnPlay);
-        Debug.Log("Efeito engatilhado com sucesso no alvo escolhido!");
+        Debug.Log("Efeito engatilhado e enviado para o ActionSystem!");
     }
 
     private Vector3 GetMouseWorldPosition()

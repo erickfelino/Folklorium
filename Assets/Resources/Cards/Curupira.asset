@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Curupira
   m_EditorClassIdentifier: 
   cardName: Curupira
-  cardBody: 'Ordem: Cause 3 de dano a base inimiga'
+  cardBody: 'Ordem: Cause 3 de dano na torre inimiga'
   cardColorGroup: 0
   cardRole: 2
   mana: 5

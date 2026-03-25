@@ -1,6 +1,6 @@
 using UnityEngine;
 using Folklorium;
-using static Folklorium.Card;
+using static Folklorium.CardData;
 
 public static class CombatRules
 {

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Saci
   m_EditorClassIdentifier: 
   cardName: Saci
-  cardBody: "\xCDmpeto"
+  cardBody: 'Ordem: Cure 3 de vida'
   cardColorGroup: 0
   cardRole: 1
   mana: 3

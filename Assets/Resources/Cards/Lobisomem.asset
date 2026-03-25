@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lobisomem
   m_EditorClassIdentifier: 
   cardName: Lobisomem
-  cardBody: 'Order: Draw 2 cards'
+  cardBody: 'Ordem: Compre 2 cards'
   cardColorGroup: 0
   cardRole: 1
   mana: 4

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Demon in bottle
   m_EditorClassIdentifier: 
   cardName: Demon in bottle
-  cardBody: 'Legado: Invoque um pote 2/2'
+  cardBody: 'Ordem: Cure 1 de vida de um lacaio aliado'
   cardColorGroup: 0
   cardRole: 1
   mana: 3

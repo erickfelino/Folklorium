@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cae11c6a3056f9b45997ff8236d7eb84, type: 3}
-  m_Name: Death Card Damage
+  m_Name: Damage Any Card
   m_EditorClassIdentifier: 
-  trigger: 3
+  trigger: 0
   requiresTarget: 1
-  validTargets: 0
-  description: Dano quando morre
+  validTargets: 2
+  description: Dano em qualquer card quando jogado

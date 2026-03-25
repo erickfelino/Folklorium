@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class DeckManager : MonoBehaviour
 {
-    public List<Card> allCards = new List<Card>();
+    public List<CardData> allCards = new List<CardData>();
     private int currentIndex = 0;
 
     void Start()
     {
         // Adiciona os cards da pasta Resources
-        Card[] cards = Resources.LoadAll<Card>("Cards");
+        CardData[] cards = Resources.LoadAll<CardData>("Cards");
         allCards.AddRange(cards);
 
         ShuffleDeck();
@@ -19,7 +19,7 @@ public class DeckManager : MonoBehaviour
     }
 
     // AGORA ESTE MÉTODO RETORNA UMA CARTA ('Card') EM VEZ DE 'void'
-    public Card DrawCard()
+    public CardData DrawCard()
     {
         if (allCards.Count == 0 || currentIndex >= allCards.Count)
         {
@@ -27,7 +27,7 @@ public class DeckManager : MonoBehaviour
             return null; // Retorna nulo para avisar que o deck secou
         }
 
-        Card nextCard = allCards[currentIndex];
+        CardData nextCard = allCards[currentIndex];
         currentIndex++;
         return nextCard; 
     }
@@ -36,7 +36,7 @@ public class DeckManager : MonoBehaviour
     {
         for (int i = 0; i < allCards.Count; i++)
         {
-            Card temp = allCards[i];
+            CardData temp = allCards[i];
             int randomIndex = Random.Range(i, allCards.Count);
             allCards[i] = allCards[randomIndex];
             allCards[randomIndex] = temp;

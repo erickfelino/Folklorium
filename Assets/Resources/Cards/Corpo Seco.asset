@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Corpo Seco
   m_EditorClassIdentifier: 
   cardName: Corpo Seco
-  cardBody: 'Ordem: Cause 1 de dano a base inimiga'
+  cardBody: 'Ordem: Cause 1 de dano na torre inimiga'
   cardColorGroup: 0
   cardRole: 0
   mana: 1

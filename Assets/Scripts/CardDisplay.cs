@@ -4,7 +4,7 @@ using Folklorium;
 
 public class CardDisplay : MonoBehaviour
 {
-    public Card cardData;
+    public CardData cardData;
     public TextMeshPro nameText;
     public TextMeshPro manaText;
     public TextMeshPro attackText;

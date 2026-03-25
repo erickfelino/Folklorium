@@ -3,14 +3,12 @@ using Folklorium;
 
 public class EffectTargetManager : MonoBehaviour
 {
-    // Singleton para as cartas acharem esse gerente facilmente
     private static EffectTargetManager _instance;
 
     public static EffectTargetManager Instance
     {
         get
         {
-            // Se alguém chamar e a instância estiver vazia, ele procura na cena na hora!
             if (_instance == null)
             {
                 _instance = FindFirstObjectByType<EffectTargetManager>();
@@ -19,47 +17,45 @@ public class EffectTargetManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private TargetingArrow arrow; // Problema 4 resolvido: Sem FindFirstObject
+    [SerializeField] private TargetingArrow arrow;
     private Camera mainCamera;
 
-    private bool isWaitingForTarget = false;
+    public bool isWaitingForTarget = false;
     
-    // Memória do que estamos fazendo
     private CardCombat currentSource;
-    private Card currentCardData;
+    private CardData currentCardData;
     private CardEffect currentPendingEffect; 
+    
+    // 👇 NOVA VARIÁVEL: Guarda o pacote de dados enquanto o jogador mira
+    private EffectData currentPendingData; 
 
     void Awake()
-{
-    // Garante que se já existir um (ex: trocou de cena), este se destrói
-    if (_instance != null && _instance != this)
     {
-        Destroy(this.gameObject);
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
     }
-    else
-    {
-        _instance = this;
-    }
-}
 
     void Start()
     {
         mainCamera = Camera.main;
     }
 
-    // A carta chama isso aqui quando cai na mesa!
-    // A carta chama isso aqui quando cai na mesa!
-    public void StartTargeting(CardCombat source, Card cardData, CardEffect effect)
+    // 👇 RECEBE O 'EffectData' AQUI TAMBÉM
+    public void StartTargeting(CardCombat source, CardData cardData, CardEffect effect, EffectData data)
     {
         // =========================================================
-        // RADAR INTELIGENTE: Precisa mesmo de seta?
+        // RADAR INTELIGENTE (Auto-Fire na Torre)
         // =========================================================
         PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
         
-        // 1. O efeito PERMITE bater na torre inimiga?
         bool canTargetEnemyPlayer = enemyHealth != null && effect.IsValidTarget(source, null, enemyHealth);
 
-        // 2. Existe ALGUMA carta viva na mesa que também seja um alvo válido?
         bool hasValidCardTarget = false;
         CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         
@@ -70,12 +66,12 @@ public class EffectTargetManager : MonoBehaviour
                 if (effect.IsValidTarget(source, c, null))
                 {
                     hasValidCardTarget = true;
-                    break; // Achou pelo menos uma carta, então VAI PRECISAR da seta para você escolher!
+                    break;
                 }
             }
         }
 
-        // 3. O VEREDITO: Se pode bater na torre E NÃO PODE bater em mais nada... AUTO-FIRE!
+        // Se pode bater na torre E NÃO PODE bater em mais nada... AUTO-FIRE!
         if (canTargetEnemyPlayer && !hasValidCardTarget)
         {
             Debug.Log($"Auto-Target: {cardData.cardName} atirou o efeito direto na Torre Inimiga!");
@@ -84,22 +80,24 @@ public class EffectTargetManager : MonoBehaviour
             {
                 source = source,
                 targetCard = null,
-                targetPlayer = enemyHealth, // Alvo definido automaticamente!
+                targetPlayer = enemyHealth, 
                 isEnemySource = source.isEnemy
             };
             
-            effect.Execute(context);
-            return; // Sai da função! Não tranca o turno e não abre a seta.
+            // 👇 PASSAMOS O DADO PARA A AÇÃO
+            GameAction action = effect.CreateAction(context, data);
+            if (action != null) ActionSystem.Instance.AddAction(action);
+            
+            return; // Sai da função!
         }
         // =========================================================
 
-        // Se chegou aqui, é porque tem mais de um alvo possível (ex: Torre OU um lacaio).
-        // Então o jogo tranca e pede a sua ajuda com a seta.
         TurnManager.LockTurn(); // 🔒 TRANCA A PORTA
 
         currentSource = source;
         currentCardData = cardData;
         currentPendingEffect = effect;
+        currentPendingData = data; // Guarda o pacote para usar depois!
 
         isWaitingForTarget = true;
         if (arrow != null)
@@ -110,7 +108,6 @@ public class EffectTargetManager : MonoBehaviour
         }
     }
 
-    // Problemas 1 e 2 resolvidos: Só 1 Update lendo o input na cena inteira!
     void Update()
     {
         if (!isWaitingForTarget) return;
@@ -136,7 +133,6 @@ public class EffectTargetManager : MonoBehaviour
             CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
             PlayerHealth targetPlayer = hit.collider.GetComponent<PlayerHealth>();
 
-            // O Targeting pergunta ao Efeito: "Posso atirar nisso?"
             if (currentPendingEffect.IsValidTarget(currentSource, targetCard, targetPlayer))
             {
                 CardEffectContext context = new CardEffectContext
@@ -146,11 +142,11 @@ public class EffectTargetManager : MonoBehaviour
                     targetPlayer = targetPlayer,
                     isEnemySource = currentSource.isEnemy
                 };
-                ExecuteAndFinish(context);
+                
+                ExecuteAndFinish(context); // Chama a finalização
             }
             else
             {
-                // Se quiser, pode colocar um som de "erro" aqui!
                 Debug.Log("Alvo bloqueado pelas regras do Efeito!");
             }
         }
@@ -161,16 +157,20 @@ public class EffectTargetManager : MonoBehaviour
         isWaitingForTarget = false;
         if (arrow != null) arrow.ShowArrow(false);
 
-        // Dispara os efeitos da carta com o contexto preenchido com o alvo!
         if (currentPendingEffect != null)
         {
-            currentPendingEffect.Execute(context);
+            // 👇 PASSAMOS O DADO QUE ESTAVA GUARDADO PARA FABRICAR A AÇÃO
+            GameAction action = currentPendingEffect.CreateAction(context, currentPendingData);
+            if (action != null) ActionSystem.Instance.AddAction(action);
         }
         
         // Limpa a memória
-        currentSource = null; currentCardData = null; currentPendingEffect = null;
+        currentSource = null; 
+        currentCardData = null; 
+        currentPendingEffect = null;
+        currentPendingData = null;
 
-        TurnManager.UnlockTurn();
+        TurnManager.UnlockTurn(); 
     }
 
     private Vector3 GetMouseWorldPosition()

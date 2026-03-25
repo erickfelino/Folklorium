@@ -1,6 +1,6 @@
 using UnityEngine;
 using Folklorium; // Para acessar a classe Card
-using static Folklorium.Card; // Para acessar os CardRoles (Soldier, Hero, Commander)
+using static Folklorium.CardData; // Para acessar os CardRoles (Soldier, Hero, Commander)
 
 [RequireComponent(typeof(CardCombat))]
 [RequireComponent(typeof(CardDrag))]

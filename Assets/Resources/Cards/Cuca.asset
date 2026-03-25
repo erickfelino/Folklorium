@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cuca
   m_EditorClassIdentifier: 
   cardName: Cuca
-  cardBody: 'Legacy: Summon 1 pot for the enemy'
+  cardBody: "Legado: D\xEA 2 de dano na torre inimiga"
   cardColorGroup: 4
   cardRole: 1
   mana: 4
