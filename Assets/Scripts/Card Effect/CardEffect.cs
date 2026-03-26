@@ -5,7 +5,10 @@ using Folklorium; // 👇 Avisamos para ele olhar o nosso namespace!
 public enum ValidTargetType
 {
     EnemyCard,
+    AllEnemySoldiers,
+    AllEnemyCards,
     AllyCard,
+    AllAllyCards,
     AnyCard,
     EnemyPlayer,
     AllyPlayer,
@@ -44,6 +47,8 @@ public abstract class CardEffect : ScriptableObject
             if (validTargets == ValidTargetType.AllyCard && !isEnemyTarget) return true;
             if (validTargets == ValidTargetType.AnyCard) return true;
             if (validTargets == ValidTargetType.AnyCharacter) return true;
+            if (validTargets == ValidTargetType.AllEnemyCards) return true;
+
         }
 
         // 2. Se o alvo for o JOGADOR (Avatar/Torre)
