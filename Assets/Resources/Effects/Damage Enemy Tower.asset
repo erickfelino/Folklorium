@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae11c6a3056f9b45997ff8236d7eb84, type: 3}
   m_Name: Damage Enemy Tower
   m_EditorClassIdentifier: 
-  trigger: 0
   requiresTarget: 1
-  validTargets: 3
+  validTargets: 6
   description: Dano na torre inimiga quando jogado

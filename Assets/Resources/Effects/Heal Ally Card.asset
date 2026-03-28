@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96b908afbf3951644b9fb4061bfcd5a0, type: 3}
   m_Name: Heal Ally Card
   m_EditorClassIdentifier: 
-  trigger: 0
   requiresTarget: 1
-  validTargets: 1
+  validTargets: 3
   description: Cura em card aliado quando jogado

@@ -777,6 +777,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aiHand: {fileID: 1642706679}
   aiMana: {fileID: 2330570353867373546}
+  isAITargeting: 0
 --- !u!4 &428874320
 Transform:
   m_ObjectHideFlags: 0
@@ -1155,6 +1156,7 @@ Transform:
   - {fileID: 915040654}
   - {fileID: 1837242349}
   - {fileID: 291544425}
+  - {fileID: 1056582159}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &618027083
@@ -2259,6 +2261,51 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1056582158
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1056582159}
+  - component: {fileID: 1056582160}
+  m_Layer: 0
+  m_Name: SpawManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1056582159
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056582158}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 605788074}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1056582160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056582158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 688722279300f46409b8b5390afcbc0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardPrefab: {fileID: 478714304680186784, guid: 189fc320ff3e9e74b851cdde00ce7544, type: 3}
 --- !u!1 &1085289907
 GameObject:
   m_ObjectHideFlags: 0
@@ -4860,6 +4907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrow: {fileID: 1103161209}
+  isWaitingForTarget: 0
 --- !u!1 &1864972931
 GameObject:
   m_ObjectHideFlags: 0

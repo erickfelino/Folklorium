@@ -32,3 +32,12 @@ public class HealEffectData : EffectData
 {
     public int heal;
 }
+
+[Serializable]
+public class SummonEffectData : EffectData
+{
+    public int attack;
+    public int health;
+    public int Quantity;
+    public int boardSide;
+}

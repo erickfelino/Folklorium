@@ -13,13 +13,22 @@ MonoBehaviour:
   m_Name: Saci
   m_EditorClassIdentifier: 
   cardName: Saci
-  cardBody: 'Ordem: Cure 3 de vida'
+  cardBody: 'Mobilizar: Cure 3 de vida'
   cardColorGroup: 0
   cardRole: 1
   mana: 3
   attack: 3
   life: 2
   art: {fileID: 21300000, guid: 418c9abefae407d47a70aa3358586dc6, type: 3}
-  damageValue: -3
   effects:
-  - {fileID: 11400000, guid: 31f8affeecc7d3b46a152ab473cb2fc9, type: 2}
+  - effectSO: {fileID: 11400000, guid: 31f8affeecc7d3b46a152ab473cb2fc9, type: 2}
+    trigger: 0
+    parameters:
+      rid: 2886593607732035658
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593607732035658
+      type: {class: HealEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        heal: 2

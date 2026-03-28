@@ -18,7 +18,12 @@ public class CardDrag : MonoBehaviour
     private ManaManager manaManager;
     private int myManaCost;
 
-    [Header("Configurações de Tabuleiro")]
+    [Header("Ajuste de Collider no Tabuleiro")]
+    [Tooltip("Centro do collider quando vira Token (para focar na arte)")]
+    public Vector3 tokenColliderCenter = new Vector3(0f, 0.25f, 0f); 
+    [Tooltip("Tamanho do collider quando vira Token")]
+    public Vector3 tokenColliderSize = new Vector3(1f, 0.5f, 0.2f);
+    
     private Vector3 handScale; 
     public GameObject[] objectsToHideOnBoard; 
     public GameObject[] objectsToShowOnBoard;
@@ -193,7 +198,14 @@ public class CardDrag : MonoBehaviour
         isPlayed = true;
         transform.SetParent(targetZone);
 
-        GetComponent<Collider>().enabled = true;
+        // 👇 Pega o BoxCollider principal e ajusta para o tamanho do Token
+        BoxCollider boxCol = GetComponent<BoxCollider>();
+        if (boxCol != null)
+        {
+            boxCol.enabled = true;
+            boxCol.center = tokenColliderCenter; // Sobe o collider para a arte
+            boxCol.size = tokenColliderSize;     // Encolhe para o tamanho da arte
+        }
 
         ResolveOnPlayEffects();
 
@@ -207,21 +219,45 @@ public class CardDrag : MonoBehaviour
 
         if (isEnemy)
         {
-            transform.localRotation = Quaternion.Euler(-89.98f, 0f, 180f);
+            // Rotação do lacaio inimigo (virado para você)
+            transform.localRotation = Quaternion.Euler(-90f, 0f, 180f);
+        }
+        else
+        {
+            // 👇 CORREÇÃO: Força o lacaio do jogador a deitar corretamente com a arte para cima!
+            transform.localRotation = Quaternion.Euler(-90f, 0f, 0f); 
         }
 
+        // --- 👇 NOVA LÓGICA DE ESCALA AQUI 👇 ---
+
+        // Pega a escala da zona (assumo que seja ~1,1,1)
         Vector3 targetScale = targetZone.localScale;
-        float fatorDeCompensacao = 20f; 
+        
+        // 👇 O FATOR PERFEITO AQUI: Aumentamos de 20 para 50 para preencher a zona!
+        float fatorDeCompensacao = 50f; 
+
+        // 👇 ESPESSURA FORÇADA: Usamos um número pequeno e fixo para a carta não ficar grossa
+        // Isso impede que os "191.5" voltem a assombrar.
+        float espessuraValue = 0.5f;
+
+        // Montamos a escala final respeitando a rotação (-90 X) da carta
         Vector3 finalScale = new Vector3(
-            targetScale.x * fatorDeCompensacao, 
-            targetScale.z * fatorDeCompensacao, 
-            handScale.z                         
+            targetScale.x * fatorDeCompensacao, // Largura (X) vira ~50 (tamanho visual)
+            targetScale.z * fatorDeCompensacao, // 👇 Comprimento visual (Z original vira Y visual) vira ~50
+            espessuraValue // 👇 Espessura real (Y original vira Z visual) vira 0.5f FIXO E FINO!
         );
 
+        // --- ☝️ FIM DA NOVA LÓGICA ☝️ ---
+
+        // O GRANDE SALTO DO DOTWEEN
         transform.DOKill(); 
+        
+        // 👇 ESTA LINHA PRECISA ESTAR DESCOMENTADA!
+        // Ela é quem faz a carta mudar de tamanho para o tamanho final correto durante o pulo
+        transform.DOScale(finalScale, 1.2f).SetEase(Ease.OutQuad);
+
         transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1.2f).SetEase(Ease.OutQuad);
     }
-
     private void TriggerOnPlayEffects()
     {
         CardCombat combat = GetComponent<CardCombat>();

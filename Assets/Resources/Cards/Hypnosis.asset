@@ -20,6 +20,15 @@ MonoBehaviour:
   attack: 1
   life: 2
   art: {fileID: 21300000, guid: 26f8f0e7ec5bfe644b5f4f6deb85f10a, type: 3}
-  damageValue: 2
   effects:
-  - {fileID: 11400000, guid: 6d429725c1d7a48469628fbe962a98dd, type: 2}
+  - effectSO: {fileID: 11400000, guid: 6d429725c1d7a48469628fbe962a98dd, type: 2}
+    trigger: 3
+    parameters:
+      rid: 2886593607732035655
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593607732035655
+      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        damage: 2

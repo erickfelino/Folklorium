@@ -13,13 +13,22 @@ MonoBehaviour:
   m_Name: Demon in bottle
   m_EditorClassIdentifier: 
   cardName: Demon in bottle
-  cardBody: 'Ordem: Cure 1 de vida de um lacaio aliado'
+  cardBody: 'Mobilizar: cause 3 de dano a um lacaio'
   cardColorGroup: 0
   cardRole: 1
   mana: 3
-  attack: 3
-  life: 2
+  attack: 2
+  life: 3
   art: {fileID: 21300000, guid: 3631f712e58da4649acc487970f4416c, type: 3}
-  damageValue: -1
   effects:
-  - {fileID: 11400000, guid: e27f52c229d16734b87bffdc10d97163, type: 2}
+  - effectSO: {fileID: 11400000, guid: 43178f1631f494b49bc2857a28db9ee8, type: 2}
+    trigger: 0
+    parameters:
+      rid: 2886593607732035675
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593607732035675
+      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        damage: 3

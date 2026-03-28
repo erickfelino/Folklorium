@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96b908afbf3951644b9fb4061bfcd5a0, type: 3}
-  m_Name: Heal Global
+  m_Script: {fileID: 11500000, guid: d1ff01ac501c0c94fbe6e8ccf7d60adf, type: 3}
+  m_Name: Summon Token
   m_EditorClassIdentifier: 
-  requiresTarget: 1
-  validTargets: 8
-  description: Cura em qualquer alvo quando jogado
+  requiresTarget: 0
+  validTargets: 0
+  description: Invoca tokens
