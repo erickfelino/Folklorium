@@ -9,7 +9,7 @@ public class SummonEffect : CardEffect
         return typeof(SummonEffectData);
     }
 
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer)
+    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         // No futuro, podemos checar se o lado do campo tem slots vazios.
         // Por enquanto, sempre podemos tentar invocar.

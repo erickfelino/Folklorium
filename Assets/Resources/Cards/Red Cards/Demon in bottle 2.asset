@@ -10,25 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Cuca
+  m_Name: Demon in bottle 2
   m_EditorClassIdentifier: 
-  cardName: Cuca
-  cardBody: "Legado: D\xEA 2 de dano na torre inimiga"
-  cardColorGroup: 4
+  cardName: Demon in bottle
+  cardBody: 'Mobilizar: cause 3 de dano a um lacaio'
+  cardColorGroup: 0
   cardRole: 1
-  mana: 4
+  mana: 3
   attack: 2
-  life: 4
-  art: {fileID: 21300000, guid: 8b009af50696b4e4fb09543b185c4fd3, type: 3}
+  life: 3
+  art: {fileID: 21300000, guid: 3631f712e58da4649acc487970f4416c, type: 3}
   effects:
-  - effectSO: {fileID: 11400000, guid: fae3465cd701f304bbc7825817a2b981, type: 2}
-    trigger: 3
+  - effectSO: {fileID: 11400000, guid: 43178f1631f494b49bc2857a28db9ee8, type: 2}
+    trigger: 0
     parameters:
-      rid: 2886593607732035652
+      rid: 2886593607732035675
   references:
     version: 2
     RefIds:
-    - rid: 2886593607732035652
+    - rid: 2886593607732035675
       type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
       data:
-        damage: 2
+        damage: 3
+        excludeSelf: 1

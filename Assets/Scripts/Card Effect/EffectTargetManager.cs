@@ -54,7 +54,7 @@ public class EffectTargetManager : MonoBehaviour
         // =========================================================
         PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
         
-        bool canTargetEnemyPlayer = enemyHealth != null && effect.IsValidTarget(source, null, enemyHealth);
+        bool canTargetEnemyPlayer = enemyHealth != null && effect.IsValidTarget(source, null, enemyHealth, data);
 
         bool hasValidCardTarget = false;
         CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
@@ -63,7 +63,7 @@ public class EffectTargetManager : MonoBehaviour
         {
             if (c != null && c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0)
             {
-                if (effect.IsValidTarget(source, c, null))
+                if (effect.IsValidTarget(source, c, null, data))
                 {
                     hasValidCardTarget = true;
                     break;
@@ -133,7 +133,7 @@ public class EffectTargetManager : MonoBehaviour
             CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
             PlayerHealth targetPlayer = hit.collider.GetComponent<PlayerHealth>();
 
-            if (currentPendingEffect.IsValidTarget(currentSource, targetCard, targetPlayer))
+            if (currentPendingEffect.IsValidTarget(currentSource, targetCard, targetPlayer, currentPendingData))
             {
                 CardEffectContext context = new CardEffectContext
                 {

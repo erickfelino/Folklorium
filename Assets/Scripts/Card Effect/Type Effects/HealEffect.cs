@@ -10,11 +10,11 @@ public class HealEffect : CardEffect
         return typeof(HealEffectData);
     }
 
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer)
+    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         // 1. Deixa a classe pai checar se o alvo bate com o que você configurou no Inspector
         // (ex: Se no Inspector está "AllyCard", a classe pai já barra se tentar curar inimigo)
-        if (!base.IsValidTarget(source, targetCard, targetPlayer)) 
+        if (!base.IsValidTarget(source, targetCard, targetPlayer, rawData)) 
         {
             return false; 
         }

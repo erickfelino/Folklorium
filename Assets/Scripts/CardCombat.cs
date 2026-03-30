@@ -121,16 +121,33 @@ public class CardCombat : MonoBehaviour
     // API DE ESTADO (NÍVEL 3)
     // ==========================================
 
-    public void ApplyRawStateChange(int attackChange, int lifeChange)
+public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = false)
     {
         currentAttack += attackChange;
-        currentLife += lifeChange;
-
         if (currentAttack < 0) currentAttack = 0;
-        if (currentLife > maxLife) currentLife = maxLife; 
+
+        // 1. É UM BUFF? Aumenta o teto e a vida atual junto.
+        if (isBuff) 
+        {
+            maxLife += lifeChange;
+            currentLife += lifeChange; 
+        }
+        // 2. É CURA OU DANO? Mexe só na vida atual.
+        else 
+        {
+            currentLife += lifeChange;
+            
+            // Trava de Segurança da Cura: Não deixa passar da Vida Máxima!
+            if (currentLife > maxLife) 
+            {
+                currentLife = maxLife; 
+            }
+        }
+        
         if (currentLife <= 0) currentLife = 0;
 
-        display.UpdateLifeText(currentLife);
+        // 👇 ATUALIZA OS TEXTOS (já com o seu sistema de cores inteligente!) 👇
+        display.UpdateStatusText(currentLife, currentAttack); 
     }
 
     // ==========================================
@@ -224,8 +241,13 @@ public class CardCombat : MonoBehaviour
         Collider col = GetComponent<Collider>(); 
         if (col != null) col.enabled = false;
         
-        TriggerEffects(Folklorium.EffectTriggerType.OnDeath);
+        // 👇 1. AVISAMOS O TABULEIRO PRIMEIRO!
+        // O tabuleiro deve ouvir isso e remover essa carta da lista de "cartas na mesa".
+        // O slot dela agora está LIVRE.
         OnDeath?.Invoke(this); 
+
+        // 👇 2. DEPOIS DISPARAMOS O EFEITO DE INVOCAÇÃO (que agora verá um espaço vazio)
+        TriggerEffects(Folklorium.EffectTriggerType.OnDeath);
 
         yield return transform.DOComplete(); 
 

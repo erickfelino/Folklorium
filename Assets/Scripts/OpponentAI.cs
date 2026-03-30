@@ -244,14 +244,14 @@ public class OpponentAI : MonoBehaviour
         {
             if (c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0 && !c.isDead)
             {
-                if (effect.IsValidTarget(source, c, null))
+                if (effect.IsValidTarget(source, c, null, rawData))
                 {
                     validCardTargets.Add(c);
                 }
             }
         }
 
-        bool canTargetPlayer = effect.IsValidTarget(source, null, playerHealth);
+        bool canTargetPlayer = effect.IsValidTarget(source, null, playerHealth, rawData);
 
         CardEffectContext context = new CardEffectContext { source = source, playerHand = aiHand, isEnemySource = true };
         bool foundTarget = false;

@@ -20,12 +20,13 @@ public class HealAction : GameAction
         bool healedSomeone = false;
 
         // 1. Tenta curar uma carta na mesa
+       // 1. Tenta curar uma carta na mesa
         if (targetCard != null && targetCard.currentLife > 0)
         {
             Debug.Log($"[Ação] Curando {targetCard.name} em {healAmount} de vida.");
             
-            // 👇 USANDO A API CORRETA! (0 de mudança no ataque, +healAmount na vida)
-            targetCard.ApplyRawStateChange(0, healAmount); 
+            // 👇 PASSAMOS 'false' NO FINAL PARA AVISAR QUE É SÓ CURA! 👇
+            targetCard.ApplyRawStateChange(0, healAmount, false); 
             
             healedSomeone = true;
         }

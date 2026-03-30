@@ -32,55 +32,108 @@ public class EffectEntryDrawer : PropertyDrawer
         // ⭐ SE TROCOU O EFFECT → recria parâmetros
         if (effectChanged && effect != null)
         {
-            paramProp.managedReferenceValue =
-                System.Activator.CreateInstance(effect.GetDataType());
-
+            paramProp.managedReferenceValue = System.Activator.CreateInstance(effect.GetDataType());
             property.serializedObject.ApplyModifiedProperties();
         }
 
-        // BOTÃO OU DRAW
+        // LÓGICA DO PARÂMETRO
         if (effect != null)
         {
             if (paramProp.managedReferenceValue == null)
             {
                 if (GUI.Button(position, "Create Parameters"))
                 {
-                    paramProp.managedReferenceValue =
-                        System.Activator.CreateInstance(effect.GetDataType());
-
+                    paramProp.managedReferenceValue = System.Activator.CreateInstance(effect.GetDataType());
                     property.serializedObject.ApplyModifiedProperties();
                 }
             }
             else
             {
-                EditorGUI.PropertyField(position, paramProp, true);
+                // 👇 DESCOBRE SE A TAG PERMITE SELF-TARGET
+                bool canTargetSelf = false;
+                var vt = effect.validTargets;
+                if (vt == ValidTargetType.AllyCard || 
+                    vt == ValidTargetType.AllAllyCards || 
+                    vt == ValidTargetType.AnyCard || 
+                    vt == ValidTargetType.AnyCharacter)
+                {
+                    canTargetSelf = true;
+                }
+
+                // 👇 DESENHA OS PARÂMETROS UM POR UM PARA FILTRAR O EXCLUDE SELF
+                SerializedProperty child = paramProp.Copy();
+                SerializedProperty end = paramProp.GetEndProperty();
+
+                if (child.NextVisible(true))
+                {
+                    do
+                    {
+                        if (SerializedProperty.EqualContents(child, end)) break;
+
+                        // A MÁGICA VISUAL AQUI: Pula a variável se for impossível dar auto-alvo!
+                        if (child.name == "excludeSelf" && !canTargetSelf) continue;
+
+                        position.height = EditorGUI.GetPropertyHeight(child, true);
+                        EditorGUI.PropertyField(position, child, true);
+                        position.y += position.height + 2;
+
+                    } while (child.NextVisible(false));
+                }
             }
         }
 
         EditorGUI.EndProperty();
     }
+
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         float line = EditorGUIUtility.singleLineHeight;
         float space = 2f;
-
         float height = 0;
 
-        // Effect SO
-        height += line + space;
+        // Effect SO + Trigger
+        height += (line + space) * 2;
 
-        // Trigger
-        height += line + space;
-
+        var effectProp = property.FindPropertyRelative("effectSO");
         var paramProp = property.FindPropertyRelative("parameters");
+
+        CardEffect effect = effectProp.objectReferenceValue as CardEffect;
+        bool canTargetSelf = false;
+
+        if (effect != null)
+        {
+            var vt = effect.validTargets;
+            if (vt == ValidTargetType.AllyCard || 
+                vt == ValidTargetType.AllAllyCards || 
+                vt == ValidTargetType.AnyCard || 
+                vt == ValidTargetType.AnyCharacter)
+            {
+                canTargetSelf = true;
+            }
+        }
 
         if (paramProp.managedReferenceValue != null)
         {
-            height += EditorGUI.GetPropertyHeight(paramProp, true);
+            // 👇 CALCULA A ALTURA CONSIDERANDO SE ESCONDEU A VARIÁVEL OU NÃO
+            SerializedProperty child = paramProp.Copy();
+            SerializedProperty end = paramProp.GetEndProperty();
+
+            if (child.NextVisible(true))
+            {
+                do
+                {
+                    if (SerializedProperty.EqualContents(child, end)) break;
+                    
+                    if (child.name == "excludeSelf" && !canTargetSelf) continue;
+
+                    height += EditorGUI.GetPropertyHeight(child, true) + space;
+
+                } while (child.NextVisible(false));
+            }
         }
-        else
+        else if (effect != null)
         {
-            height += line;
+            height += line; // Botão de Create Parameters
         }
 
         return height;

@@ -4,27 +4,35 @@ using UnityEngine;
 
 public class DeckManager : MonoBehaviour
 {
+    [Header("Deck Settings")]
+    [Tooltip("Nome da pasta dentro de Resources onde estão os ScriptableObjects deste deck.")]
+    [SerializeField] private string deckFolderPath = "Cards/Red Cards";
+
     public List<CardData> allCards = new List<CardData>();
     private int currentIndex = 0;
 
     void Start()
     {
-        // Adiciona os cards da pasta Resources
-        CardData[] cards = Resources.LoadAll<CardData>("Cards");
-        allCards.AddRange(cards);
+        // 👇 Agora ele carrega da pasta que você escrever no Inspector!
+        CardData[] cards = Resources.LoadAll<CardData>(deckFolderPath);
 
-        ShuffleDeck();
-        
-        // REMOVIDO o loop de comprar 6 cartas daqui. Quem decide comprar é a mão.
+        if (cards.Length == 0)
+        {
+            Debug.LogWarning($"Nenhuma carta encontrada na pasta Resources/{deckFolderPath}! Verifique o nome.");
+        }
+        else
+        {
+            allCards.AddRange(cards);
+            ShuffleDeck();
+        }
     }
 
-    // AGORA ESTE MÉTODO RETORNA UMA CARTA ('Card') EM VEZ DE 'void'
     public CardData DrawCard()
     {
         if (allCards.Count == 0 || currentIndex >= allCards.Count)
         {
-            Debug.Log("Acabaram as cartas do baralho!");
-            return null; // Retorna nulo para avisar que o deck secou
+            Debug.Log($"Acabaram as cartas do baralho ({deckFolderPath})!");
+            return null; 
         }
 
         CardData nextCard = allCards[currentIndex];

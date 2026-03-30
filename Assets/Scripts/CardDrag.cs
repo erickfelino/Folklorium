@@ -51,6 +51,25 @@ public class CardDrag : MonoBehaviour
 
         handScale = transform.localScale;
     }
+    void Update()
+    {
+        // Se a carta já está na mesa ou está sendo segurada pelo mouse, ignoramos a checagem automática
+        if (isPlayed || isDragging) return;
+
+        // Checamos as duas condições mágicas para a carta poder ser jogada:
+        bool isMyTurn = turnManager != null && turnManager.isPlayerTurn;
+        bool hasMana = manaManager != null && manaManager.HasEnoughMana(myManaCost);
+        
+        // A carta deve brilhar se for o nosso turno E tivermos mana
+        bool shouldGlow = isMyTurn && hasMana;
+
+        // Ativa ou desativa o glow apenas se o estado atual for diferente do que deveria ser (poupa processamento)
+        if (dragGlow != null && dragGlow.activeSelf != shouldGlow)
+        {
+            dragGlow.SetActive(shouldGlow);
+            dragGlow.GetComponent<Renderer>().material.color = Color.green;
+        }
+    }
 
     private void SetupCardRules(CardData data)
     {
@@ -113,7 +132,11 @@ public class CardDrag : MonoBehaviour
         isDragging = true;
         isAnyCardDragging = true; 
         isHovering = false; 
-        if (dragGlow != null) dragGlow.SetActive(true);
+        if (dragGlow != null)
+        {
+            dragGlow.SetActive(true);
+            dragGlow.GetComponent<Renderer>().material.color = Color.blue;
+        }
 
         handManager.TriggerDrag(this.gameObject);
 
@@ -149,7 +172,11 @@ public class CardDrag : MonoBehaviour
 
         isDragging = false;
         isAnyCardDragging = false; 
-        if (dragGlow != null) dragGlow.SetActive(false); 
+        if (dragGlow != null)
+        {
+            dragGlow.SetActive(false);
+        }
+         
 
         GetComponent<Collider>().enabled = false;
 
@@ -256,7 +283,7 @@ public class CardDrag : MonoBehaviour
         // Ela é quem faz a carta mudar de tamanho para o tamanho final correto durante o pulo
         transform.DOScale(finalScale, 1.2f).SetEase(Ease.OutQuad);
 
-        transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1.2f).SetEase(Ease.OutQuad);
+        transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1f).SetEase(Ease.OutQuad);
     }
     private void TriggerOnPlayEffects()
     {
