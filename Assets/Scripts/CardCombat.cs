@@ -76,25 +76,35 @@ public class CardCombat : MonoBehaviour
     // SISTEMA DE TRIGGERS (ATUALIZADO PARA POLIMORFISMO)
     // ==========================================
 
+    // ==========================================
+    // SISTEMA DE TRIGGERS
+    // ==========================================
+
     public void TriggerEffects(Folklorium.EffectTriggerType targetTrigger, CardCombat targetCard = null, PlayerHealth targetPlayer = null)
     {
         if (display == null || display.cardData == null || display.cardData.effects == null) return;
 
-        // Agora nós iteramos sobre as "Entradas" (EffectEntry) e não mais direto no SO
         foreach (Folklorium.EffectEntry entry in display.cardData.effects)
         {
             if (entry != null && entry.effectSO != null && entry.trigger == targetTrigger)
             {
                 CardEffect effectSO = entry.effectSO;
-                EffectData rawData = entry.parameters; // <--- Pegamos o pacote de dados do Inspector!
+                EffectData rawData = entry.parameters; 
 
                 if (effectSO.requiresTarget && targetCard == null && targetPlayer == null)
                 {
-                    if (this.isEnemy)
+                    // 👇 1. É UM ALVO ALEATÓRIO? (O Manager resolve na hora, serve pra Player e IA)
+                    if (rawData.RandomizeTarget())
+                    {
+                        EffectTargetManager.Instance.ResolveRandomTarget(this, effectSO, rawData);
+                    }
+                    // 👇 2. É A IA JOGANDO? (Vai pro cérebro da IA)
+                    else if (this.isEnemy)
                     {
                         OpponentAI ai = FindFirstObjectByType<OpponentAI>();
                         if (ai != null) ai.StartCoroutine(ai.ResolveAITargetingCoroutine(this, display.cardData, effectSO, rawData));
                     }
+                    // 👇 3. É O JOGADOR? (Puxa a seta do Manager)
                     else
                     {
                         EffectTargetManager.Instance.StartTargeting(this, display.cardData, effectSO, rawData);
@@ -107,13 +117,8 @@ public class CardCombat : MonoBehaviour
                         source = this, targetCard = targetCard, targetPlayer = targetPlayer, isEnemySource = this.isEnemy
                     };
                     
-                    // 👇 A MÁGICA ACONTECE AQUI! Passamos o Contexto E os Dados
                     GameAction action = effectSO.CreateAction(context, rawData);
-                    
-                    if (action != null)
-                    {
-                        ActionSystem.Instance.AddAction(action);
-                    }
+                    if (action != null) ActionSystem.Instance.AddAction(action);
                 }
             }
         }

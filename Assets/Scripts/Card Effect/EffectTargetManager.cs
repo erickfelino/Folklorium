@@ -180,6 +180,75 @@ public class EffectTargetManager : MonoBehaviour
         TurnManager.UnlockTurn(); // 🔓 DESTRAVA A PORTA!
     }
 
+    // =========================================================
+    // RESOLUÇÃO DE ALVO ALEATÓRIO
+    // =========================================================
+    public void ResolveRandomTarget(CardCombat source, CardEffect effect, EffectData data)
+    {
+        System.Collections.Generic.List<CardCombat> validCards = new System.Collections.Generic.List<CardCombat>();
+        System.Collections.Generic.List<PlayerHealth> validPlayers = new System.Collections.Generic.List<PlayerHealth>();
+
+        // 1. Vasculha os Jogadores (Heróis/Torres)
+        PlayerHealth[] players = FindObjectsByType<PlayerHealth>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        foreach (var p in players)
+        {
+            if (effect.IsValidTarget(source, null, p, data))
+            {
+                validPlayers.Add(p);
+            }
+        }
+
+        // 2. Vasculha as Cartas na Mesa
+        CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        foreach (var c in allCards)
+        {
+            if (c != null && c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0)
+            {
+                if (effect.IsValidTarget(source, c, null, data))
+                {
+                    validCards.Add(c);
+                }
+            }
+        }
+
+        int totalTargets = validCards.Count + validPlayers.Count;
+
+        // Se não tem ninguém válido na mesa, o efeito não faz nada
+        if (totalTargets == 0)
+        {
+            Debug.Log($"[Aleatório]: Efeito ativou, mas não havia alvos válidos na mesa!");
+            return; 
+        }
+
+        // Sorteia um número entre 0 e o total de alvos
+        int randomIndex = UnityEngine.Random.Range(0, totalTargets);
+
+        CardEffectContext context = new CardEffectContext
+        {
+            source = source,
+            isEnemySource = source.isEnemy
+        };
+
+        // Descobre se o número sorteado caiu na lista de Cartas ou de Jogadores
+        if (randomIndex < validCards.Count)
+        {
+            context.targetCard = validCards[randomIndex];
+            Debug.Log($"[Aleatório]: O alvo sorteado foi a carta: {context.targetCard.name}");
+        }
+        else
+        {
+            context.targetPlayer = validPlayers[randomIndex - validCards.Count];
+            Debug.Log($"[Aleatório]: O alvo sorteado foi o jogador: {context.targetPlayer.name}");
+        }
+
+        // Cria a ação e manda pro ActionSystem
+        GameAction action = effect.CreateAction(context, data);
+        if (action != null)
+        {
+            ActionSystem.Instance.AddAction(action);
+        }
+    }
+
     private void ExecuteAndFinish(CardEffectContext context)
     {
         isWaitingForTarget = false;
