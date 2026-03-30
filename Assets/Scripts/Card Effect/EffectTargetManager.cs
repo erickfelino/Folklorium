@@ -111,6 +111,8 @@ public class EffectTargetManager : MonoBehaviour
             arrow.ShowArrow(true);
             arrow.UpdateArrow(source.transform.position, source.transform.position); 
         }
+
+        NotifyBoardOfEffectTargetingState(true);
     }
 
     void Update()
@@ -170,6 +172,8 @@ public class EffectTargetManager : MonoBehaviour
         
         isWaitingForTarget = false;
         if (arrow != null) arrow.ShowArrow(false);
+
+        NotifyBoardOfEffectTargetingState(false);
 
         // Limpa a memória
         currentSource = null; 
@@ -254,6 +258,8 @@ public class EffectTargetManager : MonoBehaviour
         isWaitingForTarget = false;
         if (arrow != null) arrow.ShowArrow(false);
 
+        NotifyBoardOfEffectTargetingState(false);
+
         if (currentPendingEffect != null)
         {
             GameAction action = currentPendingEffect.CreateAction(context, currentPendingData);
@@ -267,6 +273,73 @@ public class EffectTargetManager : MonoBehaviour
         currentPendingData = null;
 
         TurnManager.UnlockTurn(); 
+    }
+
+    // =========================================================
+    // FEEDBACK VISUAL (GLOW) PARA EFEITOS
+    // =========================================================
+    private void NotifyBoardOfEffectTargetingState(bool isTargetingMode)
+    {
+        // ==========================================
+        // 1. LÓGICA DA TORRE INIMIGA (TargetGlow filho)
+        // ==========================================
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("PlayerHealth")?.GetComponent<PlayerHealth>();
+        PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
+        if (playerHealth != null && enemyHealth != null)
+        {
+            // Busca o GameObject filho chamado "TargetGlow"
+            Transform towerPlayerGlowObject = playerHealth.transform.Find("TargetGlow"); 
+            Transform towerEnemyGlowObject = enemyHealth.transform.Find("TargetGlow");
+            
+            if (towerPlayerGlowObject != null && towerEnemyGlowObject != null)
+            {
+                if (isTargetingMode)
+                {
+                    // Pergunta ao efeito se a torre é um alvo válido
+                    bool isValidEnemyTowerTarget = currentPendingEffect.IsValidTarget(currentSource, null, enemyHealth, currentPendingData);
+                    bool isValidPlayerTowerTarget = currentPendingEffect.IsValidTarget(currentSource, null, playerHealth, currentPendingData);
+                    
+                    // Liga o brilho APENAS se a torre for um alvo válido
+                    towerPlayerGlowObject.gameObject.SetActive(isValidPlayerTowerTarget);
+                    towerEnemyGlowObject.gameObject.SetActive(isValidEnemyTowerTarget);
+                }
+                else
+                {
+                    // Seta solta/cancelada: desliga o brilho da torre
+                    towerPlayerGlowObject.gameObject.SetActive(false);
+                    towerEnemyGlowObject.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        // ==========================================
+        // 2. LÓGICA DAS CARTAS NA MESA
+        // ==========================================
+        CardCombat[] allCards = Object.FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        
+        foreach (CardCombat card in allCards)
+        {
+            CardDrag drag = card.GetComponent<CardDrag>();
+            if (drag != null && drag.isPlayed)
+            {
+                if (isTargetingMode)
+                {
+                    bool isValidTarget = currentPendingEffect.IsValidTarget(currentSource, card, null, currentPendingData);
+
+                    if (card == currentSource)
+                    {
+                        card.RefreshGlowState(false, false); 
+                        continue; 
+                    }
+
+                    card.RefreshGlowState(true, isValidTarget);
+                }
+                else
+                {
+                    card.RefreshGlowState(false, false);
+                }
+            }
+        }
     }
 
     private Vector3 GetMouseWorldPosition()

@@ -155,48 +155,69 @@ public class CardTargeting : MonoBehaviour
 
     private void NotifyBoardOfTargetingState(bool isTargetingMode)
     {
-        // 1. O que temos na mesa agora? (Para saber se tem Provocar/Linha de Frente bloqueando)
+        // O que temos na mesa agora? 
         bool enemyHasSoldiers = CheckIfEnemyHasRole(CardRole.Soldier);
         bool enemyHasHeroes = CheckIfEnemyHasRole(CardRole.Hero);
         bool enemyHasCommanders = CheckIfEnemyHasRole(CardRole.Commander);
         CardRole myRole = GetComponent<CardDisplay>().cardData.cardRole;
 
-        // 2. Avisamos todas as cartas do campo!
+        // ==========================================
+        // 1. LÓGICA DA TORRE INIMIGA (TargetGlow filho)
+        // ==========================================
+        PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
+        if (enemyHealth != null)
+        {
+            // Busca o GameObject filho chamado "TargetGlow"
+            Transform towerGlowObject = enemyHealth.transform.Find("TargetGlow"); 
+            
+            if (towerGlowObject != null)
+            {
+                if (isTargetingMode)
+                {
+                    // Pergunta ao juiz se o ataque físico pode bater na torre
+                    bool canAttackTower = CombatRules.CanAttackPlayer(myRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders);
+                    
+                    // Liga o brilho se puder bater
+                    towerGlowObject.gameObject.SetActive(canAttackTower);
+                }
+                else
+                {
+                    // Seta solta: desliga o brilho
+                    towerGlowObject.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        // ==========================================
+        // 2. LÓGICA DAS CARTAS NA MESA (Inalterado)
+        // ==========================================
         CardCombat[] allCards = Object.FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         
         foreach (CardCombat card in allCards)
         {
             CardDrag drag = card.GetComponent<CardDrag>();
-            if (drag != null && drag.isPlayed) // Só afeta quem está na mesa (tokens ou cartas jogadas)
+            if (drag != null && drag.isPlayed)
             {
                 if (isTargetingMode)
                 {
-                    // Estamos puxando a seta. Essa carta específica pode ser alvo desse ataque?
                     bool isValidTarget = false;
 
-                    // Lógica para cartas inimigas: perguntamos ao juiz se posso atacar esse alvo
                     if (card.isEnemy)
                     {
                         CardRole targetRole = card.GetComponent<CardDisplay>().cardData.cardRole;
                         isValidTarget = CombatRules.CanAttackCard(myRole, targetRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders);
                     }
                     
-                    // Lógica para a SUA própria carta atacante: Não desligue o próprio verde!
-                    // Assim você não fica cego sobre qual carta você está usando para atacar.
                     if (card == this.myCombat)
                     {
-                        // Você pode optar por deixar ela verde ou deixá-la em branco.
-                        // O RefreshGlowState cuidará disso se você passar isTargetingMode = false para ela.
                         card.RefreshGlowState(false, false); 
                         continue; 
                     }
 
-                    // Manda pintar de vermelho (se for válido) ou apagar (se não for válido)
                     card.RefreshGlowState(true, isValidTarget);
                 }
                 else
                 {
-                    // Seta solta. Todo mundo volta à programação normal (Verde se puder atacar, apagado se não).
                     card.RefreshGlowState(false, false);
                 }
             }

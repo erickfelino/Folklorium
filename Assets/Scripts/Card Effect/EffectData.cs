@@ -59,3 +59,12 @@ public class SummonEffectData : EffectData
     public int boardSide;
     // Sem variável de excludeSelf aqui também.
 }
+
+[Serializable]
+public class DestroyEffectData : EffectData
+{
+    public int quantityTargets;
+    
+    public bool randomTarget;
+    public override bool RandomizeTarget() { return randomTarget; }
+}
