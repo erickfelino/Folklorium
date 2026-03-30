@@ -234,6 +234,19 @@ public class CardDrag : MonoBehaviour
             boxCol.size = tokenColliderSize;     // Encolhe para o tamanho da arte
         }
 
+        if (dragGlow != null)
+        {
+            // Move o centro do glow para o mesmo centro do collider (focado na arte)
+            dragGlow.transform.localPosition = tokenColliderCenter;
+            
+            // Multiplicamos por 1.05f para ele ficar uma "bordinha" um pouco maior que a carta
+            dragGlow.transform.localScale = new Vector3(
+                tokenColliderSize.x * 1.05f, 
+                tokenColliderSize.y * 1.05f, 
+                tokenColliderSize.z
+            );
+        }
+
         ResolveOnPlayEffects();
 
         foreach(GameObject obj in objectsToHideOnBoard) if(obj) obj.SetActive(false);
@@ -359,5 +372,18 @@ public class CardDrag : MonoBehaviour
     {
         handManager = hand;
         manaManager = mana;
+    }
+
+    // Método burro e limpo. Ele não sabe as regras do jogo, só pinta a cor.
+    public void SetGlow(bool active, Color color)
+    {
+        if (dragGlow != null)
+        {
+            dragGlow.SetActive(active);
+            if (active)
+            {
+                dragGlow.GetComponent<Renderer>().material.color = color;
+            }
+        }
     }
 }

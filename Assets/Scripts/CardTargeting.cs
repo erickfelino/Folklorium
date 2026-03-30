@@ -33,9 +33,12 @@ public class CardTargeting : MonoBehaviour
         isDragging = true;
         if (arrow != null) 
         {
-            arrow.SetColor(Color.red); // <--- ADICIONE ESTA LINHA!
+            arrow.SetColor(Color.red); 
             arrow.ShowArrow(true);
         }
+
+        // 👇 NOVO: Avisa a mesa inteira que estamos mirando!
+        NotifyBoardOfTargetingState(true); 
     }
 
     void OnMouseDrag()
@@ -54,6 +57,9 @@ public class CardTargeting : MonoBehaviour
 
         if (arrow != null) arrow.ShowArrow(false);
 
+        // 👇 NOVO: A seta sumiu. Avisa a mesa para voltar ao brilho normal.
+        NotifyBoardOfTargetingState(false);
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         
         if (Physics.Raycast(ray, out RaycastHit hit))
@@ -70,10 +76,11 @@ public class CardTargeting : MonoBehaviour
                 PlayerHealth enemyHealth = hit.collider.GetComponent<PlayerHealth>();
                 if (enemyHealth != null)
                 {
-                    // PERGUNTA AO JUIZ GLOBAL!
                     if (CombatRules.CanAttackPlayer(myRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders))
                     {
                         myCombat.Attack(enemyHealth);
+                        // 👇 NOVO: Avisa a própria carta para atualizar seu brilho (desligar o verde, pois já atacou)
+                        myCombat.RefreshGlowState(); 
                     }
                     else
                     {
@@ -88,10 +95,11 @@ public class CardTargeting : MonoBehaviour
                 {
                     CardRole targetRole = targetCard.GetComponent<CardDisplay>().cardData.cardRole;
 
-                    // PERGUNTA AO JUIZ GLOBAL!
                     if (CombatRules.CanAttackCard(myRole, targetRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders))
                     {
                         myCombat.Attack(targetCard);
+                        // 👇 NOVO: Avisa a própria carta para atualizar seu brilho (desligar o verde, pois já atacou)
+                        myCombat.RefreshGlowState();
                     }
                     else
                     {
@@ -143,5 +151,55 @@ public class CardTargeting : MonoBehaviour
             return ray.GetPoint(distance); 
         }
         return transform.position; 
+    }
+
+    private void NotifyBoardOfTargetingState(bool isTargetingMode)
+    {
+        // 1. O que temos na mesa agora? (Para saber se tem Provocar/Linha de Frente bloqueando)
+        bool enemyHasSoldiers = CheckIfEnemyHasRole(CardRole.Soldier);
+        bool enemyHasHeroes = CheckIfEnemyHasRole(CardRole.Hero);
+        bool enemyHasCommanders = CheckIfEnemyHasRole(CardRole.Commander);
+        CardRole myRole = GetComponent<CardDisplay>().cardData.cardRole;
+
+        // 2. Avisamos todas as cartas do campo!
+        CardCombat[] allCards = Object.FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        
+        foreach (CardCombat card in allCards)
+        {
+            CardDrag drag = card.GetComponent<CardDrag>();
+            if (drag != null && drag.isPlayed) // Só afeta quem está na mesa (tokens ou cartas jogadas)
+            {
+                if (isTargetingMode)
+                {
+                    // Estamos puxando a seta. Essa carta específica pode ser alvo desse ataque?
+                    bool isValidTarget = false;
+
+                    // Lógica para cartas inimigas: perguntamos ao juiz se posso atacar esse alvo
+                    if (card.isEnemy)
+                    {
+                        CardRole targetRole = card.GetComponent<CardDisplay>().cardData.cardRole;
+                        isValidTarget = CombatRules.CanAttackCard(myRole, targetRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders);
+                    }
+                    
+                    // Lógica para a SUA própria carta atacante: Não desligue o próprio verde!
+                    // Assim você não fica cego sobre qual carta você está usando para atacar.
+                    if (card == this.myCombat)
+                    {
+                        // Você pode optar por deixar ela verde ou deixá-la em branco.
+                        // O RefreshGlowState cuidará disso se você passar isTargetingMode = false para ela.
+                        card.RefreshGlowState(false, false); 
+                        continue; 
+                    }
+
+                    // Manda pintar de vermelho (se for válido) ou apagar (se não for válido)
+                    card.RefreshGlowState(true, isValidTarget);
+                }
+                else
+                {
+                    // Seta solta. Todo mundo volta à programação normal (Verde se puder atacar, apagado se não).
+                    card.RefreshGlowState(false, false);
+                }
+            }
+        }
     }
 }

@@ -25,8 +25,6 @@ public class EffectTargetManager : MonoBehaviour
     private CardCombat currentSource;
     private CardData currentCardData;
     private CardEffect currentPendingEffect; 
-    
-    // 👇 NOVA VARIÁVEL: Guarda o pacote de dados enquanto o jogador mira
     private EffectData currentPendingData; 
 
     void Awake()
@@ -46,17 +44,16 @@ public class EffectTargetManager : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    // 👇 RECEBE O 'EffectData' AQUI TAMBÉM
     public void StartTargeting(CardCombat source, CardData cardData, CardEffect effect, EffectData data)
     {
         // =========================================================
-        // RADAR INTELIGENTE (Auto-Fire na Torre)
+        // RADAR INTELIGENTE
         // =========================================================
         PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
         
         bool canTargetEnemyPlayer = enemyHealth != null && effect.IsValidTarget(source, null, enemyHealth, data);
-
         bool hasValidCardTarget = false;
+        
         CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         
         foreach (var c in allCards)
@@ -66,9 +63,18 @@ public class EffectTargetManager : MonoBehaviour
                 if (effect.IsValidTarget(source, c, null, data))
                 {
                     hasValidCardTarget = true;
-                    break;
+                    break; // Achou pelo menos 1, já pode parar de procurar!
                 }
             }
+        }
+
+        // 👇 NOVO: TRAVA NÍVEL 4 (O SALVA-VIDAS)
+        // Se NÃO pode bater na torre E NÃO tem lacaio válido... Cancela tudo e libera o jogo!
+        if (!canTargetEnemyPlayer && !hasValidCardTarget)
+        {
+            Debug.Log($"[Radar]: A carta {cardData.cardName} foi jogada, mas não há NENHUM alvo válido. Resolvendo sem efeito.");
+            // Não puxa a seta e não tranca o turno. O jogo segue livre!
+            return; 
         }
 
         // Se pode bater na torre E NÃO PODE bater em mais nada... AUTO-FIRE!
@@ -84,7 +90,6 @@ public class EffectTargetManager : MonoBehaviour
                 isEnemySource = source.isEnemy
             };
             
-            // 👇 PASSAMOS O DADO PARA A AÇÃO
             GameAction action = effect.CreateAction(context, data);
             if (action != null) ActionSystem.Instance.AddAction(action);
             
@@ -97,7 +102,7 @@ public class EffectTargetManager : MonoBehaviour
         currentSource = source;
         currentCardData = cardData;
         currentPendingEffect = effect;
-        currentPendingData = data; // Guarda o pacote para usar depois!
+        currentPendingData = data; 
 
         isWaitingForTarget = true;
         if (arrow != null)
@@ -118,9 +123,15 @@ public class EffectTargetManager : MonoBehaviour
             arrow.UpdateArrow(currentSource.transform.position, endPoint);
         }
 
+        // Botão Esquerdo: Confirma o alvo
         if (Input.GetMouseButtonDown(0))
         {
             TrySelectTarget();
+        }
+        // 👇 NOVO: Botão Direito do Mouse: Cancela a mira!
+        else if (Input.GetMouseButtonDown(1))
+        {
+            CancelTargeting();
         }
     }
 
@@ -143,13 +154,30 @@ public class EffectTargetManager : MonoBehaviour
                     isEnemySource = currentSource.isEnemy
                 };
                 
-                ExecuteAndFinish(context); // Chama a finalização
+                ExecuteAndFinish(context); 
             }
             else
             {
                 Debug.Log("Alvo bloqueado pelas regras do Efeito!");
             }
         }
+    }
+
+    // 👇 NOVO: Método para limpar a sujeira caso o jogador cancele com botão direito
+    private void CancelTargeting()
+    {
+        Debug.Log("Jogador cancelou a mira do efeito.");
+        
+        isWaitingForTarget = false;
+        if (arrow != null) arrow.ShowArrow(false);
+
+        // Limpa a memória
+        currentSource = null; 
+        currentCardData = null; 
+        currentPendingEffect = null;
+        currentPendingData = null;
+
+        TurnManager.UnlockTurn(); // 🔓 DESTRAVA A PORTA!
     }
 
     private void ExecuteAndFinish(CardEffectContext context)
@@ -159,7 +187,6 @@ public class EffectTargetManager : MonoBehaviour
 
         if (currentPendingEffect != null)
         {
-            // 👇 PASSAMOS O DADO QUE ESTAVA GUARDADO PARA FABRICAR A AÇÃO
             GameAction action = currentPendingEffect.CreateAction(context, currentPendingData);
             if (action != null) ActionSystem.Instance.AddAction(action);
         }

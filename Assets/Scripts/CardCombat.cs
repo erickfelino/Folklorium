@@ -63,10 +63,12 @@ public class CardCombat : MonoBehaviour
         if (isPlayerTurn && !isEnemy && cardDrag.isPlayed)
         {
             canAttackThisTurn = true;
+            RefreshGlowState();
         }
         else if (!isPlayerTurn && isEnemy && cardDrag.isPlayed)
         {
             canAttackThisTurn = true;
+            RefreshGlowState();
         }
     }
 
@@ -162,7 +164,8 @@ public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = 
             return;
         }
 
-        canAttackThisTurn = false; 
+        canAttackThisTurn = false;
+        RefreshGlowState();
         StartCoroutine(AttackChoreography(targetCard));
     }
 
@@ -196,7 +199,8 @@ public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = 
             return;
         }
 
-        canAttackThisTurn = false; 
+        canAttackThisTurn = false;
+        RefreshGlowState(); 
         StartCoroutine(AttackChoreographyPlayer(targetHealth)); 
     }
 
@@ -219,6 +223,39 @@ public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = 
         if (this != null)
         {
             transform.DOMove(originalPos, 0.75f);
+        }
+    }
+
+    public void RefreshGlowState(bool isTargetingMode = false, bool isValidTarget = false)
+    {
+        if (isDead) return;
+
+        CardDrag dragObj = GetComponent<CardDrag>();
+        if (dragObj == null) return;
+
+        // 1. O Jogador está arrastando a seta de ataque/efeito neste momento?
+        if (isTargetingMode)
+        {
+            if (isValidTarget) 
+            {
+                dragObj.SetGlow(true, Color.red); // Alvo válido = Vermelho
+            }
+            else 
+            {
+                dragObj.SetGlow(false, Color.white); // Não é alvo = Desliga o brilho
+            }
+            return;
+        }
+
+        // 2. Modo Normal de Tabuleiro (Ninguém está mirando nada)
+        // Se for lacaio do jogador E puder atacar, brilha Verde!
+        if (!isEnemy && canAttackThisTurn)
+        {
+            dragObj.SetGlow(true, Color.green);
+        }
+        else
+        {
+            dragObj.SetGlow(false, Color.white); // Desliga para os enjoos ou se já atacou
         }
     }
 
