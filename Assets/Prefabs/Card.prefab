@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6979178608611238882}
   - component: {fileID: -7183070062148544145}
   - component: {fileID: 7332489879790579819}
+  - component: {fileID: 5348423013437508000}
   m_Layer: 0
   m_Name: Card
   m_TagString: Card
@@ -155,18 +156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5523a4ce5b69d3b41bc1f6d8fd629e4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tokenColliderCenter: {x: 0, y: -0.012, z: 0}
-  tokenColliderSize: {x: 0.056, y: 0.04, z: 0.002}
-  objectsToHideOnBoard:
-  - {fileID: 7296928850231431054}
-  - {fileID: 5587956628466315549}
-  - {fileID: 1638530464812685018}
-  - {fileID: 4130671488235925314}
-  - {fileID: 4708425666060308074}
-  - {fileID: 4708425666060308074}
-  objectsToShowOnBoard:
-  - {fileID: 8615570601208198764}
-  - {fileID: 765816896608683322}
   isDragging: 0
   dragGlow: {fileID: 3456460787761474699}
   isHovering: 0
@@ -200,6 +189,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa4a1fa8992600748adb5511abd2a784, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5348423013437508000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478714304680186784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df8aabe8543c9a24b89fc6a014f2387c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tokenColliderCenter: {x: 0, y: -0.012, z: 0}
+  tokenColliderSize: {x: 0.056, y: 0.04, z: 0.002}
+  objectsToHideOnBoard:
+  - {fileID: 7296928850231431054}
+  - {fileID: 5587956628466315549}
+  - {fileID: 1638530464812685018}
+  - {fileID: 4708425666060308074}
+  - {fileID: 4130671488235925314}
+  objectsToShowOnBoard:
+  - {fileID: 8615570601208198764}
+  - {fileID: 765816896608683322}
 --- !u!1 &765816896608683322
 GameObject:
   m_ObjectHideFlags: 0

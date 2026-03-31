@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace Folklorium
 {
+    public enum BoardEntryType
+    {
+        PlayedFromHand,
+        Summoned,
+        Generated
+    }
+
     public class BoardManager : MonoBehaviour
     {
         public static BoardManager Instance { get; private set; }
@@ -15,7 +22,7 @@ namespace Folklorium
         private readonly Dictionary<CardCombat, BoardSlot> cardToSlot = new Dictionary<CardCombat, BoardSlot>();
         private readonly Dictionary<BoardSlot, CardCombat> slotToCard = new Dictionary<BoardSlot, CardCombat>();
 
-        public event Action<CardCombat, BoardSlot> OnCardPlaced;
+        public event Action<CardCombat, BoardSlot, BoardEntryType> OnCardPlaced;
         public event Action<CardCombat, BoardSlot> OnCardRemoved;
 
         private void Awake()
@@ -66,7 +73,7 @@ namespace Folklorium
             return false;
         }
 
-        public bool TryPlaceCard(CardCombat card, BoardSlot slot)
+        public bool TryPlaceCard(CardCombat card, BoardSlot slot, BoardEntryType entryType = BoardEntryType.PlayedFromHand)
         {
             if (card == null || slot == null)
                 return false;
@@ -88,8 +95,13 @@ namespace Folklorium
             cardToSlot[card] = slot;
             slotToCard[slot] = card;
 
-            OnCardPlaced?.Invoke(card, slot);
             return true;
+        }
+
+        public void NotifyCardPlaced(CardCombat card, BoardSlot slot, BoardEntryType entryType = BoardEntryType.PlayedFromHand)
+        {
+            if (card == null || slot == null) return;
+            OnCardPlaced?.Invoke(card, slot, entryType);
         }
 
         public void ReleaseCard(CardCombat card)

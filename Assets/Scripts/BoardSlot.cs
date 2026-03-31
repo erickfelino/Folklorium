@@ -14,7 +14,7 @@ namespace Folklorium
 
         public CardData.CardRole AcceptedRole => acceptedRole;
         public bool IsEnemySide => isEnemySide;
-
+    
         public bool CanAccept(CardData cardData, bool cardIsEnemy)
         {
             if (cardData == null) return false;
