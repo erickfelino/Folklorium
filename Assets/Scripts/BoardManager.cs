@@ -73,6 +73,33 @@ namespace Folklorium
             return false;
         }
 
+        public void HighlightValidSlots(CardData cardData, bool cardIsEnemy, bool active, Color color)
+        {
+            RefreshSlots();
+
+            foreach (BoardSlot slot in registeredSlots)
+            {
+                if (slot == null) continue;
+
+                bool shouldHighlight = active &&
+                                    cardData != null &&
+                                    slot.CanAccept(cardData, cardIsEnemy);
+
+                slot.SetHighlight(shouldHighlight, color);
+            }
+        }
+
+        public void ClearHighlights()
+        {
+            RefreshSlots();
+
+            foreach (BoardSlot slot in registeredSlots)
+            {
+                if (slot == null) continue;
+                slot.SetHighlight(false, Color.white);
+            }
+        }
+
         public bool TryPlaceCard(CardCombat card, BoardSlot slot, BoardEntryType entryType = BoardEntryType.PlayedFromHand)
         {
             if (card == null || slot == null)

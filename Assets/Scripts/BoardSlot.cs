@@ -14,6 +14,15 @@ namespace Folklorium
 
         public CardData.CardRole AcceptedRole => acceptedRole;
         public bool IsEnemySide => isEnemySide;
+        private Renderer rend;
+        private Color originalColor;
+
+        void Awake()
+        {
+            rend = GetComponent<Renderer>();
+            if (rend != null)
+                originalColor = rend.material.color;
+        }
     
         public bool CanAccept(CardData cardData, bool cardIsEnemy)
         {
@@ -21,6 +30,12 @@ namespace Folklorium
             if (!IsFree) return false;
             if (cardData.cardRole != acceptedRole) return false;
             return cardIsEnemy == isEnemySide;
+        }
+
+        public void SetHighlight(bool active, Color color)
+        {
+            if (rend == null) return;
+            rend.material.color = active ? color : originalColor;
         }
 
         public void SetOccupant(CardCombat card)

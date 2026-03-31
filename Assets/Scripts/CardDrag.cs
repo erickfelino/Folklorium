@@ -87,6 +87,7 @@ public class CardDrag : MonoBehaviour
 
         handManager?.TriggerDrag(this.gameObject);
         dragPlane = new Plane(Vector3.up, transform.position);
+        playController?.SetBoardHighlight(this, true);
     }
 
     void OnMouseDrag()
@@ -139,10 +140,13 @@ public class CardDrag : MonoBehaviour
 
         if (!isPlayed)
             GetComponent<Collider>().enabled = true;
+        
+        playController?.SetBoardHighlight(this, false);
     }
 
     private void ReturnToHand()
     {
+        playController?.SetBoardHighlight(this, false);
         handManager?.CancelHoverOrDrag(this.gameObject);
     }
 

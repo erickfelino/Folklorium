@@ -87,6 +87,40 @@ public class CardPlayController : MonoBehaviour
         return true;
     }
 
+    public void SetBoardHighlight(CardDrag cardDrag, bool active)
+    {
+        ResolveReferences();
+
+        if (boardManager == null || cardDrag == null)
+            return;
+
+        CardDisplay display = cardDrag.GetComponent<CardDisplay>();
+        CardCombat combat = cardDrag.GetComponent<CardCombat>();
+
+        if (display == null || display.cardData == null || combat == null)
+            return;
+
+        Color highlightColor = GetHighlightColor(display.cardData.cardRole);
+
+        boardManager.HighlightValidSlots(
+            display.cardData,
+            combat.isEnemy,
+            active,
+            highlightColor
+        );
+    }
+
+    private Color GetHighlightColor(CardData.CardRole role)
+    {
+        switch (role)
+        {
+            case CardData.CardRole.Soldier: return Color.green;
+            case CardData.CardRole.Hero: return Color.blue;
+            case CardData.CardRole.Commander: return Color.red;
+            default: return Color.white;
+        }
+    }
+
     public void PlayDeniedFeedback(CardDrag cardDrag)
     {
         cardDrag?.ShakeInvalidPlay();
