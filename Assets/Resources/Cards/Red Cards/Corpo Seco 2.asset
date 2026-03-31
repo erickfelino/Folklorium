@@ -24,11 +24,11 @@ MonoBehaviour:
   - effectSO: {fileID: 11400000, guid: cdf80184b41976d48a95554ccde1e490, type: 2}
     trigger: 3
     parameters:
-      rid: 2886593607732035670
+      rid: 2886593678062125117
   references:
     version: 2
     RefIds:
-    - rid: 2886593607732035670
+    - rid: 2886593678062125117
       type: {class: SummonEffectData, ns: , asm: Assembly-CSharp}
       data:
         attack: 1

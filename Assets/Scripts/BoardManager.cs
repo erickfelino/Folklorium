@@ -19,11 +19,18 @@ namespace Folklorium
         [SerializeField] private bool autoDiscoverSlots = true;
         [SerializeField] private List<BoardSlot> registeredSlots = new List<BoardSlot>();
 
+        [Header("Event Channels")]
+        [SerializeField] private BoardCardPlacedEventChannelSO boardCardPlacedChannel;
+        [SerializeField] private BoardCardRemovedEventChannelSO boardCardRemovedChannel;
+
         private readonly Dictionary<CardCombat, BoardSlot> cardToSlot = new Dictionary<CardCombat, BoardSlot>();
         private readonly Dictionary<BoardSlot, CardCombat> slotToCard = new Dictionary<BoardSlot, CardCombat>();
 
         public event Action<CardCombat, BoardSlot, BoardEntryType> OnCardPlaced;
         public event Action<CardCombat, BoardSlot> OnCardRemoved;
+
+        public BoardCardPlacedEventChannelSO CardPlacedChannel => boardCardPlacedChannel;
+        public BoardCardRemovedEventChannelSO CardRemovedChannel => boardCardRemovedChannel;
 
         private void Awake()
         {
@@ -82,8 +89,8 @@ namespace Folklorium
                 if (slot == null) continue;
 
                 bool shouldHighlight = active &&
-                                    cardData != null &&
-                                    slot.CanAccept(cardData, cardIsEnemy);
+                                       cardData != null &&
+                                       slot.CanAccept(cardData, cardIsEnemy);
 
                 slot.SetHighlight(shouldHighlight, color);
             }
@@ -96,6 +103,7 @@ namespace Folklorium
             foreach (BoardSlot slot in registeredSlots)
             {
                 if (slot == null) continue;
+
                 slot.SetHighlight(false, Color.white);
             }
         }
@@ -128,7 +136,18 @@ namespace Folklorium
         public void NotifyCardPlaced(CardCombat card, BoardSlot slot, BoardEntryType entryType = BoardEntryType.PlayedFromHand)
         {
             if (card == null || slot == null) return;
+
             OnCardPlaced?.Invoke(card, slot, entryType);
+
+            if (boardCardPlacedChannel != null)
+            {
+                boardCardPlacedChannel.RaiseEvent(new BoardCardPlacedEventPayload
+                {
+                    card = card,
+                    slot = slot,
+                    entryType = entryType
+                });
+            }
         }
 
         public void ReleaseCard(CardCombat card)
@@ -150,6 +169,15 @@ namespace Folklorium
 
                 slot.ClearOccupant(card);
                 OnCardRemoved?.Invoke(card, slot);
+
+                if (boardCardRemovedChannel != null)
+                {
+                    boardCardRemovedChannel.RaiseEvent(new BoardCardRemovedEventPayload
+                    {
+                        card = card,
+                        slot = slot
+                    });
+                }
             }
         }
 
@@ -182,6 +210,21 @@ namespace Folklorium
             }
 
             return count;
+        }
+
+        public List<CardCombat> GetAllCardsOnBoard()
+        {
+            List<CardCombat> cards = new List<CardCombat>();
+
+            foreach (var pair in cardToSlot)
+            {
+                if (pair.Key != null)
+                {
+                    cards.Add(pair.Key);
+                }
+            }
+
+            return cards;
         }
     }
 }
