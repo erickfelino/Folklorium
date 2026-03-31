@@ -1,0 +1,266 @@
+using UnityEngine;
+using System;
+using System.Collections;
+using DG.Tweening;
+using Folklorium;
+
+[RequireComponent(typeof(CardDisplay))]
+[RequireComponent(typeof(CardDrag))]
+public class CardCombat : MonoBehaviour
+{
+    private TurnManager turnManager;
+
+    [Header("Status de Combate")]
+    public int currentAttack;
+    public int currentLife;
+    public int maxLife;
+    public bool canAttackThisTurn = false;
+    public bool isEnemy;
+    public bool isDead = false;
+
+    private CardDisplay display;
+    private CardDrag cardDrag;
+
+    public event Action<CardCombat> OnDeath;
+
+    void Start()
+    {
+        turnManager = FindFirstObjectByType<TurnManager>();
+
+        if (turnManager != null)
+        {
+            turnManager.OnTurnChanged += WakeUpCard;
+        }
+        else
+        {
+            Debug.LogError("ERRO: O TurnManager não foi encontrado na cena!");
+        }
+
+        display = GetComponent<CardDisplay>();
+        if (display != null && display.cardData != null)
+        {
+            currentAttack = display.cardData.attack;
+            currentLife = display.cardData.life;
+            maxLife = display.cardData.life;
+        }
+
+        cardDrag = GetComponent<CardDrag>();
+    }
+
+    void OnDestroy()
+    {
+        if (turnManager != null)
+        {
+            turnManager.OnTurnChanged -= WakeUpCard;
+        }
+    }
+
+    private void WakeUpCard(bool isPlayerTurn)
+    {
+        if (!cardDrag.isPlayed)
+            return;
+
+        // Carta pode atacar somente no turno do seu dono
+        bool shouldWake =
+            (isPlayerTurn && !isEnemy) ||
+            (!isPlayerTurn && isEnemy);
+
+        canAttackThisTurn = shouldWake;
+
+        RefreshGlowState();
+    }
+
+    public void TriggerEffects(Folklorium.EffectTriggerType targetTrigger, CardCombat targetCard = null, PlayerHealth targetPlayer = null)
+    {
+        if (display == null || display.cardData == null || display.cardData.effects == null) return;
+
+        foreach (Folklorium.EffectEntry entry in display.cardData.effects)
+        {
+            if (entry != null && entry.effectSO != null && entry.trigger == targetTrigger)
+            {
+                CardEffect effectSO = entry.effectSO;
+                EffectData rawData = entry.parameters;
+
+                if (effectSO.requiresTarget && targetCard == null && targetPlayer == null)
+                {
+                    if (rawData.RandomizeTarget())
+                    {
+                        EffectTargetManager.Instance.ResolveRandomTarget(this, effectSO, rawData);
+                    }
+                    else if (this.isEnemy)
+                    {
+                        OpponentAI ai = FindFirstObjectByType<OpponentAI>();
+                        if (ai != null) ai.StartCoroutine(ai.ResolveAITargetingCoroutine(this, display.cardData, effectSO, rawData));
+                    }
+                    else
+                    {
+                        EffectTargetManager.Instance.StartTargeting(this, display.cardData, effectSO, rawData);
+                    }
+                }
+                else
+                {
+                    CardEffectContext context = new CardEffectContext
+                    {
+                        source = this,
+                        targetCard = targetCard,
+                        targetPlayer = targetPlayer,
+                        isEnemySource = this.isEnemy
+                    };
+
+                    GameAction action = effectSO.CreateAction(context, rawData);
+                    if (action != null) ActionSystem.Instance.AddAction(action);
+                }
+            }
+        }
+    }
+
+    public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = false)
+    {
+        currentAttack += attackChange;
+        if (currentAttack < 0) currentAttack = 0;
+
+        if (isBuff)
+        {
+            maxLife += lifeChange;
+            currentLife += lifeChange;
+        }
+        else
+        {
+            currentLife += lifeChange;
+            if (currentLife > maxLife)
+            {
+                currentLife = maxLife;
+            }
+        }
+
+        if (currentLife <= 0) currentLife = 0;
+        display.UpdateStatusText(currentLife, currentAttack);
+    }
+
+    public void Attack(CardCombat targetCard)
+    {
+        if (!canAttackThisTurn)
+        {
+            Debug.Log("Esta criatura não pode atacar neste turno!");
+            return;
+        }
+
+        canAttackThisTurn = false;
+        RefreshGlowState();
+        StartCoroutine(AttackChoreography(targetCard));
+    }
+
+    private IEnumerator AttackChoreography(CardCombat targetCard)
+    {
+        Vector3 originalPos = transform.position;
+
+        yield return transform.DOMove(targetCard.transform.position, 0.15f).WaitForCompletion();
+
+        int myDamage = this.currentAttack;
+        int enemyDamage = targetCard.currentAttack;
+
+        ActionSystem.Instance.AddAction(new DamageAction(this, targetCard, null, myDamage));
+        ActionSystem.Instance.AddAction(new DamageAction(targetCard, this, null, enemyDamage));
+
+        TriggerEffects(Folklorium.EffectTriggerType.OnAttack, targetCard);
+
+        yield return new WaitForSeconds(0.35f);
+
+        if (this != null && transform != null)
+        {
+            yield return transform.DOMove(originalPos, 0.5f).SetEase(Ease.OutQuart).WaitForCompletion();
+        }
+    }
+
+    public void Attack(PlayerHealth targetHealth)
+    {
+        if (!canAttackThisTurn)
+        {
+            Debug.Log("Esta criatura não pode atacar neste turno!");
+            return;
+        }
+
+        canAttackThisTurn = false;
+        RefreshGlowState();
+        StartCoroutine(AttackChoreographyPlayer(targetHealth));
+    }
+
+    private IEnumerator AttackChoreographyPlayer(PlayerHealth targetHealth)
+    {
+        Vector3 originalPos = transform.position;
+
+        yield return transform.DOMove(targetHealth.transform.position, 0.15f).WaitForCompletion();
+
+        int myDamage = this.currentAttack;
+
+        if (targetHealth != null)
+        {
+            ActionSystem.Instance.AddAction(new DamageAction(this, null, targetHealth, myDamage));
+            TriggerEffects(Folklorium.EffectTriggerType.OnAttack, null, targetHealth);
+        }
+
+        yield return new WaitForSeconds(0.35f);
+
+        if (this != null)
+        {
+            transform.DOMove(originalPos, 0.75f);
+        }
+    }
+
+    public void RefreshGlowState(bool isTargetingMode = false, bool isValidTarget = false)
+    {
+        if (isDead) return;
+
+        CardDrag dragObj = GetComponent<CardDrag>();
+        if (dragObj == null) return;
+
+        if (isTargetingMode)
+        {
+            if (isValidTarget)
+            {
+                dragObj.SetGlow(true, Color.red);
+            }
+            else
+            {
+                dragObj.SetGlow(false, Color.white);
+            }
+            return;
+        }
+
+        if (!isEnemy && canAttackThisTurn)
+        {
+            dragObj.SetGlow(true, Color.green);
+        }
+        else
+        {
+            dragObj.SetGlow(false, Color.white);
+        }
+    }
+
+    public void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        Debug.Log($"{display.cardData.cardName} foi destruído!");
+
+        isDead = true;
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        BoardManager.Instance?.ReleaseCard(this);
+
+        OnDeath?.Invoke(this);
+        TriggerEffects(Folklorium.EffectTriggerType.OnDeath);
+
+        yield return transform.DOComplete();
+        yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
+
+        Destroy(gameObject);
+    }
+}

@@ -24,24 +24,12 @@ public class HandManager : MonoBehaviour
     private List<Vector3> targetPositions = new List<Vector3>();
     private List<Quaternion> targetRotations = new List<Quaternion>();
 
-    void Start()
-    {
-        DrawInitialHand(4);
-    }
-
-    public void DrawInitialHand(int amount)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            DrawCardFromDeck();
-        }
-    }
-
     public void DrawCardFromDeck()
     {
+        Debug.Log("comprando um card");
         if (deckManager != null)
         {
-            Card drawnCard = deckManager.DrawCard();
+            CardData drawnCard = deckManager.DrawCard();
             
             if (drawnCard != null)
             {
@@ -50,7 +38,7 @@ public class HandManager : MonoBehaviour
         }
     }
 
-    public void AddCardToHand(Card cardData)
+    public void AddCardToHand(CardData cardData)
     {
         GameObject newCard = Instantiate(cardPrefab, handTransform.position, Quaternion.identity, handTransform);
         newCard.transform.localScale = new Vector3(10f, 10f, 10f);
@@ -59,13 +47,15 @@ public class HandManager : MonoBehaviour
         if (drag != null)
         {
             drag.SetManagers(this, myManaManager); 
-            
             if (isEnemyHand)
             {
                 drag.enabled = false;
         
                 Collider col = newCard.GetComponent<Collider>();
                 if (col != null) col.enabled = false;
+
+                CardCombat cardCombat = newCard.GetComponent<CardCombat>();
+                cardCombat.isEnemy = true;
             }
         }
         

@@ -1,85 +1,55 @@
 using UnityEngine;
-using DG.Tweening; // Coloquei aqui por precaução, caso você queira animar coisas extras no futuro!
+using DG.Tweening;
 using Folklorium;
-using static Folklorium.Card;
-using Unity.VisualScripting;
 
 public class CardDrag : MonoBehaviour
 {
-    private string dropZoneTag;
-    private Color highlightColor;
-    private GameObject[] validZones; 
-    private Color originalZoneColor;
-    private Plane dragPlane; 
+    private Plane dragPlane;
     private HandManager handManager;
-
-    [Header("Mana")]
     private ManaManager manaManager;
+    private CardPlayController playController;
+
     private int myManaCost;
 
-    [Header("Configurações de Tabuleiro")]
-    private Vector3 handScale; 
-    public GameObject[] objectsToHideOnBoard; 
-    public GameObject[] objectsToShowOnBoard;
-    private bool isPlayed = false;
+    public bool isPlayed { get; private set; } = false;
     public bool isDragging = false;
+    public static bool isAnyCardDragging = false;
 
     [Header("Efeitos Visuais")]
-    public GameObject dragGlow; 
+    public GameObject dragGlow;
     public bool isHovering = false;
+
+    public HandManager HandManagerRef => handManager;
+    public ManaManager ManaManagerRef => manaManager;
+    public int ManaCost => myManaCost;
+    public bool IsPlayed => isPlayed;
 
     void Start()
     {
-        Card cardData = GetComponent<CardDisplay>().cardData;
+        CardData cardData = GetComponent<CardDisplay>().cardData;
         myManaCost = cardData.mana;
-        SetupCardRules(cardData);
-
-        validZones = GameObject.FindGameObjectsWithTag(dropZoneTag);
-
-        if (validZones.Length > 0)
-        {
-            originalZoneColor = validZones[0].GetComponent<Renderer>().material.color;
-        }
-
-        handScale = transform.localScale;
+        playController = CardPlayController.Instance != null ? CardPlayController.Instance : FindFirstObjectByType<CardPlayController>();
     }
 
-    private void SetupCardRules(Card data)
+    void Update()
     {
-        if (data == null) return;
+        if (isPlayed || isDragging) return;
 
-        switch (data.cardRole)
+        bool shouldGlow = playController != null && playController.CanBeginDrag(this);
+
+        if (dragGlow != null && dragGlow.activeSelf != shouldGlow)
         {
-            case CardRole.Soldier:
-                dropZoneTag = "DropZoneSoldier";
-                highlightColor = Color.green;
-                break;
-            case CardRole.Hero:
-                dropZoneTag = "DropZoneHero";
-                highlightColor = Color.blue;
-                break;
-            case CardRole.Commander:
-                dropZoneTag = "DropZoneCommander";
-                highlightColor = Color.red;
-                break;
-            default:
-                dropZoneTag = "Untagged";
-                highlightColor = Color.white;
-                break;
+            dragGlow.SetActive(shouldGlow);
+            dragGlow.GetComponent<Renderer>().material.color = Color.green;
         }
     }
-
-    // ==========================================
-    // GATILHOS DO MOUSE COM DOTWEEN
-    // ==========================================
 
     void OnMouseEnter()
     {
-        if (!isDragging && !isPlayed)
+        if (!isDragging && !isPlayed && !isAnyCardDragging)
         {
             isHovering = true;
-            // AVISA O HAND MANAGER PRA FAZER A CARTA SALTAR E CRESCER
-            handManager.TriggerHover(this.gameObject); 
+            handManager?.TriggerHover(this.gameObject);
         }
     }
 
@@ -88,10 +58,9 @@ public class CardDrag : MonoBehaviour
         if (!isPlayed)
         {
             isHovering = false;
-            if (!isDragging) 
+            if (!isDragging)
             {
-                // AVISA O HAND MANAGER PRA DEVOLVER A CARTA PRO LEQUE
-                handManager.CancelHoverOrDrag(this.gameObject); 
+                handManager?.CancelHoverOrDrag(this.gameObject);
             }
         }
     }
@@ -100,33 +69,25 @@ public class CardDrag : MonoBehaviour
     {
         if (isPlayed) return;
 
-        if (manaManager != null && !manaManager.HasEnoughMana(myManaCost))
+        if (playController != null && !playController.CanBeginDrag(this))
         {
-            Debug.Log("Mana Insuficiente!");
-            // A carta dá uma tremidinha balançando a cabeça dizendo "não"
-            transform.DOShakeRotation(0.3f, Vector3.forward * 15f); 
-            return; // Bloqueia todo o resto do código, a carta não sai do lugar!
+            playController.PlayDeniedFeedback(this);
+            return;
         }
 
         isDragging = true;
-        isHovering = false; 
-        if (dragGlow != null) dragGlow.SetActive(true); 
+        isAnyCardDragging = true;
+        isHovering = false;
 
-        // AVISA O HAND MANAGER PRA ENCOLHER A CARTA RAPIDINHO
-        handManager.TriggerDrag(this.gameObject);
-
-        foreach (GameObject zone in validZones)
+        if (dragGlow != null)
         {
-            if (zone.transform.childCount == 0)
-            {
-                zone.GetComponent<Renderer>().material.color = highlightColor;
-            }
+            dragGlow.SetActive(true);
+            dragGlow.GetComponent<Renderer>().material.color = Color.blue;
         }
 
+        handManager?.TriggerDrag(this.gameObject);
         dragPlane = new Plane(Vector3.up, transform.position);
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
+        playController?.SetBoardHighlight(this, true);
     }
 
     void OnMouseDrag()
@@ -137,7 +98,6 @@ public class CardDrag : MonoBehaviour
         if (dragPlane.Raycast(ray, out float distance))
         {
             Vector3 targetPosition = ray.GetPoint(distance);
-            // Mantemos o LERP aqui porque ele é o mestre de seguir o mouse em tempo real!
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 25f);
         }
     }
@@ -147,97 +107,88 @@ public class CardDrag : MonoBehaviour
         if (isPlayed || !isDragging) return;
 
         isDragging = false;
-        if (dragGlow != null) dragGlow.SetActive(false); 
+        isAnyCardDragging = false;
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        if (dragGlow != null)
+        {
+            dragGlow.SetActive(false);
+        }
 
         GetComponent<Collider>().enabled = false;
 
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.collider.CompareTag(dropZoneTag) && hit.transform.childCount == 0) 
-            {
-                // 1. Paga o custo e tira da mão
-                if (manaManager != null) manaManager.SpendMana(myManaCost);
-                if (handManager != null) handManager.RemoveCardFromHand(gameObject);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
-                // 2. Chama a animação unificada! (false = não é o inimigo)
-                TransformIntoTokenAndJump(hit.transform, false);
-            }
-            else
+        bool placedCard = false;
+
+        foreach (RaycastHit hit in hits)
+        {
+            BoardSlot slot = hit.collider.GetComponentInParent<BoardSlot>();
+            if (slot == null) continue;
+
+            if (playController != null && playController.TryPlayCard(this, slot))
             {
-                ReturnToHand();
+                placedCard = true;
+                break;
             }
         }
-        else
+
+        if (!placedCard)
         {
             ReturnToHand();
         }
 
-        // Reativa o collider se ela voltou pra mão
-        if (!isPlayed) GetComponent<Collider>().enabled = true;
-
-        foreach (GameObject zone in validZones)
-        {
-            zone.GetComponent<Renderer>().material.color = originalZoneColor;
-        }
+        if (!isPlayed)
+            GetComponent<Collider>().enabled = true;
+        
+        playController?.SetBoardHighlight(this, false);
     }
 
-    // Atualizei esse método para usar a mágica do DOTween!
     private void ReturnToHand()
     {
-        if (handManager != null)
-        {
-            // Em vez de teletransportar duro de volta, a carta vai voar suavemente 
-            // de volta pro exato espaço dela no leque graças à nossa função de cancelar do HandManager!
-            handManager.CancelHoverOrDrag(this.gameObject);
-        }
+        playController?.SetBoardHighlight(this, false);
+        handManager?.CancelHoverOrDrag(this.gameObject);
     }
 
-    public void TransformIntoTokenAndJump(Transform targetZone, bool isEnemy)
+    public void MarkAsPlayed()
     {
         isPlayed = true;
-        transform.SetParent(targetZone);
-
-        // Desliga o Collider para o mouse não interferir mais no token
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
-
-        // Troca os visuais
-        foreach(GameObject obj in objectsToHideOnBoard) if(obj) obj.SetActive(false);
-        foreach(GameObject obj in objectsToShowOnBoard) if(obj) obj.SetActive(true);
-
-        MeshRenderer mesh = GetComponent<MeshRenderer>();
-        if(mesh != null) mesh.enabled = false;
-
-        // Calcula a posição do centro da zona
-        Vector3 finalPos = new Vector3(targetZone.position.x, targetZone.position.y + 0.1f, targetZone.position.z - 0.15f);
-
-        // Se for o oponente jogando, a carta precisa virar 180 graus pra te encarar
-        if (isEnemy)
-        {
-            transform.localRotation = Quaternion.Euler(-89.98f, 0f, 180f);
-        }
-
-        // Calcula aquele Scale que você tinha feito antes!
-        Vector3 targetScale = targetZone.localScale;
-        float fatorDeCompensacao = 20f; 
-        Vector3 finalScale = new Vector3(
-            targetScale.x * fatorDeCompensacao, 
-            targetScale.z * fatorDeCompensacao, 
-            handScale.z                         
-        );
-
-        // O GRANDE SALTO DO DOTWEEN (Posição e Escala juntos!)
-        transform.DOKill(); 
-        transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1.2f).SetEase(Ease.OutQuad);
-        //transform.DOScale(finalScale, 1.2f).SetEase(Ease.OutQuad); Se precisar mudar o tamanho dela ao cair no board no futuro
     }
-    
+
+    public void ShakeInvalidPlay()
+    {
+        transform.DOShakeRotation(0.3f, Vector3.forward * 15f);
+    }
+
+    public void TransformIntoTokenAndJump(BoardSlot targetSlot, bool isEnemy)
+    {
+        CardBoardView view = GetComponent<CardBoardView>();
+        if (view != null)
+        {
+            view.PlayPlacementAnimation(targetSlot, isEnemy);
+        }
+        else
+        {
+            MarkAsPlayed();
+            transform.SetParent(targetSlot.transform);
+        }
+    }
+
     public void SetManagers(HandManager hand, ManaManager mana)
     {
         handManager = hand;
         manaManager = mana;
+    }
+
+    public void SetGlow(bool active, Color color)
+    {
+        if (dragGlow != null)
+        {
+            dragGlow.SetActive(active);
+            if (active)
+            {
+                dragGlow.GetComponent<Renderer>().material.color = color;
+            }
+        }
     }
 }

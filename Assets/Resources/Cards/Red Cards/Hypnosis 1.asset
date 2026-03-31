@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Hypnosis 1
+  m_EditorClassIdentifier: 
+  cardName: Hypnosis
+  cardBody: "Legado: D\xEA 2 de dano em um lacaio inimigo"
+  cardColorGroup: 0
+  cardRole: 0
+  mana: 2
+  attack: 1
+  life: 2
+  art: {fileID: 21300000, guid: 26f8f0e7ec5bfe644b5f4f6deb85f10a, type: 3}
+  effects:
+  - effectSO: {fileID: 11400000, guid: 6d429725c1d7a48469628fbe962a98dd, type: 2}
+    trigger: 3
+    parameters:
+      rid: 2886593607732035655
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593607732035655
+      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        damage: 2
+        excludeSelf: 1

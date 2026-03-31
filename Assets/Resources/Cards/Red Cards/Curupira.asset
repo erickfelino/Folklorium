@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Curupira
+  m_EditorClassIdentifier: 
+  cardName: Curupira
+  cardBody: 'Mobilizar: Cause 3 de dano na torre inimiga'
+  cardColorGroup: 0
+  cardRole: 2
+  mana: 5
+  attack: 2
+  life: 2
+  art: {fileID: 21300000, guid: 544e9852c87591a4c957f2acb3983a45, type: 3}
+  effects:
+  - effectSO: {fileID: 11400000, guid: fae3465cd701f304bbc7825817a2b981, type: 2}
+    trigger: 0
+    parameters:
+      rid: 2886593607732035653
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593607732035653
+      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        damage: 3
+        excludeSelf: 1

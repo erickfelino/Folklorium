@@ -64,16 +64,16 @@ public class EndTurnButton : MonoBehaviour
         }
     }
 
-    private void HandleTurnChanged(bool isPlayerTurn)
+    private void HandleTurnChanged(bool IsPlayerTurn)
     {
         if (surfaceMat != null) 
         {
-            surfaceMat.color = isPlayerTurn ? originalSurfaceColor : colorOpponentTurn;
+            surfaceMat.color = IsPlayerTurn ? originalSurfaceColor : colorOpponentTurn;
         }
         
-        ChangeParticleColor(isPlayerTurn ? colorTurnActive : colorOpponentTurn);
+        ChangeParticleColor(IsPlayerTurn ? colorTurnActive : colorOpponentTurn);
 
-        if (isPlayerTurn && playerManaManager != null)
+        if (IsPlayerTurn && playerManaManager != null)
         {
             UpdateManaVisuals(playerManaManager.currentMana);
         }

@@ -1,9 +1,12 @@
 using UnityEngine;
-using System; // IMPORTANTE: Precisamos disso para usar o 'Action'
+using System; 
 using System.Collections;
 
 public class TurnManager : MonoBehaviour
 {
+    [Header("Configurações da Partida")]
+    [SerializeField] private int startingHandSize = 3; // Tamanho base da mão inicial
+
     [Header("Gerenciadores de Mana")]
     [SerializeField] private ManaManager playerManaManager;
     [SerializeField] private ManaManager enemyManaManager;
@@ -15,13 +18,104 @@ public class TurnManager : MonoBehaviour
     [Header("Outros Gerenciadores")]
     [SerializeField] private OpponentAI opponentAI;
     
-    public bool IsPlayerTurn { get; private set; } = true;
+    public bool IsPlayerTurn { get; private set; }
     public event Action<bool> OnTurnChanged;
+    private static int pendingLocks = 0;
+    // O jogo continua lendo isso como um bool para não quebrar o seu OpponentAI!
+    public static bool IsResolvingEffect 
+    {
+        get { return pendingLocks > 0; }
+    }
+
+    // Tranca a porta (+1)
+    public static void LockTurn() 
+    { 
+        pendingLocks++; 
+    }
+
+    // Destranca a porta (-1)
+    public static void UnlockTurn() 
+    { 
+        pendingLocks--; 
+        if (pendingLocks < 0) pendingLocks = 0; 
+    }
+
+    private void Start()
+    {
+        // 1. Configuração Inicial Limpa
+        playerManaManager.maxMana = 0;
+        playerManaManager.currentMana = 0;
+        playerManaManager.UpdateUI();
+
+        enemyManaManager.maxMana = 0;
+        enemyManaManager.currentMana = 0;
+        enemyManaManager.UpdateUI();
+
+        // 2. Joga a moeda pra cima!
+        StartCoroutine(DecideWhoGoesFirst());
+    }
+
+    private IEnumerator DecideWhoGoesFirst()
+    {
+        Debug.Log("Sorteando quem começa...");
+        yield return new WaitForSeconds(1f); 
+
+        bool playerGoesFirst = UnityEngine.Random.value > 0.5f;
+
+        // 3. Distribui as cartas ANTES do turno começar, aplicando a vantagem do 2º jogador
+        yield return StartCoroutine(DealStartingHands(playerGoesFirst));
+
+        // 4. Inicia a partida de fato
+        if (playerGoesFirst)
+        {
+            Debug.Log("O Jogador ganhou no cara ou coroa! Você começa.");
+            IsPlayerTurn = true;
+            StartPlayerTurn();
+        }
+        else
+        {
+            Debug.Log("A IA ganhou no cara ou coroa! Ela começa.");
+            IsPlayerTurn = false;
+            StartCoroutine(SimulateOpponentTurn());
+        }
+    }
+
+    // ==========================================
+    // NOVA FASE: DISTRIBUIÇÃO DA MÃO INICIAL
+    // ==========================================
+    private IEnumerator DealStartingHands(bool playerGoesFirst)
+    {
+        Debug.Log("Distribuindo cartas iniciais...");
+
+        // Define a quantidade baseada em quem joga primeiro
+        int playerDrawCount = playerGoesFirst ? startingHandSize : startingHandSize + 1;
+        int enemyDrawCount = playerGoesFirst ? startingHandSize + 1 : startingHandSize;
+
+        // Jogador compra as cartas dele
+        for (int i = 0; i < playerDrawCount; i++)
+        {
+            playerHandManager.DrawCardFromDeck();
+            yield return new WaitForSeconds(0.2f); // Dá um tempinho para a carta animar
+        }
+
+        yield return new WaitForSeconds(0.5f); // Pausa dramática entre os jogadores
+
+        // IA compra as cartas dela
+        for (int i = 0; i < enemyDrawCount; i++)
+        {
+            enemyHandManager.DrawCardFromDeck();
+            yield return new WaitForSeconds(0.2f); // Dá um tempinho para a carta animar
+        }
+
+        yield return new WaitForSeconds(1f); // Pausa final antes do "Turno 1" começar
+    }
 
     public void StartPlayerTurn()
     {
-        Debug.Log("Seu Turno!");
         IsPlayerTurn = true;
+        OnTurnChanged?.Invoke(IsPlayerTurn);
+
+        Debug.Log("Seu Turno!");
         
         playerHandManager.DrawCardFromDeck(); 
 
@@ -30,8 +124,6 @@ public class TurnManager : MonoBehaviour
             playerManaManager.maxMana++;
         }
         playerManaManager.RefillMana();
-
-        OnTurnChanged?.Invoke(IsPlayerTurn);
     }
 
     public void EndPlayerTurn()
@@ -39,7 +131,6 @@ public class TurnManager : MonoBehaviour
         if (!IsPlayerTurn) return; 
         
         IsPlayerTurn = false;
-        
         OnTurnChanged?.Invoke(IsPlayerTurn);
         
         StartCoroutine(SimulateOpponentTurn());
@@ -47,6 +138,9 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator SimulateOpponentTurn()
     {
+        IsPlayerTurn = false;
+        OnTurnChanged?.Invoke(IsPlayerTurn);
+
         Debug.Log("Turno do Inimigo!");
         
         enemyHandManager.DrawCardFromDeck();
@@ -60,6 +154,7 @@ public class TurnManager : MonoBehaviour
         yield return new WaitForSeconds(1f); 
         
         yield return StartCoroutine(opponentAI.ProcessTurn());
+        
         StartPlayerTurn();
     }
 }

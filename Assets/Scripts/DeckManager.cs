@@ -4,30 +4,38 @@ using UnityEngine;
 
 public class DeckManager : MonoBehaviour
 {
-    public List<Card> allCards = new List<Card>();
+    [Header("Deck Settings")]
+    [Tooltip("Nome da pasta dentro de Resources onde estão os ScriptableObjects deste deck.")]
+    [SerializeField] private string deckFolderPath = "Cards/Red Cards";
+
+    public List<CardData> allCards = new List<CardData>();
     private int currentIndex = 0;
 
     void Start()
     {
-        // Adiciona os cards da pasta Resources
-        Card[] cards = Resources.LoadAll<Card>("Cards");
-        allCards.AddRange(cards);
+        // 👇 Agora ele carrega da pasta que você escrever no Inspector!
+        CardData[] cards = Resources.LoadAll<CardData>(deckFolderPath);
 
-        ShuffleDeck();
-        
-        // REMOVIDO o loop de comprar 6 cartas daqui. Quem decide comprar é a mão.
+        if (cards.Length == 0)
+        {
+            Debug.LogWarning($"Nenhuma carta encontrada na pasta Resources/{deckFolderPath}! Verifique o nome.");
+        }
+        else
+        {
+            allCards.AddRange(cards);
+            ShuffleDeck();
+        }
     }
 
-    // AGORA ESTE MÉTODO RETORNA UMA CARTA ('Card') EM VEZ DE 'void'
-    public Card DrawCard()
+    public CardData DrawCard()
     {
         if (allCards.Count == 0 || currentIndex >= allCards.Count)
         {
-            Debug.Log("Acabaram as cartas do baralho!");
-            return null; // Retorna nulo para avisar que o deck secou
+            Debug.Log($"Acabaram as cartas do baralho ({deckFolderPath})!");
+            return null; 
         }
 
-        Card nextCard = allCards[currentIndex];
+        CardData nextCard = allCards[currentIndex];
         currentIndex++;
         return nextCard; 
     }
@@ -36,7 +44,7 @@ public class DeckManager : MonoBehaviour
     {
         for (int i = 0; i < allCards.Count; i++)
         {
-            Card temp = allCards[i];
+            CardData temp = allCards[i];
             int randomIndex = Random.Range(i, allCards.Count);
             allCards[i] = allCards[randomIndex];
             allCards[randomIndex] = temp;

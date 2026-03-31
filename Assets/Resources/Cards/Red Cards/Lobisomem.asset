@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Lobisomem
+  m_EditorClassIdentifier: 
+  cardName: Lobisomem
+  cardBody: 'Mobilizar: Compre 2 cards'
+  cardColorGroup: 0
+  cardRole: 2
+  mana: 6
+  attack: 6
+  life: 6
+  art: {fileID: 21300000, guid: 73ebe44ed65a47745a062790fe70ead6, type: 3}
+  effects: []
+  references:
+    version: 2
+    RefIds: []
