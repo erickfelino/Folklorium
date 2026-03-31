@@ -27,6 +27,8 @@ public class CardBoardView : MonoBehaviour
         }
 
         transform.SetParent(targetSlot.transform);
+        
+        SetupBoardVisuals();
 
         BoxCollider boxCol = GetComponent<BoxCollider>();
         if (boxCol != null)
@@ -73,14 +75,7 @@ public class CardBoardView : MonoBehaviour
         seq.Join(transform.DOJump(finalPos, jumpPower: 0.7f, numJumps: 1, duration: 1f).SetEase(Ease.OutQuad));
         seq.OnComplete(() => onComplete?.Invoke());
     }
-
     public void SetupBoardVisuals()
-    {
-        AdjustCollider();
-        AdjustGlow();
-    }
-
-    void AdjustCollider()
     {
         BoxCollider boxCol = GetComponent<BoxCollider>();
         if (boxCol == null) return;
@@ -88,10 +83,7 @@ public class CardBoardView : MonoBehaviour
         boxCol.enabled = true;
         boxCol.center = tokenColliderCenter;
         boxCol.size = tokenColliderSize;
-    }
 
-    void AdjustGlow()
-    {
         if (dragGlow == null) return;
 
         dragGlow.transform.localPosition = tokenColliderCenter;

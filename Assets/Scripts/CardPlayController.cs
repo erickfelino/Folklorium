@@ -71,11 +71,9 @@ public class CardPlayController : MonoBehaviour
         CardBoardView boardView = cardDrag.GetComponent<CardBoardView>();
         if (boardView != null)
         {
-            boardView.PlayPlacementAnimation(slot, combat.isEnemy, () =>
-            {
-                boardManager.NotifyCardPlaced(combat, slot, BoardEntryType.PlayedFromHand);
-                combat.TriggerEffects(EffectTriggerType.OnPlay);
-            });
+            boardView.PlayPlacementAnimation(slot, combat.isEnemy);
+            boardManager.NotifyCardPlaced(combat, slot, BoardEntryType.PlayedFromHand);
+            combat.TriggerEffects(EffectTriggerType.OnPlay);
         }
         else
         {

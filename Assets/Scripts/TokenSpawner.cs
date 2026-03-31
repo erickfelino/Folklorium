@@ -65,10 +65,15 @@ public class TokenSpawner : MonoBehaviour
         CardBoardView view = newTokenObj.GetComponent<CardBoardView>();
         if (view != null)
         {
-            view.SetupBoardVisuals();
+            
+            view.PlayPlacementAnimation(freeSlot, isEnemySide, () =>
+            {
+                boardManager.NotifyCardPlaced(combat, freeSlot, BoardEntryType.Summoned);
+            });
         }
         else
         {
+            newTokenObj.transform.SetParent(freeSlot.transform);
             boardManager.NotifyCardPlaced(combat, freeSlot, BoardEntryType.Summoned);
         }
     }

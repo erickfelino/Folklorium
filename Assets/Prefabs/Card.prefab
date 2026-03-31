@@ -212,6 +212,7 @@ MonoBehaviour:
   objectsToShowOnBoard:
   - {fileID: 8615570601208198764}
   - {fileID: 765816896608683322}
+  dragGlow: {fileID: 3456460787761474699}
 --- !u!1 &765816896608683322
 GameObject:
   m_ObjectHideFlags: 0

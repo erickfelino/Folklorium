@@ -55,18 +55,19 @@ public class CardCombat : MonoBehaviour
         }
     }
 
-    private void WakeUpCard(bool IsPlayerTurn)
+    private void WakeUpCard(bool isPlayerTurn)
     {
-        if (IsPlayerTurn && !isEnemy && cardDrag.isPlayed)
-        {
-            canAttackThisTurn = true;
-            RefreshGlowState();
-        }
-        else if (!IsPlayerTurn && isEnemy && cardDrag.isPlayed)
-        {
-            canAttackThisTurn = true;
-            RefreshGlowState();
-        }
+        if (!cardDrag.isPlayed)
+            return;
+
+        // Carta pode atacar somente no turno do seu dono
+        bool shouldWake =
+            (isPlayerTurn && !isEnemy) ||
+            (!isPlayerTurn && isEnemy);
+
+        canAttackThisTurn = shouldWake;
+
+        RefreshGlowState();
     }
 
     public void TriggerEffects(Folklorium.EffectTriggerType targetTrigger, CardCombat targetCard = null, PlayerHealth targetPlayer = null)

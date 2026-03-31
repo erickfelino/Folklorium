@@ -14,6 +14,7 @@ namespace Folklorium
 
         public CardData.CardRole AcceptedRole => acceptedRole;
         public bool IsEnemySide => isEnemySide;
+        
         private Renderer rend;
         private Color originalColor;
 

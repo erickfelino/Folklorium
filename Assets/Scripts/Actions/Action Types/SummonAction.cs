@@ -33,6 +33,7 @@ public class SummonAction : GameAction
             if (TokenSpawner.Instance != null)
             {
                 yield return new WaitForSeconds(1f);
+                Debug.Log("Tentando invocar token");
                 TokenSpawner.Instance.SpawnToken(attack, health, spawnForEnemy);
             }
             else

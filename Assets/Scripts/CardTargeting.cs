@@ -26,7 +26,6 @@ public class CardTargeting : MonoBehaviour
     {
         if (myCombat.isEnemy || !myCombat.canAttackThisTurn || !cardDrag.isPlayed) 
         {
-            Debug.Log("Esta carta não pode atacar agora.");
             return;
         }
 

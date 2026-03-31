@@ -90,6 +90,8 @@ public class OpponentAI : MonoBehaviour
                         if (dragScript != null)
                         {
                             dragScript.TransformIntoTokenAndJump(freeSlot, true);
+                            boardManager.NotifyCardPlaced(combatScript, freeSlot, BoardEntryType.PlayedFromHand);
+                            combatScript.TriggerEffects(EffectTriggerType.OnPlay);
                         }
 
                         yield return new WaitForSeconds(1.2f);
