@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 70290307}
   - component: {fileID: 70290306}
   - component: {fileID: 70290305}
+  - component: {fileID: 70290308}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_Two
   m_TagString: EnemyDropZoneHero
@@ -227,6 +228,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &70290308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70290303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &120653570
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,6 +297,7 @@ GameObject:
   - component: {fileID: 128374885}
   - component: {fileID: 128374884}
   - component: {fileID: 128374883}
+  - component: {fileID: 128374886}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_Two
   m_TagString: DropZoneHero
@@ -378,6 +394,66 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &128374886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128374881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
+--- !u!1 &141069880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 141069881}
+  - component: {fileID: 141069882}
+  m_Layer: 0
+  m_Name: CardPlayController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &141069881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141069880}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 605788074}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &141069882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141069880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5406a35eb046a324f9935923646513e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnManager: {fileID: 2067252100}
+  boardManager: {fileID: 1918692357}
 --- !u!1 &167981072
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,6 +466,7 @@ GameObject:
   - component: {fileID: 167981076}
   - component: {fileID: 167981075}
   - component: {fileID: 167981074}
+  - component: {fileID: 167981077}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_Three
   m_TagString: DropZoneSoldier
@@ -486,6 +563,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &167981077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167981072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1001 &274865959
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -650,6 +741,7 @@ GameObject:
   - component: {fileID: 361841561}
   - component: {fileID: 361841560}
   - component: {fileID: 361841559}
+  - component: {fileID: 361841562}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_Four
   m_TagString: DropZoneSoldier
@@ -746,6 +838,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &361841562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361841557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1 &428874318
 GameObject:
   m_ObjectHideFlags: 0
@@ -805,6 +911,7 @@ GameObject:
   - component: {fileID: 471784334}
   - component: {fileID: 471784333}
   - component: {fileID: 471784332}
+  - component: {fileID: 471784335}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_Three
   m_TagString: EnemyDropZoneHero
@@ -901,6 +1008,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &471784335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471784330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &519619467
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,6 +1034,7 @@ GameObject:
   - component: {fileID: 519619471}
   - component: {fileID: 519619470}
   - component: {fileID: 519619469}
+  - component: {fileID: 519619472}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_Seven
   m_TagString: DropZoneSoldier
@@ -1009,6 +1131,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &519619472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519619467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1 &582907691
 GameObject:
   m_ObjectHideFlags: 0
@@ -1157,6 +1293,8 @@ Transform:
   - {fileID: 1837242349}
   - {fileID: 291544425}
   - {fileID: 1056582159}
+  - {fileID: 1918692356}
+  - {fileID: 141069881}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &618027083
@@ -1171,6 +1309,7 @@ GameObject:
   - component: {fileID: 618027087}
   - component: {fileID: 618027086}
   - component: {fileID: 618027085}
+  - component: {fileID: 618027088}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_One
   m_TagString: DropZoneSoldier
@@ -1267,6 +1406,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &618027088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 618027083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1 &626601843
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,6 +1432,7 @@ GameObject:
   - component: {fileID: 626601847}
   - component: {fileID: 626601846}
   - component: {fileID: 626601845}
+  - component: {fileID: 626601848}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_Six
   m_TagString: DropZoneSoldier
@@ -1375,6 +1529,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &626601848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626601843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1 &671815701
 GameObject:
   m_ObjectHideFlags: 0
@@ -1466,6 +1634,7 @@ GameObject:
   - component: {fileID: 673762154}
   - component: {fileID: 673762153}
   - component: {fileID: 673762152}
+  - component: {fileID: 673762155}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_Two
   m_TagString: EnemyDropZoneSoldier
@@ -1562,6 +1731,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &673762155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 673762150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!114 &748154134 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
@@ -1585,6 +1768,7 @@ GameObject:
   - component: {fileID: 784287514}
   - component: {fileID: 784287513}
   - component: {fileID: 784287512}
+  - component: {fileID: 784287515}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_One
   m_TagString: DropZoneHero
@@ -1681,6 +1865,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &784287515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784287510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
 --- !u!1001 &802780510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1737,6 +1935,10 @@ PrefabInstance:
       propertyPath: hand
       value: 
       objectReference: {fileID: 1642706679}
+    - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
+      propertyPath: deckFolderPath
+      value: Cards/Red Cards
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1930,6 +2132,7 @@ GameObject:
   - component: {fileID: 857568617}
   - component: {fileID: 857568616}
   - component: {fileID: 857568615}
+  - component: {fileID: 857568618}
   m_Layer: 0
   m_Name: Drop_Zone_Commander
   m_TagString: DropZoneCommander
@@ -2026,6 +2229,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &857568618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857568613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 2
+  isEnemySide: 0
 --- !u!1 &915040653
 GameObject:
   m_ObjectHideFlags: 0
@@ -2165,6 +2382,7 @@ GameObject:
   - component: {fileID: 1041126777}
   - component: {fileID: 1041126776}
   - component: {fileID: 1041126775}
+  - component: {fileID: 1041126778}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_Two
   m_TagString: DropZoneSoldier
@@ -2261,6 +2479,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1041126778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041126773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1 &1056582158
 GameObject:
   m_ObjectHideFlags: 0
@@ -2608,6 +2840,7 @@ GameObject:
   - component: {fileID: 1192132297}
   - component: {fileID: 1192132296}
   - component: {fileID: 1192132295}
+  - component: {fileID: 1192132298}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Commander
   m_TagString: EnemyDropZoneCommander
@@ -2704,6 +2937,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1192132298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192132293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 2
+  isEnemySide: 1
 --- !u!1 &1196285884
 GameObject:
   m_ObjectHideFlags: 0
@@ -2716,6 +2963,7 @@ GameObject:
   - component: {fileID: 1196285888}
   - component: {fileID: 1196285887}
   - component: {fileID: 1196285886}
+  - component: {fileID: 1196285889}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_Five
   m_TagString: DropZoneHero
@@ -2812,6 +3060,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1196285889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196285884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
 --- !u!1 &1204281263
 GameObject:
   m_ObjectHideFlags: 0
@@ -2824,6 +3086,7 @@ GameObject:
   - component: {fileID: 1204281267}
   - component: {fileID: 1204281266}
   - component: {fileID: 1204281265}
+  - component: {fileID: 1204281268}
   m_Layer: 0
   m_Name: Drop_Zone_Soldier_Five
   m_TagString: DropZoneSoldier
@@ -2920,6 +3183,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1204281268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204281263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 0
 --- !u!1 &1241217247
 GameObject:
   m_ObjectHideFlags: 0
@@ -2932,6 +3209,7 @@ GameObject:
   - component: {fileID: 1241217251}
   - component: {fileID: 1241217250}
   - component: {fileID: 1241217249}
+  - component: {fileID: 1241217252}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_One
   m_TagString: EnemyDropZoneSoldier
@@ -3028,6 +3306,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1241217252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1241217247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!1 &1271892368
 GameObject:
   m_ObjectHideFlags: 0
@@ -3040,6 +3332,7 @@ GameObject:
   - component: {fileID: 1271892372}
   - component: {fileID: 1271892371}
   - component: {fileID: 1271892370}
+  - component: {fileID: 1271892373}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_Three
   m_TagString: DropZoneHero
@@ -3136,6 +3429,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1271892373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271892368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
 --- !u!1 &1293744132
 GameObject:
   m_ObjectHideFlags: 0
@@ -3148,6 +3455,7 @@ GameObject:
   - component: {fileID: 1293744136}
   - component: {fileID: 1293744135}
   - component: {fileID: 1293744134}
+  - component: {fileID: 1293744137}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_One
   m_TagString: EnemyDropZoneHero
@@ -3244,6 +3552,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1293744137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293744132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &1303551540
 GameObject:
   m_ObjectHideFlags: 0
@@ -3377,6 +3699,7 @@ GameObject:
   - component: {fileID: 1343544096}
   - component: {fileID: 1343544095}
   - component: {fileID: 1343544094}
+  - component: {fileID: 1343544097}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_Four
   m_TagString: EnemyDropZoneHero
@@ -3473,6 +3796,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1343544097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343544092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &1368283365
 GameObject:
   m_ObjectHideFlags: 0
@@ -3485,6 +3822,7 @@ GameObject:
   - component: {fileID: 1368283369}
   - component: {fileID: 1368283368}
   - component: {fileID: 1368283367}
+  - component: {fileID: 1368283370}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_Seven
   m_TagString: EnemyDropZoneSoldier
@@ -3581,6 +3919,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1368283370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368283365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!1 &1373981400
 GameObject:
   m_ObjectHideFlags: 0
@@ -3593,6 +3945,7 @@ GameObject:
   - component: {fileID: 1373981404}
   - component: {fileID: 1373981403}
   - component: {fileID: 1373981402}
+  - component: {fileID: 1373981405}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_Six
   m_TagString: EnemyDropZoneSoldier
@@ -3689,6 +4042,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1373981405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373981400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!1 &1407252552
 GameObject:
   m_ObjectHideFlags: 0
@@ -3701,6 +4068,7 @@ GameObject:
   - component: {fileID: 1407252556}
   - component: {fileID: 1407252555}
   - component: {fileID: 1407252554}
+  - component: {fileID: 1407252557}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_Three
   m_TagString: EnemyDropZoneSoldier
@@ -3797,6 +4165,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1407252557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407252552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!1 &1443437533
 GameObject:
   m_ObjectHideFlags: 0
@@ -3841,6 +4223,7 @@ GameObject:
   - component: {fileID: 1454486276}
   - component: {fileID: 1454486275}
   - component: {fileID: 1454486274}
+  - component: {fileID: 1454486277}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_Seven
   m_TagString: DropZoneHero
@@ -3937,6 +4320,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1454486277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454486272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
 --- !u!1 &1491050795
 GameObject:
   m_ObjectHideFlags: 0
@@ -3949,6 +4346,7 @@ GameObject:
   - component: {fileID: 1491050799}
   - component: {fileID: 1491050798}
   - component: {fileID: 1491050797}
+  - component: {fileID: 1491050800}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_Four
   m_TagString: DropZoneHero
@@ -4045,6 +4443,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1491050800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491050795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
 --- !u!1 &1590556638
 GameObject:
   m_ObjectHideFlags: 0
@@ -4358,6 +4770,7 @@ GameObject:
   - component: {fileID: 1603460863}
   - component: {fileID: 1603460862}
   - component: {fileID: 1603460861}
+  - component: {fileID: 1603460864}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_Five
   m_TagString: EnemyDropZoneHero
@@ -4454,6 +4867,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1603460864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603460859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &1642706678
 GameObject:
   m_ObjectHideFlags: 0
@@ -4658,6 +5085,7 @@ GameObject:
   - component: {fileID: 1801350407}
   - component: {fileID: 1801350406}
   - component: {fileID: 1801350405}
+  - component: {fileID: 1801350408}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_Six
   m_TagString: EnemyDropZoneHero
@@ -4754,6 +5182,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1801350408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801350403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &1822690392
 GameObject:
   m_ObjectHideFlags: 0
@@ -4766,6 +5208,7 @@ GameObject:
   - component: {fileID: 1822690396}
   - component: {fileID: 1822690395}
   - component: {fileID: 1822690394}
+  - component: {fileID: 1822690397}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Hero_Seven
   m_TagString: EnemyDropZoneHero
@@ -4862,6 +5305,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1822690397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822690392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 1
 --- !u!1 &1837242348
 GameObject:
   m_ObjectHideFlags: 0
@@ -4958,6 +5415,7 @@ GameObject:
   - component: {fileID: 1888145360}
   - component: {fileID: 1888145359}
   - component: {fileID: 1888145358}
+  - component: {fileID: 1888145361}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_Four
   m_TagString: EnemyDropZoneSoldier
@@ -5054,6 +5512,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1888145361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888145356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!1 &1888572526
 GameObject:
   m_ObjectHideFlags: 0
@@ -5088,6 +5560,54 @@ Transform:
   - {fileID: 1443437534}
   m_Father: {fileID: 582907695}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1918692355
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1918692356}
+  - component: {fileID: 1918692357}
+  m_Layer: 0
+  m_Name: BoardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1918692356
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918692355}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 605788074}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1918692357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918692355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6a3d30fcbb5786428b3207e7e35b051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoDiscoverSlots: 1
+  registeredSlots: []
+  boardCardPlacedChannel: {fileID: 11400000, guid: d8fa567fba78ead4f8d5ffdd1ca997a1, type: 2}
+  boardCardRemovedChannel: {fileID: 11400000, guid: b3934317ca81341438056005845e52dc, type: 2}
 --- !u!1 &2064860216
 GameObject:
   m_ObjectHideFlags: 0
@@ -5100,6 +5620,7 @@ GameObject:
   - component: {fileID: 2064860220}
   - component: {fileID: 2064860219}
   - component: {fileID: 2064860218}
+  - component: {fileID: 2064860221}
   m_Layer: 0
   m_Name: Enemy_Drop_Zone_Soldier_Five
   m_TagString: EnemyDropZoneSoldier
@@ -5196,6 +5717,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2064860221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064860216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 0
+  isEnemySide: 1
 --- !u!1 &2067252099
 GameObject:
   m_ObjectHideFlags: 0
@@ -5296,6 +5831,7 @@ GameObject:
   - component: {fileID: 2103186119}
   - component: {fileID: 2103186118}
   - component: {fileID: 2103186117}
+  - component: {fileID: 2103186120}
   m_Layer: 0
   m_Name: Drop_Zone_Hero_Six
   m_TagString: DropZoneHero
@@ -5392,6 +5928,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2103186120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103186115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec07f8bb96039de4a96a95144cb7d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceptedRole: 1
+  isEnemySide: 0
 --- !u!1001 &1106313017639027736
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5590,6 +6140,10 @@ PrefabInstance:
       propertyPath: hand
       value: 
       objectReference: {fileID: 915040655}
+    - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
+      propertyPath: deckFolderPath
+      value: Cards/Red Cards
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

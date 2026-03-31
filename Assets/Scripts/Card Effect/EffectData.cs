@@ -68,3 +68,11 @@ public class DestroyEffectData : EffectData
     public bool randomTarget;
     public override bool RandomizeTarget() { return randomTarget; }
 }
+
+[Serializable]
+    public class SummonAuraEffectData : EffectData
+    {
+        public int attackBonus = 1;
+        public int healthBonus = 1;
+        public bool affectOnlyOwnSide = true;
+    }
