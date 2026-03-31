@@ -7,10 +7,12 @@ public class TokenSpawner : MonoBehaviour
 
     [Header("Configurações do Token")]
     [Tooltip("O Prefab da carta base que será o visual do Token")]
-    public GameObject cardPrefab; 
+    public GameObject cardPrefab;
+    private BoardManager boardManager; 
 
     private void Awake()
     {
+        boardManager = BoardManager.Instance != null ? BoardManager.Instance : FindFirstObjectByType<BoardManager>();
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
@@ -72,10 +74,10 @@ public class TokenSpawner : MonoBehaviour
         }
 
         // 4. Transformar no lacaio do tabuleiro (sua função do CardDrag!)
-        CardDrag dragComp = newTokenObj.GetComponent<CardDrag>();
-        if (dragComp != null)
+        CardDrag dragScript = newTokenObj.GetComponent<CardDrag>();
+        if (dragScript != null)
         {
-            dragComp.TransformIntoTokenAndJump(emptyZone, isEnemySide);
+            //dragScript.TransformIntoTokenAndJump(emptyZone, isEnemySide);
         }
     }
 }

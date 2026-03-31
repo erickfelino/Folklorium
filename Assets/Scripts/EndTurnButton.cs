@@ -48,7 +48,7 @@ public class EndTurnButton : MonoBehaviour
 
     private void UpdateManaVisuals(int currentMana)
     {
-        if (!turnManager.isPlayerTurn) return;
+        if (!turnManager.IsPlayerTurn) return;
 
         if (currentMana <= 0)
         {
@@ -64,16 +64,16 @@ public class EndTurnButton : MonoBehaviour
         }
     }
 
-    private void HandleTurnChanged(bool isPlayerTurn)
+    private void HandleTurnChanged(bool IsPlayerTurn)
     {
         if (surfaceMat != null) 
         {
-            surfaceMat.color = isPlayerTurn ? originalSurfaceColor : colorOpponentTurn;
+            surfaceMat.color = IsPlayerTurn ? originalSurfaceColor : colorOpponentTurn;
         }
         
-        ChangeParticleColor(isPlayerTurn ? colorTurnActive : colorOpponentTurn);
+        ChangeParticleColor(IsPlayerTurn ? colorTurnActive : colorOpponentTurn);
 
-        if (isPlayerTurn && playerManaManager != null)
+        if (IsPlayerTurn && playerManaManager != null)
         {
             UpdateManaVisuals(playerManaManager.currentMana);
         }
@@ -81,7 +81,7 @@ public class EndTurnButton : MonoBehaviour
 
     void OnMouseEnter()
     {
-        if (turnManager.isPlayerTurn) canSelectGlow.SetActive(true);
+        if (turnManager.IsPlayerTurn) canSelectGlow.SetActive(true);
     }
 
     void OnMouseExit()
@@ -91,7 +91,7 @@ public class EndTurnButton : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (turnManager.isPlayerTurn)
+        if (turnManager.IsPlayerTurn)
         {
             canSelectGlow.SetActive(false); 
             turnManager.EndPlayerTurn();

@@ -10,6 +10,12 @@ public class OpponentAI : MonoBehaviour
     public HandManager aiHand;
     public ManaManager aiMana;
     public bool isAITargeting = false;
+    private BoardManager boardManager;
+
+    private void Awake()
+    {
+        boardManager = BoardManager.Instance != null ? BoardManager.Instance : FindFirstObjectByType<BoardManager>();
+    }
     
     public IEnumerator ProcessTurn()
     {
@@ -59,19 +65,16 @@ public class OpponentAI : MonoBehaviour
 
         foreach (GameObject cardObj in cardsInHand)
         {
-            // 👇 TRAVA NÍVEL 3: Espera a ação anterior terminar antes de jogar a próxima
             yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
-            
+
             CardData cardData = cardObj.GetComponent<CardDisplay>().cardData;
-            
+
             if (cardData.mana <= aiMana.currentMana)
             {
-                string targetTag = GetEnemyZoneTag(cardData.cardRole);
-                GameObject emptyZone = FindEmptyZone(targetTag);
-
-                if (emptyZone != null)
+                if (boardManager != null && boardManager.TryGetFreeSlot(cardData, true, out BoardSlot freeSlot))
                 {
                     Debug.Log($"IA decidiu invocar: {cardData.cardName}");
+
                     aiMana.SpendMana(cardData.mana);
                     aiHand.RemoveCardFromHand(cardObj);
 
@@ -81,13 +84,16 @@ public class OpponentAI : MonoBehaviour
                         combatScript.isEnemy = true;
                     }
 
-                    CardDrag dragScript = cardObj.GetComponent<CardDrag>();
-                    if (dragScript != null)
+                    if (boardManager.TryPlaceCard(combatScript, freeSlot))
                     {
-                        dragScript.TransformIntoTokenAndJump(emptyZone.transform, true);
-                    }
+                        CardDrag dragScript = cardObj.GetComponent<CardDrag>();
+                        if (dragScript != null)
+                        {
+                            dragScript.TransformIntoTokenAndJump(freeSlot, true);
+                        }
 
-                    yield return new WaitForSeconds(1.2f); 
+                        yield return new WaitForSeconds(1.2f);
+                    }
                 }
             }
         }
@@ -200,31 +206,7 @@ public class OpponentAI : MonoBehaviour
         }
         return totalDamage;
     }
-
-    // ==========================================
-    // MÉTODOS DE ZONAS
-    // ==========================================
-    private string GetEnemyZoneTag(CardData.CardRole role)
-    {
-        switch (role)
-        {
-            case CardData.CardRole.Soldier: return "EnemyDropZoneSoldier";
-            case CardData.CardRole.Commander: return "EnemyDropZoneCommander";
-            case CardData.CardRole.Hero: return "EnemyDropZoneHero";
-            default: return "Untagged";
-        }
-    }
-
-    private GameObject FindEmptyZone(string tag)
-    {
-        GameObject[] zones = GameObject.FindGameObjectsWithTag(tag);
-        foreach (GameObject zone in zones)
-        {
-            if (zone.transform.childCount == 0) return zone;
-        }
-        return null;
-    }
-
+    
     // ==========================================
     // FASE 3: ESCOLHA DE ALVOS PARA EFEITOS (MÁGICAS)
     // ==========================================

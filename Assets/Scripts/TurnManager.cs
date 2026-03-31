@@ -18,11 +18,11 @@ public class TurnManager : MonoBehaviour
     [Header("Outros Gerenciadores")]
     [SerializeField] private OpponentAI opponentAI;
     
-    public bool isPlayerTurn { get; private set; }
+    public bool IsPlayerTurn { get; private set; }
     public event Action<bool> OnTurnChanged;
     private static int pendingLocks = 0;
     // O jogo continua lendo isso como um bool para não quebrar o seu OpponentAI!
-    public static bool isResolvingEffect 
+    public static bool IsResolvingEffect 
     {
         get { return pendingLocks > 0; }
     }
@@ -69,13 +69,13 @@ public class TurnManager : MonoBehaviour
         if (playerGoesFirst)
         {
             Debug.Log("O Jogador ganhou no cara ou coroa! Você começa.");
-            isPlayerTurn = true;
+            IsPlayerTurn = true;
             StartPlayerTurn();
         }
         else
         {
             Debug.Log("A IA ganhou no cara ou coroa! Ela começa.");
-            isPlayerTurn = false;
+            IsPlayerTurn = false;
             StartCoroutine(SimulateOpponentTurn());
         }
     }
@@ -112,8 +112,8 @@ public class TurnManager : MonoBehaviour
 
     public void StartPlayerTurn()
     {
-        isPlayerTurn = true;
-        OnTurnChanged?.Invoke(isPlayerTurn);
+        IsPlayerTurn = true;
+        OnTurnChanged?.Invoke(IsPlayerTurn);
 
         Debug.Log("Seu Turno!");
         
@@ -128,18 +128,18 @@ public class TurnManager : MonoBehaviour
 
     public void EndPlayerTurn()
     {
-        if (!isPlayerTurn) return; 
+        if (!IsPlayerTurn) return; 
         
-        isPlayerTurn = false;
-        OnTurnChanged?.Invoke(isPlayerTurn);
+        IsPlayerTurn = false;
+        OnTurnChanged?.Invoke(IsPlayerTurn);
         
         StartCoroutine(SimulateOpponentTurn());
     }
 
     private IEnumerator SimulateOpponentTurn()
     {
-        isPlayerTurn = false;
-        OnTurnChanged?.Invoke(isPlayerTurn);
+        IsPlayerTurn = false;
+        OnTurnChanged?.Invoke(IsPlayerTurn);
 
         Debug.Log("Turno do Inimigo!");
         

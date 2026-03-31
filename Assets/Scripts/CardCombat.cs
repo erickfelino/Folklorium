@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using DG.Tweening;
+using Folklorium;
 
 [RequireComponent(typeof(CardDisplay))]
 [RequireComponent(typeof(CardDrag))]
@@ -12,7 +13,7 @@ public class CardCombat : MonoBehaviour
     [Header("Status de Combate")]
     public int currentAttack;
     public int currentLife;
-    public int maxLife; 
+    public int maxLife;
     public bool canAttackThisTurn = false;
     public bool isEnemy;
     public bool isDead = false;
@@ -21,10 +22,6 @@ public class CardCombat : MonoBehaviour
     private CardDrag cardDrag;
 
     public event Action<CardCombat> OnDeath;
-
-    // ==========================================
-    // INICIALIZAÇÃO E EVENTOS DE TURNO
-    // ==========================================
 
     void Start()
     {
@@ -58,27 +55,19 @@ public class CardCombat : MonoBehaviour
         }
     }
 
-    private void WakeUpCard(bool isPlayerTurn)
+    private void WakeUpCard(bool IsPlayerTurn)
     {
-        if (isPlayerTurn && !isEnemy && cardDrag.isPlayed)
+        if (IsPlayerTurn && !isEnemy && cardDrag.isPlayed)
         {
             canAttackThisTurn = true;
             RefreshGlowState();
         }
-        else if (!isPlayerTurn && isEnemy && cardDrag.isPlayed)
+        else if (!IsPlayerTurn && isEnemy && cardDrag.isPlayed)
         {
             canAttackThisTurn = true;
             RefreshGlowState();
         }
     }
-
-    // ==========================================
-    // SISTEMA DE TRIGGERS (ATUALIZADO PARA POLIMORFISMO)
-    // ==========================================
-
-    // ==========================================
-    // SISTEMA DE TRIGGERS
-    // ==========================================
 
     public void TriggerEffects(Folklorium.EffectTriggerType targetTrigger, CardCombat targetCard = null, PlayerHealth targetPlayer = null)
     {
@@ -89,22 +78,19 @@ public class CardCombat : MonoBehaviour
             if (entry != null && entry.effectSO != null && entry.trigger == targetTrigger)
             {
                 CardEffect effectSO = entry.effectSO;
-                EffectData rawData = entry.parameters; 
+                EffectData rawData = entry.parameters;
 
                 if (effectSO.requiresTarget && targetCard == null && targetPlayer == null)
                 {
-                    // 👇 1. É UM ALVO ALEATÓRIO? (O Manager resolve na hora, serve pra Player e IA)
                     if (rawData.RandomizeTarget())
                     {
                         EffectTargetManager.Instance.ResolveRandomTarget(this, effectSO, rawData);
                     }
-                    // 👇 2. É A IA JOGANDO? (Vai pro cérebro da IA)
                     else if (this.isEnemy)
                     {
                         OpponentAI ai = FindFirstObjectByType<OpponentAI>();
                         if (ai != null) ai.StartCoroutine(ai.ResolveAITargetingCoroutine(this, display.cardData, effectSO, rawData));
                     }
-                    // 👇 3. É O JOGADOR? (Puxa a seta do Manager)
                     else
                     {
                         EffectTargetManager.Instance.StartTargeting(this, display.cardData, effectSO, rawData);
@@ -114,9 +100,12 @@ public class CardCombat : MonoBehaviour
                 {
                     CardEffectContext context = new CardEffectContext
                     {
-                        source = this, targetCard = targetCard, targetPlayer = targetPlayer, isEnemySource = this.isEnemy
+                        source = this,
+                        targetCard = targetCard,
+                        targetPlayer = targetPlayer,
+                        isEnemySource = this.isEnemy
                     };
-                    
+
                     GameAction action = effectSO.CreateAction(context, rawData);
                     if (action != null) ActionSystem.Instance.AddAction(action);
                 }
@@ -124,46 +113,32 @@ public class CardCombat : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // API DE ESTADO (NÍVEL 3)
-    // ==========================================
-
-public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = false)
+    public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = false)
     {
         currentAttack += attackChange;
         if (currentAttack < 0) currentAttack = 0;
 
-        // 1. É UM BUFF? Aumenta o teto e a vida atual junto.
-        if (isBuff) 
+        if (isBuff)
         {
             maxLife += lifeChange;
-            currentLife += lifeChange; 
+            currentLife += lifeChange;
         }
-        // 2. É CURA OU DANO? Mexe só na vida atual.
-        else 
+        else
         {
             currentLife += lifeChange;
-            
-            // Trava de Segurança da Cura: Não deixa passar da Vida Máxima!
-            if (currentLife > maxLife) 
+            if (currentLife > maxLife)
             {
-                currentLife = maxLife; 
+                currentLife = maxLife;
             }
         }
-        
+
         if (currentLife <= 0) currentLife = 0;
-
-        // 👇 ATUALIZA OS TEXTOS (já com o seu sistema de cores inteligente!) 👇
-        display.UpdateStatusText(currentLife, currentAttack); 
+        display.UpdateStatusText(currentLife, currentAttack);
     }
-
-    // ==========================================
-    // SISTEMA DE COMBATE FÍSICO
-    // ==========================================
 
     public void Attack(CardCombat targetCard)
     {
-        if (!canAttackThisTurn) 
+        if (!canAttackThisTurn)
         {
             Debug.Log("Esta criatura não pode atacar neste turno!");
             return;
@@ -198,22 +173,22 @@ public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = 
 
     public void Attack(PlayerHealth targetHealth)
     {
-        if (!canAttackThisTurn) 
+        if (!canAttackThisTurn)
         {
             Debug.Log("Esta criatura não pode atacar neste turno!");
             return;
         }
 
         canAttackThisTurn = false;
-        RefreshGlowState(); 
-        StartCoroutine(AttackChoreographyPlayer(targetHealth)); 
+        RefreshGlowState();
+        StartCoroutine(AttackChoreographyPlayer(targetHealth));
     }
 
     private IEnumerator AttackChoreographyPlayer(PlayerHealth targetHealth)
     {
         Vector3 originalPos = transform.position;
 
-        yield return transform.DOMove(targetHealth.transform.position,0.15f).WaitForCompletion();
+        yield return transform.DOMove(targetHealth.transform.position, 0.15f).WaitForCompletion();
 
         int myDamage = this.currentAttack;
 
@@ -238,35 +213,28 @@ public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = 
         CardDrag dragObj = GetComponent<CardDrag>();
         if (dragObj == null) return;
 
-        // 1. O Jogador está arrastando a seta de ataque/efeito neste momento?
         if (isTargetingMode)
         {
-            if (isValidTarget) 
+            if (isValidTarget)
             {
-                dragObj.SetGlow(true, Color.red); // Alvo válido = Vermelho
+                dragObj.SetGlow(true, Color.red);
             }
-            else 
+            else
             {
-                dragObj.SetGlow(false, Color.white); // Não é alvo = Desliga o brilho
+                dragObj.SetGlow(false, Color.white);
             }
             return;
         }
 
-        // 2. Modo Normal de Tabuleiro (Ninguém está mirando nada)
-        // Se for lacaio do jogador E puder atacar, brilha Verde!
         if (!isEnemy && canAttackThisTurn)
         {
             dragObj.SetGlow(true, Color.green);
         }
         else
         {
-            dragObj.SetGlow(false, Color.white); // Desliga para os enjoos ou se já atacou
+            dragObj.SetGlow(false, Color.white);
         }
     }
-
-    // ==========================================
-    // SISTEMA DE MORTE
-    // ==========================================
 
     public void Die()
     {
@@ -280,19 +248,16 @@ public void ApplyRawStateChange(int attackChange, int lifeChange, bool isBuff = 
         Debug.Log($"{display.cardData.cardName} foi destruído!");
 
         isDead = true;
-        Collider col = GetComponent<Collider>(); 
-        if (col != null) col.enabled = false;
-        
-        // 👇 1. AVISAMOS O TABULEIRO PRIMEIRO!
-        // O tabuleiro deve ouvir isso e remover essa carta da lista de "cartas na mesa".
-        // O slot dela agora está LIVRE.
-        OnDeath?.Invoke(this); 
 
-        // 👇 2. DEPOIS DISPARAMOS O EFEITO DE INVOCAÇÃO (que agora verá um espaço vazio)
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        BoardManager.Instance?.ReleaseCard(this);
+
+        OnDeath?.Invoke(this);
         TriggerEffects(Folklorium.EffectTriggerType.OnDeath);
 
-        yield return transform.DOComplete(); 
-
+        yield return transform.DOComplete();
         yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
 
         Destroy(gameObject);
