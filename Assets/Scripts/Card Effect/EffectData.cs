@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 
 // A classe pai. 
 [Serializable]
 public abstract class EffectData 
 { 
-    // 👇 Função base: Por padrão, ninguém exclui a si mesmo.
+    // Por padrão, ninguém exclui a si mesmo.
     public virtual bool GetExcludeSelf() { return false; }
     public virtual bool RandomizeTarget() { return false; }
 }
@@ -13,7 +14,7 @@ public abstract class EffectData
 public class DamageEffectData : EffectData
 {
     public int damage;
-    public bool excludeSelf; // Vai aparecer no Inspector!
+    public bool excludeSelf;
     public bool randomTarget;
 
     public override bool GetExcludeSelf() { return excludeSelf; }
@@ -25,7 +26,7 @@ public class BuffEffectData : EffectData
 {
     public int attack;
     public int health;
-    public bool excludeSelf; // Vai aparecer no Inspector!
+    public bool excludeSelf;
     public bool randomTarget;
 
     public override bool GetExcludeSelf() { return excludeSelf; }
@@ -36,7 +37,7 @@ public class BuffEffectData : EffectData
 public class HealEffectData : EffectData
 {
     public int heal;
-    public bool excludeSelf; // Vai aparecer no Inspector!
+    public bool excludeSelf;
     public bool randomTarget;
 
     public override bool GetExcludeSelf() { return excludeSelf; }
@@ -47,7 +48,6 @@ public class HealEffectData : EffectData
 public class DrawCardEffectData : EffectData
 {
     public int amount;
-    // 👇 Sem variável aqui! O Inspector fica limpo e ele usa o 'false' da classe pai.
 }
 
 [Serializable]
@@ -57,22 +57,45 @@ public class SummonEffectData : EffectData
     public int health;
     public int Quantity;
     public int boardSide;
-    // Sem variável de excludeSelf aqui também.
 }
 
 [Serializable]
 public class DestroyEffectData : EffectData
 {
     public int quantityTargets;
-    
     public bool randomTarget;
+
     public override bool RandomizeTarget() { return randomTarget; }
 }
 
 [Serializable]
-    public class SummonAuraEffectData : EffectData
+public class SummonAuraEffectData : EffectData
+{
+    public int attackBonus = 1;
+    public int healthBonus = 1;
+    public bool affectOnlyOwnSide = true;
+}
+
+[Serializable]
+public class AoEEffectData : EffectData
+{
+    public enum AoEMode
     {
-        public int attackBonus = 1;
-        public int healthBonus = 1;
-        public bool affectOnlyOwnSide = true;
+        Damage,
+        Heal,
+        Buff,
+        Destroy
     }
+
+    public AoEMode mode = AoEMode.Damage;
+
+    public int damageAmount = 1;
+    public int healAmount = 1;
+    public int buffAttack = 1;
+    public int buffHealth = 1;
+
+    public List<AoETargetType> targetGroups = new List<AoETargetType>();
+
+    public bool excludeSelf;
+    public override bool GetExcludeSelf() { return excludeSelf; }
+}

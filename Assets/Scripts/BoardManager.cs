@@ -211,5 +211,20 @@ namespace Folklorium
 
             return count;
         }
+
+        public List<CardCombat> GetAllCardsOnBoard()
+        {
+            List<CardCombat> cards = new List<CardCombat>();
+
+            foreach (var pair in cardToSlot)
+            {
+                if (pair.Key != null)
+                {
+                    cards.Add(pair.Key);
+                }
+            }
+
+            return cards;
+        }
     }
 }

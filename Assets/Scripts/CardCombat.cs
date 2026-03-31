@@ -81,6 +81,25 @@ public class CardCombat : MonoBehaviour
                 CardEffect effectSO = entry.effectSO;
                 EffectData rawData = entry.parameters;
 
+                CardEffectContext context = new CardEffectContext
+                {
+                    source = this,
+                    targetCard = targetCard,
+                    targetPlayer = targetPlayer,
+                    isEnemySource = this.isEnemy
+                };
+
+                // Efeitos em área resolvem os próprios alvos dentro da Action.
+                if (rawData is AoEEffectData)
+                {
+                    GameAction aoeAction = effectSO.CreateAction(context, rawData);
+                    if (aoeAction != null)
+                        ActionSystem.Instance.AddAction(aoeAction);
+
+                    continue;
+                }
+
+                // Efeitos com alvo aleatório
                 if (effectSO.requiresTarget && targetCard == null && targetPlayer == null)
                 {
                     if (rawData.RandomizeTarget())
@@ -90,7 +109,8 @@ public class CardCombat : MonoBehaviour
                     else if (this.isEnemy)
                     {
                         OpponentAI ai = FindFirstObjectByType<OpponentAI>();
-                        if (ai != null) ai.StartCoroutine(ai.ResolveAITargetingCoroutine(this, display.cardData, effectSO, rawData));
+                        if (ai != null)
+                            ai.StartCoroutine(ai.ResolveAITargetingCoroutine(this, display.cardData, effectSO, rawData));
                     }
                     else
                     {
@@ -99,16 +119,9 @@ public class CardCombat : MonoBehaviour
                 }
                 else
                 {
-                    CardEffectContext context = new CardEffectContext
-                    {
-                        source = this,
-                        targetCard = targetCard,
-                        targetPlayer = targetPlayer,
-                        isEnemySource = this.isEnemy
-                    };
-
                     GameAction action = effectSO.CreateAction(context, rawData);
-                    if (action != null) ActionSystem.Instance.AddAction(action);
+                    if (action != null)
+                        ActionSystem.Instance.AddAction(action);
                 }
             }
         }
@@ -133,7 +146,10 @@ public class CardCombat : MonoBehaviour
             }
         }
 
-        if (currentLife <= 0) currentLife = 0;
+        if (currentLife <= 0)
+        {
+            Die();
+        }
         display.UpdateStatusText(currentLife, currentAttack);
     }
 
