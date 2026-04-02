@@ -8,6 +8,7 @@ public class TokenSpawner : MonoBehaviour
     [Header("Configurações do Token")]
     [Tooltip("O Prefab da carta base que será o visual do Token")]
     public GameObject cardPrefab;
+    public Sprite tokenArt;
 
     private BoardManager boardManager;
 
@@ -32,6 +33,7 @@ public class TokenSpawner : MonoBehaviour
         tokenData.attack = attack;
         tokenData.life = health;
         tokenData.mana = 0;
+        tokenData.art = tokenArt;
         tokenData.cardRole = CardData.CardRole.Soldier;
 
         if (!boardManager.TryGetFreeSlot(tokenData, isEnemySide, out BoardSlot freeSlot))
