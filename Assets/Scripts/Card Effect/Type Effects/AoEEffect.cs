@@ -9,19 +9,19 @@ public class AoEEffect : CardEffect
         return typeof(AoEEffectData);
     }
 
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
+    public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         return false;
     }
 
     public override GameAction CreateAction(CardEffectContext context, EffectData rawData)
+{
+    if (rawData is not AoEEffectData aoeData)
     {
-        if (rawData is not AoEEffectData aoeData)
-        {
-            Debug.LogWarning("[AoEEffect] rawData não é AoEEffectData.");
-            return null;
-        }
-
-        return new AoEEffectAction(context.source, aoeData);
+        Debug.LogWarning("[AoEEffect] rawData não é AoEEffectData.");
+        return null;
     }
+
+    return new AoEEffectAction(context.source, aoeData);
+}
 }

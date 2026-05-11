@@ -4,15 +4,13 @@ using DG.Tweening;
 
 public class DamageAction : GameAction
 {
-    private CardCombat source;
     private CardCombat targetCard;
     private PlayerHealth targetPlayer;
     private int finalDamage;
 
     // Construtor: Preenchemos o ticket com os dados brutos
-    public DamageAction(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, int damage)
+    public DamageAction(CardCombat targetCard, PlayerHealth targetPlayer, int damage)
     {
-        this.source = source;
         this.targetCard = targetCard;
         this.targetPlayer = targetPlayer;
         this.finalDamage = damage;

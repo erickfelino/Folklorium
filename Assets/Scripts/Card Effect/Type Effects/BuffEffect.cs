@@ -18,10 +18,10 @@ public class BuffEffect : CardEffect
             int healthBonus = buffData.health;
 
             // 3. Criamos o "Ticket de Ação" e mandamos para a fila
-            return new BuffAction(context.source, context.targetCard, attackBonus, healthBonus);
+            return new BuffAction(context.targetCard, attackBonus, healthBonus);
         }
 
-        Debug.LogError($"[BuffEffect] ERRO: A carta '{context.source.name}' tentou usar o BuffEffect, mas os dados passados não são BuffEffectData!");
+        Debug.LogError($"[BuffEffect] ERRO: A carta '{context.source.SourceName}' tentou usar o BuffEffect, mas os dados passados não são BuffEffectData!");
         return null;
     }
 }

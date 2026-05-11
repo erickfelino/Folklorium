@@ -9,7 +9,7 @@ public class SummonEffect : CardEffect
         return typeof(SummonEffectData);
     }
 
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
+    public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         // No futuro, podemos checar se o lado do campo tem slots vazios.
         // Por enquanto, sempre podemos tentar invocar.
@@ -38,6 +38,6 @@ public class SummonEffect : CardEffect
         }
 
         // Criamos o Ticket de Invocação, passando os atributos do Token e quem jogou a carta
-        return new SummonAction(atk, hp, qty, side, context.isEnemySource);
+        return new SummonAction(atk, hp, qty, side, context.IsEnemySource);
     }
 }

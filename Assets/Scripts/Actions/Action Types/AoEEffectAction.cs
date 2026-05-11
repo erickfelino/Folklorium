@@ -1,15 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Folklorium;
 
 public class AoEEffectAction : GameAction
 {
-    private readonly CardCombat source;
+    private readonly IEffectSource source;
     private readonly AoEEffectData data;
 
-    public AoEEffectAction(CardCombat source, AoEEffectData data)
+    public AoEEffectAction(IEffectSource source, AoEEffectData data)
     {
         this.source = source;
         this.data = data;
@@ -21,7 +20,7 @@ public class AoEEffectAction : GameAction
             ? BoardManager.Instance
             : Object.FindFirstObjectByType<BoardManager>();
 
-        if (boardManager == null || data == null)
+        if (boardManager == null || data == null || source == null)
             yield break;
 
         List<CardCombat> allCards = boardManager.GetAllCardsOnBoard();
@@ -31,8 +30,12 @@ public class AoEEffectAction : GameAction
             if (card == null || card.isDead)
                 continue;
 
-            if (data.GetExcludeSelf() && card == source)
+            if (data.GetExcludeSelf() &&
+                source.EffectGameObject != null &&
+                source.EffectGameObject == card.gameObject)
+            {
                 continue;
+            }
 
             if (!MatchesAnySelectedGroup(card, source, data.targetGroups))
                 continue;
@@ -60,7 +63,7 @@ public class AoEEffectAction : GameAction
         }
     }
 
-    private bool MatchesAnySelectedGroup(CardCombat card, CardCombat source, List<AoETargetType> groups)
+    private bool MatchesAnySelectedGroup(CardCombat card, IEffectSource source, List<AoETargetType> groups)
     {
         if (card == null || source == null || groups == null || groups.Count == 0)
             return false;
@@ -69,7 +72,7 @@ public class AoEEffectAction : GameAction
         if (display == null || display.cardData == null)
             return false;
 
-        bool targetIsEnemyFromSource = card.isEnemy != source.isEnemy;
+        bool targetIsEnemyFromSource = card.isEnemy != source.IsEnemy;
         CardData.CardRole role = display.cardData.cardRole;
 
         foreach (AoETargetType group in groups)

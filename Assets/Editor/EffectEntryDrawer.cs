@@ -53,7 +53,6 @@ public class EffectEntryDrawer : PropertyDrawer
                 bool canTargetSelf = false;
                 var vt = effect.validTargets;
                 if (vt == ValidTargetType.AllyCard || 
-                    vt == ValidTargetType.AllAllyCards || 
                     vt == ValidTargetType.AnyCard || 
                     vt == ValidTargetType.AnyCharacter)
                 {
@@ -104,7 +103,6 @@ public class EffectEntryDrawer : PropertyDrawer
         {
             var vt = effect.validTargets;
             if (vt == ValidTargetType.AllyCard || 
-                vt == ValidTargetType.AllAllyCards || 
                 vt == ValidTargetType.AnyCard || 
                 vt == ValidTargetType.AnyCharacter)
             {

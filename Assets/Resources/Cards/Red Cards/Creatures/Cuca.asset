@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Cuca
+  m_EditorClassIdentifier: 
+  cardName: Cuca
+  cardBody: 'Mobilizar: Destrua um lacaio inimigo'
+  cardColorGroup: 4
+  cardRole: 2
+  mana: 5
+  attack: 4
+  life: 4
+  art: {fileID: 21300000, guid: 8b009af50696b4e4fb09543b185c4fd3, type: 3}
+  effects:
+  - effectSO: {fileID: 11400000, guid: 6e36874f5b7584d4ab47fa2f055a58d3, type: 2}
+    trigger: 0
+    parameters:
+      rid: 2886593648273129545
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593648273129545
+      type: {class: DestroyEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        quantityTargets: 1
+        randomTarget: 0

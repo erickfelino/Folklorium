@@ -6,7 +6,7 @@ public class DeckManager : MonoBehaviour
 {
     [Header("Deck Settings")]
     [Tooltip("Nome da pasta dentro de Resources onde estão os ScriptableObjects deste deck.")]
-    [SerializeField] private string deckFolderPath = "Cards/Red Cards";
+    [SerializeField] private string deckFolderPath = "Cards/Red Cards/Creatures";
 
     public List<CardData> allCards = new List<CardData>();
     private int currentIndex = 0;

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Demon in bottle 2
+  m_EditorClassIdentifier: 
+  cardName: Demon in bottle
+  cardBody: 'Mobilizar: cause 3 de dano a um lacaio'
+  cardColorGroup: 0
+  cardRole: 1
+  mana: 3
+  attack: 2
+  life: 3
+  art: {fileID: 21300000, guid: 3631f712e58da4649acc487970f4416c, type: 3}
+  effects:
+  - effectSO: {fileID: 11400000, guid: 43178f1631f494b49bc2857a28db9ee8, type: 2}
+    trigger: 0
+    parameters:
+      rid: 2886593607732035675
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593607732035675
+      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        damage: 3
+        excludeSelf: 1

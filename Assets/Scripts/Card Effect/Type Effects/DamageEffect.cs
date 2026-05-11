@@ -17,11 +17,11 @@ public class DamageEffect : CardEffect
             int damageToDeal = damageData.damage;
 
             // 3. Cospe o ticket pronto
-            return new DamageAction(context.source, context.targetCard, context.targetPlayer, damageToDeal);
+            return new DamageAction(context.targetCard, context.targetPlayer, damageToDeal);
         }
 
         // Sistema anti-falhas: se o designer arrastou o efeito de dano, mas escolheu "BuffData" na Unity
-        Debug.LogError($"[DamageEffect] ERRO: A carta '{context.source.name}' tentou usar o DamageEffect, mas os dados passados não são DamageEffectData!");
+        Debug.LogError($"[DamageEffect] ERRO: A carta '{context.source.SourceName}' tentou usar o DamageEffect, mas os dados passados não são DamageEffectData!");
         return null;
     }
 }

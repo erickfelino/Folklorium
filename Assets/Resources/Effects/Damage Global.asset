@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Damage Global
   m_EditorClassIdentifier: 
   requiresTarget: 1
-  validTargets: 8
+  validTargets: 6
   description: Dano em qualquer alvo quando jogado

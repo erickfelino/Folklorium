@@ -6,8 +6,21 @@ using Folklorium;
 
 [RequireComponent(typeof(CardDisplay))]
 [RequireComponent(typeof(CardDrag))]
-public class CardCombat : MonoBehaviour
+public class CardCombat : MonoBehaviour, IEffectSource
 {
+    public bool IsEnemy => isEnemy;
+    public Transform EffectTransform => transform;
+    public GameObject EffectGameObject => gameObject;
+
+    public string SourceName
+    {
+        get
+        {
+            if (display != null && display.cardData != null)
+                return display.cardData.cardName;
+            return gameObject.name;
+        }
+    }
     private TurnManager turnManager;
 
     [Header("Status de Combate")]
@@ -85,8 +98,7 @@ public class CardCombat : MonoBehaviour
                 {
                     source = this,
                     targetCard = targetCard,
-                    targetPlayer = targetPlayer,
-                    isEnemySource = this.isEnemy
+                    targetPlayer = targetPlayer
                 };
 
                 // Efeitos em área resolvem os próprios alvos dentro da Action.
@@ -175,8 +187,8 @@ public class CardCombat : MonoBehaviour
         int myDamage = this.currentAttack;
         int enemyDamage = targetCard.currentAttack;
 
-        ActionSystem.Instance.AddAction(new DamageAction(this, targetCard, null, myDamage));
-        ActionSystem.Instance.AddAction(new DamageAction(targetCard, this, null, enemyDamage));
+        ActionSystem.Instance.AddAction(new DamageAction(targetCard, null, myDamage));
+        ActionSystem.Instance.AddAction(new DamageAction(this, null, enemyDamage));
 
         TriggerEffects(Folklorium.EffectTriggerType.OnAttack, targetCard);
 
@@ -211,7 +223,7 @@ public class CardCombat : MonoBehaviour
 
         if (targetHealth != null)
         {
-            ActionSystem.Instance.AddAction(new DamageAction(this, null, targetHealth, myDamage));
+            ActionSystem.Instance.AddAction(new DamageAction(null, targetHealth, myDamage));
             TriggerEffects(Folklorium.EffectTriggerType.OnAttack, null, targetHealth);
         }
 

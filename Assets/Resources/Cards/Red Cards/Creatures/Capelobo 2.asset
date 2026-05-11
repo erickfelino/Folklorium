@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Capelobo 2
+  m_EditorClassIdentifier: 
+  cardName: Capelobo
+  cardBody: "Mobilizar: D\xEA +1/+1 para um lacaio aliado"
+  cardColorGroup: 0
+  cardRole: 0
+  mana: 1
+  attack: 1
+  life: 1
+  art: {fileID: 21300000, guid: 1ba0261a0802bca4ca27a44052c1c8cb, type: 3}
+  effects:
+  - effectSO: {fileID: 11400000, guid: 1d89d0e848136764fa921eb48812344e, type: 2}
+    trigger: 0
+    parameters:
+      rid: 2886593648273129533
+  references:
+    version: 2
+    RefIds:
+    - rid: 2886593648273129533
+      type: {class: BuffEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        attack: 1
+        health: 1
+        excludeSelf: 1

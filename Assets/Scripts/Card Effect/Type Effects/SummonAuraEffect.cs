@@ -9,7 +9,7 @@ public class SummonAuraEffect : CardEffect
         return typeof(SummonAuraEffectData);
     }
 
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
+    public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         return false;
     }
@@ -27,6 +27,12 @@ public class SummonAuraEffect : CardEffect
             ownSideOnly = auraData.affectOnlyOwnSide;
         }
 
-        return new SummonAuraAction(context.source, atk, hp, ownSideOnly);
+        if (context.source is not CardCombat sourceCard)
+        {
+            Debug.LogWarning("[SummonAuraEffect] A source da aura precisa ser uma CardCombat.");
+            return null;
+        }
+
+        return new SummonAuraAction(sourceCard, atk, hp, ownSideOnly);
     }
 }

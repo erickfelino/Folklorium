@@ -14,15 +14,10 @@ namespace Folklorium
         [Tooltip("Quando este efeito deve ser ativado?")]
         public EffectTriggerType trigger; 
         
-        // 👇 O SEGREDO DO POLIMORFISMO NA UNITY 👇
         // Isso fará a Unity desenhar a classe específica (DamageData, BuffData, etc) no Inspector
         [SerializeReference] 
         public EffectData parameters; 
     }
-
-    // ==========================================
-    // DADOS DA CARTA
-    // ==========================================
 
     [CreateAssetMenu(fileName = "New Card", menuName = "Card")]
     public class CardData : ScriptableObject
@@ -49,11 +44,12 @@ namespace Folklorium
             Neutral
         }
 
-        public enum CardRole // Categorias de criatura
+        public enum CardRole
         {
             Soldier,
             Hero,
-            Commander
+            Commander,
+            Spell
         }
     }
 }

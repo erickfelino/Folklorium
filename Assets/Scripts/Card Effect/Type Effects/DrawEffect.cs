@@ -8,7 +8,7 @@ public class DrawEffect : CardEffect
     {
         return typeof(DrawCardEffectData);
     }
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
+    public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         // Magias de comprar cartas geralmente não precisam que você clique em um alvo na mesa.
         // Então, ela sempre é um alvo válido ao ser jogada!
@@ -32,6 +32,6 @@ public class DrawEffect : CardEffect
             Debug.LogWarning("O pacote de dados passado para o DrawEffect não é um DrawCardEffectData!");
         }
 
-        return new DrawAction(handToDraw, amountToDraw, context.isEnemySource);
+        return new DrawAction(handToDraw, amountToDraw, context.IsEnemySource);
     }
 }

@@ -10,7 +10,7 @@ public class DestroyEffect : CardEffect
         return typeof(DestroyEffectData);
     }
 
-    public override bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
+    public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         // 1. Deixa a classe pai checar se o alvo bate com o que você configurou no Inspector
         // (ex: Se no Inspector está "AllyCard", a classe pai já barra se tentar curar inimigo)

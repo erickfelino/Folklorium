@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Damage Any Card
   m_EditorClassIdentifier: 
   requiresTarget: 1
-  validTargets: 5
+  validTargets: 2
   description: Dano em qualquer card quando jogado

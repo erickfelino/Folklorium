@@ -53,7 +53,6 @@ public class EffectTargeting : MonoBehaviour
             CardEffectContext context = new CardEffectContext
             {
                 source = myCombat,
-                isEnemySource = myCombat.isEnemy
             };
 
             if (hit.collider.CompareTag("Card"))

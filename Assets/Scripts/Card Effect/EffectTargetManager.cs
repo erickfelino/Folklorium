@@ -22,8 +22,7 @@ public class EffectTargetManager : MonoBehaviour
 
     public bool isWaitingForTarget = false;
     
-    private CardCombat currentSource;
-    private CardData currentCardData;
+    private IEffectSource currentSource;
     private CardEffect currentPendingEffect; 
     private EffectData currentPendingData; 
 
@@ -44,7 +43,7 @@ public class EffectTargetManager : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void StartTargeting(CardCombat source, CardData cardData, CardEffect effect, EffectData data)
+    public void StartTargeting(IEffectSource source, CardData cardData, CardEffect effect, EffectData data)
     {
         // =========================================================
         // RADAR INTELIGENTE
@@ -80,36 +79,35 @@ public class EffectTargetManager : MonoBehaviour
         // Se pode bater na torre E NÃO PODE bater em mais nada... AUTO-FIRE!
         if (canTargetEnemyPlayer && !hasValidCardTarget)
         {
-            Debug.Log($"Auto-Target: {cardData.cardName} atirou o efeito direto na Torre Inimiga!");
+            Debug.Log($"Auto-Target: {cardData.cardName} atirou direto na Torre!");
             
-            CardEffectContext context = new CardEffectContext
+            // Se for magia, finaliza pelo SpellSlot para gastar mana
+            if (source is SpellSlot spell)
             {
-                source = source,
-                targetCard = null,
-                targetPlayer = enemyHealth, 
-                isEnemySource = source.isEnemy
-            };
-            
-            GameAction action = effect.CreateAction(context, data);
-            if (action != null) ActionSystem.Instance.AddAction(action);
-            
-            return; // Sai da função!
+                spell.ResolveSpellEffects(null, enemyHealth);
+            }
+            else // Se for criatura (CardCombat), segue o fluxo normal
+            {
+                CardEffectContext context = new CardEffectContext { source = source, targetPlayer = enemyHealth };
+                GameAction action = effect.CreateAction(context, data);
+                if (action != null) ActionSystem.Instance.AddAction(action);
+            }
+            return;
         }
         // =========================================================
 
         TurnManager.LockTurn(); // 🔒 TRANCA A PORTA
 
         currentSource = source;
-        currentCardData = cardData;
         currentPendingEffect = effect;
-        currentPendingData = data; 
+        currentPendingData = data;
 
         isWaitingForTarget = true;
         if (arrow != null)
         {
             arrow.SetColor(Color.cyan);
             arrow.ShowArrow(true);
-            arrow.UpdateArrow(source.transform.position, source.transform.position); 
+            arrow.UpdateArrow(source.EffectTransform.position, source.EffectTransform.position);
         }
 
         NotifyBoardOfEffectTargetingState(true);
@@ -122,7 +120,7 @@ public class EffectTargetManager : MonoBehaviour
         if (arrow != null)
         {
             Vector3 endPoint = GetMouseWorldPosition();
-            arrow.UpdateArrow(currentSource.transform.position, endPoint);
+            arrow.UpdateArrow(currentSource.EffectTransform.position, endPoint);
         }
 
         // Botão Esquerdo: Confirma o alvo
@@ -153,7 +151,7 @@ public class EffectTargetManager : MonoBehaviour
                     source = currentSource,
                     targetCard = targetCard,
                     targetPlayer = targetPlayer,
-                    isEnemySource = currentSource.isEnemy
+                    
                 };
                 
                 ExecuteAndFinish(context); 
@@ -177,7 +175,6 @@ public class EffectTargetManager : MonoBehaviour
 
         // Limpa a memória
         currentSource = null; 
-        currentCardData = null; 
         currentPendingEffect = null;
         currentPendingData = null;
 
@@ -187,7 +184,7 @@ public class EffectTargetManager : MonoBehaviour
     // =========================================================
     // RESOLUÇÃO DE ALVO ALEATÓRIO
     // =========================================================
-    public void ResolveRandomTarget(CardCombat source, CardEffect effect, EffectData data)
+    public void ResolveRandomTarget(IEffectSource source, CardEffect effect, EffectData data)
     {
         System.Collections.Generic.List<CardCombat> validCards = new System.Collections.Generic.List<CardCombat>();
         System.Collections.Generic.List<PlayerHealth> validPlayers = new System.Collections.Generic.List<PlayerHealth>();
@@ -230,7 +227,6 @@ public class EffectTargetManager : MonoBehaviour
         CardEffectContext context = new CardEffectContext
         {
             source = source,
-            isEnemySource = source.isEnemy
         };
 
         // Descobre se o número sorteado caiu na lista de Cartas ou de Jogadores
@@ -257,21 +253,29 @@ public class EffectTargetManager : MonoBehaviour
     {
         isWaitingForTarget = false;
         if (arrow != null) arrow.ShowArrow(false);
-
         NotifyBoardOfEffectTargetingState(false);
 
-        if (currentPendingEffect != null)
+        // VERIFICAÇÃO DE QUEM É A FONTE
+        if (currentSource is SpellSlot spell)
         {
-            GameAction action = currentPendingEffect.CreateAction(context, currentPendingData);
-            if (action != null) ActionSystem.Instance.AddAction(action);
+            // Se for magia, o SpellSlot assume o comando para gastar mana e rodar TODOS os efeitos
+            spell.ResolveSpellEffects(context.targetCard, context.targetPlayer);
         }
-        
-        // Limpa a memória
-        currentSource = null; 
-        currentCardData = null; 
+        else
+        {
+            // Se for uma criatura (CardCombat), a mana já foi gasta ao jogar a carta,
+            // então apenas executamos a ação do efeito específico (Battlecry).
+            if (currentPendingEffect != null)
+            {
+                GameAction action = currentPendingEffect.CreateAction(context, currentPendingData);
+                if (action != null) ActionSystem.Instance.AddAction(action);
+            }
+        }
+
+        // Limpeza padrão
+        currentSource = null;  
         currentPendingEffect = null;
         currentPendingData = null;
-
         TurnManager.UnlockTurn(); 
     }
 
@@ -326,7 +330,7 @@ public class EffectTargetManager : MonoBehaviour
                 {
                     bool isValidTarget = currentPendingEffect.IsValidTarget(currentSource, card, null, currentPendingData);
 
-                    if (card == currentSource)
+                    if (currentSource is CardCombat sourceCard && card == sourceCard)
                     {
                         card.RefreshGlowState(false, false); 
                         continue; 
@@ -345,8 +349,8 @@ public class EffectTargetManager : MonoBehaviour
     private Vector3 GetMouseWorldPosition()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, currentSource.transform.position); 
+        Plane groundPlane = new Plane(Vector3.up, currentSource.EffectTransform.position); 
         if (groundPlane.Raycast(ray, out float distance)) return ray.GetPoint(distance); 
-        return currentSource.transform.position; 
+        return currentSource.EffectTransform.position; 
     }
 }

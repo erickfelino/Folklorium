@@ -1,0 +1,8 @@
+
+Name :  Low Poly Cartoon Fox
+
+A cute low poly fox, ready for your scene. only 314 triangle.
+its not rigged but have one uv channel and one texture (1024 * 1024 ).
+If you have any questions or want other format, please contact me.
+
+Tags : animal,fox,cute,cartoon,model,lowpoly,poly,jungle,unity3d,unitypackage

@@ -5,10 +5,7 @@ using Folklorium; // 👇 Avisamos para ele olhar o nosso namespace!
 public enum ValidTargetType
 {
     EnemyCard,
-    AllEnemySoldiers,
-    AllEnemyCards,
     AllyCard,
-    AllAllyCards,
     AnyCard,
     EnemyTower,
     AllyTower,
@@ -33,7 +30,7 @@ public abstract class CardEffect : ScriptableObject
 
     // 2. A MÁGICA: O Efeito valida o alvo!
     // 👇 Adicionamos o 'EffectData rawData' no final
-    public virtual bool IsValidTarget(CardCombat source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
+    public virtual bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
         if (!requiresTarget) return false;
         if (source == null) return false; 
@@ -41,23 +38,22 @@ public abstract class CardEffect : ScriptableObject
         if (targetCard != null)
         {
             // 👇 A MÁGICA: Perguntamos pro pacote de dados se ele exclui a si mesmo!
-            if (rawData != null && rawData.GetExcludeSelf() && targetCard == source) 
-                return false;
+            if (rawData != null && rawData.GetExcludeSelf() && source != null && source.EffectGameObject == targetCard.gameObject)
+                return false;   
 
-            bool isEnemyTarget = (targetCard.isEnemy != source.isEnemy); 
+            bool isEnemyTarget = targetCard.isEnemy != source.IsEnemy; 
             
             if (validTargets == ValidTargetType.EnemyCard && isEnemyTarget) return true;
             if (validTargets == ValidTargetType.AllyCard && !isEnemyTarget) return true;
             if (validTargets == ValidTargetType.AnyCard) return true;
             if (validTargets == ValidTargetType.AnyCharacter) return true;
-            if (validTargets == ValidTargetType.AllEnemyCards) return true;
         }
 
-        // ... resto da função do targetPlayer continua igual
+    
         if (targetPlayer != null)
         {
             bool targetIsAIHealth = targetPlayer.CompareTag("EnemyHealth"); 
-            bool isEnemyPlayer = source.isEnemy ? !targetIsAIHealth : targetIsAIHealth;
+            bool isEnemyPlayer = source.IsEnemy ? !targetIsAIHealth : targetIsAIHealth;
             
             if (validTargets == ValidTargetType.EnemyTower && isEnemyPlayer) return true;
             if (validTargets == ValidTargetType.AllyTower && !isEnemyPlayer) return true;

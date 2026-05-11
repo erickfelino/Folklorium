@@ -237,7 +237,7 @@ public class OpponentAI : MonoBehaviour
 
         bool canTargetPlayer = effect.IsValidTarget(source, null, playerHealth, rawData);
 
-        CardEffectContext context = new CardEffectContext { source = source, playerHand = aiHand, isEnemySource = true };
+        CardEffectContext context = new CardEffectContext { source = source, playerHand = aiHand};
         bool foundTarget = false;
 
         List<CardCombat> enemiesToAI = validCardTargets.Where(c => !c.isEnemy).ToList(); 

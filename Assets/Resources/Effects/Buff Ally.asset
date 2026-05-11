@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Buff Ally
   m_EditorClassIdentifier: 
   requiresTarget: 1
-  validTargets: 3
-  description: 
+  validTargets: 1
+  description: Buffa card aliado

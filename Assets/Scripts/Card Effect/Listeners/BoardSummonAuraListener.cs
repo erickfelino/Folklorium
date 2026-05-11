@@ -67,7 +67,7 @@ public class BoardSummonAuraListener : MonoBehaviour
         if (ActionSystem.Instance == null)
             return;
         Debug.Log("chamou o buff 6");       
-        ActionSystem.Instance.AddAction(new BuffAction(owner, owner, attackBonus, healthBonus));
+        ActionSystem.Instance.AddAction(new BuffAction(owner, attackBonus, healthBonus));
         Debug.Log("chamou o buff fim");
     }
 }

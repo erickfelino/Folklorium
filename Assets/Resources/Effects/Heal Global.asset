@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Heal Global
   m_EditorClassIdentifier: 
   requiresTarget: 1
-  validTargets: 9
+  validTargets: 6
   description: Cura em qualquer alvo quando jogado

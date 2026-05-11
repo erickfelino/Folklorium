@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Damage Enemy Tower
   m_EditorClassIdentifier: 
   requiresTarget: 1
-  validTargets: 6
+  validTargets: 3
   description: Dano na torre inimiga quando jogado
