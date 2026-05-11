@@ -84,9 +84,7 @@ public class SpellSlot : MonoBehaviour, IEffectSource
             {
                 effectTargetManager.StartTargeting(this, spellData, firstTargetedEffect.effectSO, firstTargetedEffect.parameters);
             }
-
             return;
-
         }
         
         ResolveSpellEffects(null, null);
@@ -126,4 +124,4 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         if (_renderer == null) return;
         _renderer.material.color = isSpent ? Color.gray : Color.white;
     }
-}
+}  
