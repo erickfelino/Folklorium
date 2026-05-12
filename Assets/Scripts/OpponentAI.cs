@@ -9,23 +9,54 @@ public class OpponentAI : MonoBehaviour
     [Header("Gerenciadores do Oponente")]
     public HandManager aiHand;
     public ManaManager aiMana;
+    public bool isAITargeting = false;
+    private BoardManager boardManager;
+
+    private void Awake()
+    {
+        boardManager = BoardManager.Instance != null ? BoardManager.Instance : FindFirstObjectByType<BoardManager>();
+    }
     
     public IEnumerator ProcessTurn()
     {
         Debug.Log("IA: Começando o meu turno...");
         yield return new WaitForSeconds(1f);
 
-        // A IA pensa como um jogador real: primeiro joga as cartas, depois ataca!
+        yield return StartCoroutine(WaitUntilDustSettles());
+
         yield return StartCoroutine(PlayCardsPhase());
         
+        yield return StartCoroutine(WaitUntilDustSettles());
+
         yield return StartCoroutine(AttackPhase());
 
-        Debug.Log("IA: Fim das jogadas. Passo o turno.");
+        yield return StartCoroutine(WaitUntilDustSettles());
+
         yield return new WaitForSeconds(1f);
     }
 
+    private IEnumerator WaitUntilDustSettles()
+    {
+        float idleTimer = 0f;
+        
+        // O jogo precisa ficar 100% parado por 0.5 segundos SEGUIDOS
+        while (idleTimer < 0.5f)
+        {
+            if (ActionSystem.Instance.IsGameBusy())
+            {
+                idleTimer = 0f; // Alguém fez algo! Zera o cronômetro da IA.
+            }
+            else
+            {
+                idleTimer += Time.deltaTime; // Jogo está quieto, acumula tempo.
+            }
+            
+            yield return null; // Espera o próximo frame da Unity
+        }
+    }
+
     // ==========================================
-    // FASE 1: DESCER CARTAS (Lógica de Curva de Mana)
+    // FASE 1: DESCER CARTAS
     // ==========================================
     private IEnumerator PlayCardsPhase()
     {
@@ -34,33 +65,37 @@ public class OpponentAI : MonoBehaviour
 
         foreach (GameObject cardObj in cardsInHand)
         {
-            Card cardData = cardObj.GetComponent<CardDisplay>().cardData;
-            
+            yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
+
+            CardData cardData = cardObj.GetComponent<CardDisplay>().cardData;
+
             if (cardData.mana <= aiMana.currentMana)
             {
-                string targetTag = GetEnemyZoneTag(cardData.cardRole);
-                GameObject emptyZone = FindEmptyZone(targetTag);
-
-                if (emptyZone != null)
+                if (boardManager != null && boardManager.TryGetFreeSlot(cardData, true, out BoardSlot freeSlot))
                 {
                     Debug.Log($"IA decidiu invocar: {cardData.cardName}");
+
                     aiMana.SpendMana(cardData.mana);
                     aiHand.RemoveCardFromHand(cardObj);
 
-                    CardDrag dragScript = cardObj.GetComponent<CardDrag>();
-                    if (dragScript != null)
+                    CardCombat combatScript = cardObj.GetComponent<CardCombat>();
+                    if (combatScript != null)
                     {
-                        dragScript.TransformIntoTokenAndJump(emptyZone.transform, true);
-                        
-                        // Marca a carta como sendo do inimigo IMEDIATAMENTE!
-                        CardCombat combatScript = cardObj.GetComponent<CardCombat>();
-                        if (combatScript != null)
-                        {
-                            combatScript.isEnemy = true;
-                        }
+                        combatScript.isEnemy = true;
                     }
 
-                    yield return new WaitForSeconds(1.2f); 
+                    if (boardManager.TryPlaceCard(combatScript, freeSlot))
+                    {
+                        CardDrag dragScript = cardObj.GetComponent<CardDrag>();
+                        if (dragScript != null)
+                        {
+                            dragScript.TransformIntoTokenAndJump(freeSlot, true);
+                            boardManager.NotifyCardPlaced(combatScript, freeSlot, BoardEntryType.PlayedFromHand);
+                            combatScript.TriggerEffects(EffectTriggerType.OnPlay);
+                        }
+
+                        yield return new WaitForSeconds(1.2f);
+                    }
                 }
             }
         }
@@ -71,44 +106,36 @@ public class OpponentAI : MonoBehaviour
     // ==========================================
     private IEnumerator AttackPhase()
     {
-        // 1. Acha as vidas na mesa
         PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("PlayerHealth")?.GetComponent<PlayerHealth>();
         PlayerHealth aiHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
 
-        // 2. Pega as cartas da IA que estão vivas e prontas para atacar
         CardCombat[] allCardsOnBoard = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         List<CardCombat> aiCards = allCardsOnBoard.Where(c => c.isEnemy && c.canAttackThisTurn && c.currentLife > 0).ToList();
 
         foreach (CardCombat aiCard in aiCards)
         {
-            if (aiCard == null || aiCard.currentLife <= 0) continue; 
+            if (aiCard == null || aiCard.currentLife <= 0 || aiCard.isDead) continue; 
 
-            // -----------------------------------------------------
-            // O RADAR: Lê a mesa do jogador a cada ataque (pois a mesa muda)
-            // -----------------------------------------------------
+            // 👇 TRAVA NÍVEL 3: Espera o combate anterior terminar COMPLETAMENTE
+            yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
+
             List<CardCombat> playerCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
-                .Where(c => !c.isEnemy && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0).ToList();
+                .Where(c => !c.isEnemy && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0 && !c.isDead).ToList();
 
-            bool pHasSoldiers = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == Card.CardRole.Soldier);
-            bool pHasHeroes = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == Card.CardRole.Hero);
-            bool pHasCommanders = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == Card.CardRole.Commander);
+            bool pHasSoldiers = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == CardData.CardRole.Soldier);
+            bool pHasHeroes = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == CardData.CardRole.Hero);
+            bool pHasCommanders = playerCards.Any(c => c.GetComponent<CardDisplay>().cardData.cardRole == CardData.CardRole.Commander);
 
-            Card.CardRole myRole = aiCard.GetComponent<CardDisplay>().cardData.cardRole;
+            CardData.CardRole myRole = aiCard.GetComponent<CardDisplay>().cardData.cardRole;
 
-            // -----------------------------------------------------
-            // O JUIZ: Usa o CombatRules.cs para saber quem a IA pode atacar
-            // -----------------------------------------------------
             bool canAttackFace = CombatRules.CanAttackPlayer(myRole, pHasSoldiers, pHasHeroes, pHasCommanders);
 
             List<CardCombat> validTargets = playerCards.Where(pCard =>
             {
-                Card.CardRole targetRole = pCard.GetComponent<CardDisplay>().cardData.cardRole;
+                CardData.CardRole targetRole = pCard.GetComponent<CardDisplay>().cardData.cardRole;
                 return CombatRules.CanAttackCard(myRole, targetRole, pHasSoldiers, pHasHeroes, pHasCommanders);
             }).ToList();
 
-            // -----------------------------------------------------
-            // CÁLCULO DE AMEAÇA (A IA sabe se vai ganhar ou perder?)
-            // -----------------------------------------------------
             int myTotalFaceDamage = CalculatePotentialFaceDamage(aiCards, pHasSoldiers, pHasHeroes, pHasCommanders);
             int enemyTotalDamage = playerCards.Sum(c => c.currentAttack); 
 
@@ -117,18 +144,14 @@ public class OpponentAI : MonoBehaviour
 
             bool attacked = false;
 
-            // =====================================================
-            // ÁRVORE DE DECISÃO DA IA
-            // =====================================================
-
-            // MODO 1: LETAL (Ganhar o jogo)
+            // MODO 1: LETAL
             if (iHaveLethal && canAttackFace && playerHealth != null)
             {
                 Debug.Log($"IA [LETAL]: {aiCard.name} ataca o Jogador para vencer!");
                 aiCard.Attack(playerHealth);
                 attacked = true;
             }
-            // MODO 2: DEFESA (Sobreviver custe o que custar)
+            // MODO 2: DEFESA
             else if (enemyHasLethal && validTargets.Count > 0)
             {
                 CardCombat biggestThreat = validTargets.OrderByDescending(c => c.currentAttack).FirstOrDefault();
@@ -139,7 +162,6 @@ public class OpponentAI : MonoBehaviour
             // MODO 3: PADRÃO / AGGRO / KAMIKAZE
             else
             {
-                // Tenta achar a Troca Perfeita (Mata o inimigo e sobrevive)
                 CardCombat bestTrade = validTargets
                     .Where(p => aiCard.currentAttack >= p.currentLife && aiCard.currentLife > p.currentAttack)
                     .OrderByDescending(p => p.currentAttack) 
@@ -151,14 +173,12 @@ public class OpponentAI : MonoBehaviour
                     aiCard.Attack(bestTrade);
                     attacked = true;
                 }
-                // Se não tem troca boa, mas o caminho pro jogador está livre, BATE NA CARA!
                 else if (canAttackFace && playerHealth != null)
                 {
                     Debug.Log($"IA [AGGRO]: {aiCard.name} bate direto na vida do Jogador.");
                     aiCard.Attack(playerHealth);
                     attacked = true;
                 }
-                // Se o caminho tá bloqueado e não tem troca boa, se sacrifica na carta mais forte que puder bater
                 else if (validTargets.Count > 0)
                 {
                     CardCombat kamikazeTarget = validTargets.OrderByDescending(p => p.currentAttack).First();
@@ -172,16 +192,14 @@ public class OpponentAI : MonoBehaviour
         }
     }
 
-    // Método auxiliar para calcular se a IA tem dano suficiente para ganhar o jogo neste turno
     private int CalculatePotentialFaceDamage(List<CardCombat> aiCards, bool pSoldiers, bool pHeroes, bool pCommanders)
     {
         int totalDamage = 0;
         foreach(var c in aiCards)
         {
-            if (c.currentLife > 0 && c.canAttackThisTurn)
+            if (c.currentLife > 0 && c.canAttackThisTurn && !c.isDead) 
             {
-                Card.CardRole role = c.GetComponent<CardDisplay>().cardData.cardRole;
-                // Usa o juiz estático aqui também!
+                CardData.CardRole role = c.GetComponent<CardDisplay>().cardData.cardRole;
                 if (CombatRules.CanAttackPlayer(role, pSoldiers, pHeroes, pCommanders))
                 {
                     totalDamage += c.currentAttack;
@@ -190,28 +208,75 @@ public class OpponentAI : MonoBehaviour
         }
         return totalDamage;
     }
-
+    
     // ==========================================
-    // MÉTODOS DE ZONAS
+    // FASE 3: ESCOLHA DE ALVOS PARA EFEITOS (MÁGICAS)
     // ==========================================
-    private string GetEnemyZoneTag(Card.CardRole role)
+    
+    // 👇 RECEBE O rawData AQUI AGORA
+    public IEnumerator ResolveAITargetingCoroutine(CardCombat source, CardData cardData, CardEffect effect, EffectData rawData)
     {
-        switch (role)
-        {
-            case Card.CardRole.Soldier: return "EnemyDropZoneSoldier";
-            case Card.CardRole.Commander: return "EnemyDropZoneCommander";
-            case Card.CardRole.Hero: return "EnemyDropZoneHero";
-            default: return "Untagged";
-        }
-    }
+        isAITargeting = true; 
+        yield return new WaitForSeconds(1.5f);
 
-    private GameObject FindEmptyZone(string tag)
-    {
-        GameObject[] zones = GameObject.FindGameObjectsWithTag(tag);
-        foreach (GameObject zone in zones)
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("PlayerHealth")?.GetComponent<PlayerHealth>();
+        
+        CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        List<CardCombat> validCardTargets = new List<CardCombat>();
+
+        foreach (var c in allCards)
         {
-            if (zone.transform.childCount == 0) return zone;
+            if (c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0 && !c.isDead)
+            {
+                if (effect.IsValidTarget(source, c, null, rawData))
+                {
+                    validCardTargets.Add(c);
+                }
+            }
         }
-        return null;
+
+        bool canTargetPlayer = effect.IsValidTarget(source, null, playerHealth, rawData);
+
+        CardEffectContext context = new CardEffectContext { source = source, playerHand = aiHand};
+        bool foundTarget = false;
+
+        List<CardCombat> enemiesToAI = validCardTargets.Where(c => !c.isEnemy).ToList(); 
+        List<CardCombat> alliesToAI = validCardTargets.Where(c => c.isEnemy).ToList();  
+
+        if (enemiesToAI.Count > 0)
+        {
+            CardCombat chosenCard = enemiesToAI.OrderByDescending(c => c.currentAttack).First();
+            context.targetCard = chosenCard;
+            foundTarget = true;
+            Debug.Log($"IA [MÁGICA]: {cardData.cardName} focou no lacaio inimigo {chosenCard.name}.");
+        }
+        else if (canTargetPlayer)
+        {
+            context.targetPlayer = playerHealth;
+            foundTarget = true;
+            Debug.Log($"IA [MÁGICA]: {cardData.cardName} atirou o efeito direto na vida do Jogador.");
+        }
+        else if (alliesToAI.Count > 0)
+        {
+            CardCombat chosenCard = alliesToAI.OrderByDescending(c => c.currentAttack).First();
+            context.targetCard = chosenCard;
+            foundTarget = true;
+            Debug.Log($"IA [MÁGICA - BUFF/FORÇADO]: {cardData.cardName} alvejou a própria carta {chosenCard.name}.");
+        }
+
+        if (foundTarget)
+        {
+            // 👇 PASSA O rawData PARA A FÁBRICA DA AÇÃO AQUI
+            GameAction action = effect.CreateAction(context, rawData);
+            if (action != null)
+            {
+                ActionSystem.Instance.AddAction(action);
+            }
+        }
+        else
+        {
+            Debug.Log($"IA [MÁGICA]: {cardData.cardName} entrou em campo, mas não havia alvos válidos para o efeito.");
+        }
+        isAITargeting = false;
     }
 }

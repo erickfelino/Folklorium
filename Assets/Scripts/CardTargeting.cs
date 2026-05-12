@@ -1,6 +1,6 @@
 using UnityEngine;
 using Folklorium; // Para acessar a classe Card
-using static Folklorium.Card; // Para acessar os CardRoles (Soldier, Hero, Commander)
+using static Folklorium.CardData; // Para acessar os CardRoles (Soldier, Hero, Commander)
 
 [RequireComponent(typeof(CardCombat))]
 [RequireComponent(typeof(CardDrag))]
@@ -26,12 +26,18 @@ public class CardTargeting : MonoBehaviour
     {
         if (myCombat.isEnemy || !myCombat.canAttackThisTurn || !cardDrag.isPlayed) 
         {
-            Debug.Log("Esta carta não pode atacar agora.");
             return;
         }
 
         isDragging = true;
-        if (arrow != null) arrow.ShowArrow(true);
+        if (arrow != null) 
+        {
+            arrow.SetColor(Color.red); 
+            arrow.ShowArrow(true);
+        }
+
+        // 👇 NOVO: Avisa a mesa inteira que estamos mirando!
+        NotifyBoardOfTargetingState(true); 
     }
 
     void OnMouseDrag()
@@ -50,6 +56,9 @@ public class CardTargeting : MonoBehaviour
 
         if (arrow != null) arrow.ShowArrow(false);
 
+        // 👇 NOVO: A seta sumiu. Avisa a mesa para voltar ao brilho normal.
+        NotifyBoardOfTargetingState(false);
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         
         if (Physics.Raycast(ray, out RaycastHit hit))
@@ -66,10 +75,11 @@ public class CardTargeting : MonoBehaviour
                 PlayerHealth enemyHealth = hit.collider.GetComponent<PlayerHealth>();
                 if (enemyHealth != null)
                 {
-                    // PERGUNTA AO JUIZ GLOBAL!
                     if (CombatRules.CanAttackPlayer(myRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders))
                     {
                         myCombat.Attack(enemyHealth);
+                        // 👇 NOVO: Avisa a própria carta para atualizar seu brilho (desligar o verde, pois já atacou)
+                        myCombat.RefreshGlowState(); 
                     }
                     else
                     {
@@ -84,10 +94,11 @@ public class CardTargeting : MonoBehaviour
                 {
                     CardRole targetRole = targetCard.GetComponent<CardDisplay>().cardData.cardRole;
 
-                    // PERGUNTA AO JUIZ GLOBAL!
                     if (CombatRules.CanAttackCard(myRole, targetRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders))
                     {
                         myCombat.Attack(targetCard);
+                        // 👇 NOVO: Avisa a própria carta para atualizar seu brilho (desligar o verde, pois já atacou)
+                        myCombat.RefreshGlowState();
                     }
                     else
                     {
@@ -139,5 +150,76 @@ public class CardTargeting : MonoBehaviour
             return ray.GetPoint(distance); 
         }
         return transform.position; 
+    }
+
+    private void NotifyBoardOfTargetingState(bool isTargetingMode)
+    {
+        // O que temos na mesa agora? 
+        bool enemyHasSoldiers = CheckIfEnemyHasRole(CardRole.Soldier);
+        bool enemyHasHeroes = CheckIfEnemyHasRole(CardRole.Hero);
+        bool enemyHasCommanders = CheckIfEnemyHasRole(CardRole.Commander);
+        CardRole myRole = GetComponent<CardDisplay>().cardData.cardRole;
+
+        // ==========================================
+        // 1. LÓGICA DA TORRE INIMIGA (TargetGlow filho)
+        // ==========================================
+        PlayerHealth enemyHealth = GameObject.FindGameObjectWithTag("EnemyHealth")?.GetComponent<PlayerHealth>();
+        if (enemyHealth != null)
+        {
+            // Busca o GameObject filho chamado "TargetGlow"
+            Transform towerGlowObject = enemyHealth.transform.Find("TargetGlow"); 
+            
+            if (towerGlowObject != null)
+            {
+                if (isTargetingMode)
+                {
+                    // Pergunta ao juiz se o ataque físico pode bater na torre
+                    bool canAttackTower = CombatRules.CanAttackPlayer(myRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders);
+                    
+                    // Liga o brilho se puder bater
+                    towerGlowObject.gameObject.SetActive(canAttackTower);
+                }
+                else
+                {
+                    // Seta solta: desliga o brilho
+                    towerGlowObject.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        // ==========================================
+        // 2. LÓGICA DAS CARTAS NA MESA (Inalterado)
+        // ==========================================
+        CardCombat[] allCards = Object.FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        
+        foreach (CardCombat card in allCards)
+        {
+            CardDrag drag = card.GetComponent<CardDrag>();
+            if (drag != null && drag.isPlayed)
+            {
+                if (isTargetingMode)
+                {
+                    bool isValidTarget = false;
+
+                    if (card.isEnemy)
+                    {
+                        CardRole targetRole = card.GetComponent<CardDisplay>().cardData.cardRole;
+                        isValidTarget = CombatRules.CanAttackCard(myRole, targetRole, enemyHasSoldiers, enemyHasHeroes, enemyHasCommanders);
+                    }
+                    
+                    if (card == this.myCombat)
+                    {
+                        card.RefreshGlowState(false, false); 
+                        continue; 
+                    }
+
+                    card.RefreshGlowState(true, isValidTarget);
+                }
+                else
+                {
+                    card.RefreshGlowState(false, false);
+                }
+            }
+        }
     }
 }
