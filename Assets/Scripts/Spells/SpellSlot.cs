@@ -7,11 +7,13 @@ public class SpellSlot : MonoBehaviour, IEffectSource
     [SerializeField] private CardData spellData;
     [SerializeField] private ManaManager manaManager;
     [SerializeField] private EffectTargetManager effectTargetManager;
-    private TurnManager turnManager; // 1. Referência para o TurnManager
+    private TurnManager turnManager;
 
     private bool isEnemy;
     private bool isSpent;
-    private Renderer _renderer;
+    
+    // 1. Mudamos para um array, pois agora temos vários sub-objetos (cilindros)
+    private Renderer[] _renderers;
 
     public bool IsEnemy => isEnemy;
     public Transform EffectTransform => transform;
@@ -20,8 +22,8 @@ public class SpellSlot : MonoBehaviour, IEffectSource
 
     private void Awake() 
     {
-        _renderer = GetComponent<Renderer>();
-        // 2. Busca o TurnManager na cena (seguindo o padrão do seu CardCombat)
+        // 2. Buscamos todos os renderers nos filhos (pCylinder1, pCylinder2, etc)
+        _renderers = GetComponentsInChildren<Renderer>();
         turnManager = FindFirstObjectByType<TurnManager>();
     }
 
@@ -121,7 +123,25 @@ public class SpellSlot : MonoBehaviour, IEffectSource
 
     private void RefreshVisual()
     {
-        if (_renderer == null) return;
-        _renderer.material.color = isSpent ? Color.gray : Color.white;
+        if (_renderers == null || _renderers.Length == 0) return;
+
+        // Definimos as cores baseadas no estado
+        Color finalColor = isSpent ? Color.gray : Color.white;
+        
+        // Se estiver gasto, a emissão fica preta (apagada). Se não, fica branca (brilho normal)
+        // Nota: O shader Standard usa "_EmissionColor" para controlar o brilho via código
+        Color emissionColor = isSpent ? Color.black : Color.white; 
+
+        foreach (var r in _renderers)
+        {
+            // Muda a cor principal (Albedo)
+            r.material.color = finalColor;
+
+            // Muda a cor da emissão para "apagar" as runas azuis
+            r.material.SetColor("_EmissionColor", emissionColor);
+            
+            // Dica: Se o brilho não sumir totalmente, pode ser necessário usar:
+            // DynamicGI.SetEmissive(r, isSpent ? 0 : 1);
+        }
     }
-}  
+}
