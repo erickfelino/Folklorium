@@ -8,9 +8,10 @@ public class SpellSlot : MonoBehaviour, IEffectSource
     [SerializeField] private ManaManager manaManager;
     [SerializeField] private EffectTargetManager effectTargetManager;
     private TurnManager turnManager;
-
     private bool isEnemy;
-    private bool isSpent;
+    private int manaCostModifier;
+    private int remainingUses = 1;
+    private int extraUsesBonus = 0;
     
     // 1. Mudamos para um array, pois agora temos vários sub-objetos (cilindros)
     private Renderer[] _renderers;
@@ -32,7 +33,6 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         spellData = data;
         isEnemy = enemySide;
         manaManager = mana;
-        isSpent = false;
 
         RefreshVisual();
     }
@@ -47,8 +47,8 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         // --- AS NOVAS TRAVAS DE SEGURANÇA ---
         
         // 1. Se já foi usada ou dados estão faltando
-        if (isSpent || spellData == null || manaManager == null || turnManager == null)
-            return;
+        if (remainingUses <= 0 || spellData == null || manaManager == null || turnManager == null)
+        return;
 
         // 2. Se for uma magia do inimigo, o jogador não pode clicar para usar
         if (isEnemy)
@@ -67,7 +67,7 @@ public class SpellSlot : MonoBehaviour, IEffectSource
 
         // --- FIM DAS TRAVAS ---
 
-        if (!manaManager.HasEnoughMana(spellData.mana))
+        if (!manaManager.HasEnoughMana(GetEffectiveManaCost()))
         {
             Debug.Log("Mana insuficiente!");
             return;
@@ -88,17 +88,16 @@ public class SpellSlot : MonoBehaviour, IEffectSource
             }
             return;
         }
-        
+
         ResolveSpellEffects(null, null);
     }
 
     public void ResolveSpellEffects(CardCombat targetCard, PlayerHealth targetPlayer)
     {
-        // ... (resto do seu código permanece igual)
         if (spellData == null || spellData.effects == null)
             return;
 
-        manaManager.SpendMana(spellData.mana);
+        manaManager.SpendMana(GetEffectiveManaCost());
 
         foreach (var entry in spellData.effects)
         {
@@ -117,7 +116,33 @@ public class SpellSlot : MonoBehaviour, IEffectSource
                 ActionSystem.Instance.AddAction(action);
         }
 
-        isSpent = true;
+        ConsumeUse();
+        RefreshVisual();
+    }
+
+    public void ApplyAuraModifiers(int manaDiscount, int extraUses)
+    {
+        manaCostModifier = manaDiscount;
+        extraUsesBonus = extraUses;
+
+        remainingUses = Mathf.Max(1, 1 + extraUsesBonus);
+        RefreshVisual();
+    }
+
+    public int GetEffectiveManaCost()
+    {
+        if (spellData == null)
+            return 0;
+
+        return Mathf.Max(0, spellData.mana + manaCostModifier);
+    }
+
+    public void ConsumeUse()
+    {
+        if (remainingUses <= 0)
+            return;
+
+        remainingUses--;
         RefreshVisual();
     }
 
@@ -125,23 +150,19 @@ public class SpellSlot : MonoBehaviour, IEffectSource
     {
         if (_renderers == null || _renderers.Length == 0) return;
 
-        // Definimos as cores baseadas no estado
-        Color finalColor = isSpent ? Color.gray : Color.white;
-        
-        // Se estiver gasto, a emissão fica preta (apagada). Se não, fica branca (brilho normal)
-        // Nota: O shader Standard usa "_EmissionColor" para controlar o brilho via código
-        Color emissionColor = isSpent ? Color.black : Color.white; 
+        bool isAvailable = remainingUses > 0;
+
+        Color finalColor = isAvailable ? Color.white : Color.gray;
+        Color emissionColor = isAvailable ? Color.white : Color.black;
 
         foreach (var r in _renderers)
         {
-            // Muda a cor principal (Albedo)
-            r.material.color = finalColor;
-
-            // Muda a cor da emissão para "apagar" as runas azuis
-            r.material.SetColor("_EmissionColor", emissionColor);
-            
-            // Dica: Se o brilho não sumir totalmente, pode ser necessário usar:
-            // DynamicGI.SetEmissive(r, isSpent ? 0 : 1);
+            if (!isAvailable)
+            {
+                r.material.color = finalColor;
+                r.material.SetColor("_EmissionColor", emissionColor);
+                
+            }
         }
     }
 }
