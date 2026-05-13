@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Demon in bottle 1
+  m_Name: Thunder Archer
   m_EditorClassIdentifier: 
-  cardName: Demon in bottle
-  cardBody: 'Mobilizar: cause 3 de dano a um lacaio'
-  cardColorGroup: 0
-  cardRole: 1
-  mana: 3
+  cardName: Thunder Archer
+  cardBody: 'Mobilizar: Cause 2 de dano a um lacaio'
+  cardColorGroup: 1
+  cardRole: 0
+  mana: 2
   attack: 2
-  life: 3
-  art: {fileID: 21300000, guid: 3631f712e58da4649acc487970f4416c, type: 3}
+  life: 1
+  art: {fileID: 21300000, guid: f1d3d5dbe9bda494cafd1a210b3e54c5, type: 3}
   effects:
-  - effectSO: {fileID: 11400000, guid: 43178f1631f494b49bc2857a28db9ee8, type: 2}
+  - effectSO: {fileID: 11400000, guid: 6d429725c1d7a48469628fbe962a98dd, type: 2}
     trigger: 0
     parameters:
-      rid: 2886593607732035675
+      rid: 347702166048210945
   references:
     version: 2
     RefIds:
-    - rid: 2886593607732035675
+    - rid: 347702166048210945
       type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
       data:
-        damage: 3
-        excludeSelf: 1
+        damage: 2
+        excludeSelf: 0
         randomTarget: 0

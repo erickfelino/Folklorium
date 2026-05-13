@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Boitata
   cardBody: 'Mobilizar: Invoque um soldado 1/1'
-  cardColorGroup: 1
+  cardColorGroup: 0
   cardRole: 0
   mana: 2
   attack: 1

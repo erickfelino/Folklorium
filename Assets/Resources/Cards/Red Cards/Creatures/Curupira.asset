@@ -33,3 +33,4 @@ MonoBehaviour:
       data:
         damage: 3
         excludeSelf: 1
+        randomTarget: 0
