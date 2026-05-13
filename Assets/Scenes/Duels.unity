@@ -1879,6 +1879,137 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
+--- !u!1 &812210742
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 812210747}
+  - component: {fileID: 812210746}
+  - component: {fileID: 812210745}
+  - component: {fileID: 812210744}
+  - component: {fileID: 812210743}
+  m_Layer: 0
+  m_Name: EnemyAura
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &812210743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812210742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9e444e4eda1ae4a891fffaa51fdc77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardCardPlacedChannel: {fileID: 11400000, guid: d8fa567fba78ead4f8d5ffdd1ca997a1, type: 2}
+  spellSlots:
+  - {fileID: 870237834}
+  - {fileID: 1626904936}
+  isEnemySide: 1
+  turnManager: {fileID: 2067252100}
+  auraIndicator: {fileID: 812210744}
+  pureRedColor: {r: 1, g: 0, b: 0, a: 1}
+  pureBlueColor: {r: 0, g: 0, b: 1, a: 1}
+  redBlueColor: {r: 0.55, g: 0, b: 0.8, a: 1}
+--- !u!23 &812210744
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812210742}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &812210745
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812210742}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &812210746
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812210742}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &812210747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812210742}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
+  m_LocalPosition: {x: 2.97, y: 0.36, z: 1.0500001}
+  m_LocalScale: {x: 0.5, y: 0.6553, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &813570861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2067,6 +2198,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   acceptedRole: 2
   isEnemySide: 0
+--- !u!114 &870237834 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1878087847712310585, guid: 43de1e1554eca014fa75d91d6ff950a3, type: 3}
+  m_PrefabInstance: {fileID: 813570861}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6f11ed7a4899d54492cf6bffc4f2285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &915040653
 GameObject:
   m_ObjectHideFlags: 0
@@ -2539,6 +2681,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 605788074}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1187845564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1187845565}
+  - component: {fileID: 1187845566}
+  m_Layer: 0
+  m_Name: EnemySpellsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1187845565
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1187845564}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.3755846, y: -0.8176988, z: -0.7922249}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1853536768}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1187845566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1187845564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96ca5cded824ffa409bd54e06f786081, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spellSlot1: {fileID: 870237834}
+  spellSlot2: {fileID: 1626904936}
+  manaManager: {fileID: 2330570353867373546}
 --- !u!1 &1192132293
 GameObject:
   m_ObjectHideFlags: 0
@@ -2908,6 +3097,137 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   acceptedRole: 0
   isEnemySide: 0
+--- !u!1 &1207329387
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1207329392}
+  - component: {fileID: 1207329391}
+  - component: {fileID: 1207329390}
+  - component: {fileID: 1207329389}
+  - component: {fileID: 1207329388}
+  m_Layer: 0
+  m_Name: PlayerAura
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1207329388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207329387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9e444e4eda1ae4a891fffaa51fdc77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardCardPlacedChannel: {fileID: 11400000, guid: d8fa567fba78ead4f8d5ffdd1ca997a1, type: 2}
+  spellSlots:
+  - {fileID: 60879965}
+  - {fileID: 1098606517}
+  isEnemySide: 0
+  turnManager: {fileID: 2067252100}
+  auraIndicator: {fileID: 1207329389}
+  pureRedColor: {r: 1, g: 0, b: 0, a: 1}
+  pureBlueColor: {r: 0, g: 0, b: 1, a: 1}
+  redBlueColor: {r: 0.55, g: 0, b: 0.8, a: 1}
+--- !u!23 &1207329389
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207329387}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 3446698055713957111, guid: 54a4d9452a5f11145a3aa9249c94bde3, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1207329390
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207329387}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &1207329391
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207329387}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1207329392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207329387}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.601, y: 0.31100002, z: -2.154}
+  m_LocalScale: {x: 0.5, y: 0.487425, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1241217247
 GameObject:
   m_ObjectHideFlags: 0
@@ -3398,6 +3718,53 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &1333177302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1333177303}
+  - component: {fileID: 1333177304}
+  m_Layer: 0
+  m_Name: PlayerSpellsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1333177303
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333177302}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.3755846, y: -0.8176988, z: -0.7922249}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1853536768}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1333177304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333177302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96ca5cded824ffa409bd54e06f786081, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spellSlot1: {fileID: 60879965}
+  spellSlot2: {fileID: 1098606517}
+  manaManager: {fileID: 2330570353800790985}
 --- !u!1 &1343544092
 GameObject:
   m_ObjectHideFlags: 0
@@ -4384,6 +4751,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   acceptedRole: 1
   isEnemySide: 1
+--- !u!114 &1626904936 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 647173019842083937, guid: 022b7cd48b2c578418b93fa35b130e84, type: 3}
+  m_PrefabInstance: {fileID: 1750550767}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6f11ed7a4899d54492cf6bffc4f2285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1642706678
 GameObject:
   m_ObjectHideFlags: 0
@@ -4942,7 +5320,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1853536768}
-  - component: {fileID: 1853536769}
   m_Layer: 0
   m_Name: SpellManager
   m_TagString: Untagged
@@ -4962,24 +5339,11 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1333177303}
+  - {fileID: 1187845565}
   m_Father: {fileID: 605788074}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1853536769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1853536767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96ca5cded824ffa409bd54e06f786081, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spellSlot1: {fileID: 60879965}
-  spellSlot2: {fileID: 1098606517}
-  manaManager: {fileID: 2330570353800790985}
 --- !u!1 &1864972931
 GameObject:
   m_ObjectHideFlags: 0
@@ -5380,6 +5744,12 @@ MonoBehaviour:
   enemyManaManager: {fileID: 2330570353867373546}
   playerHandManager: {fileID: 915040655}
   enemyHandManager: {fileID: 1642706679}
+  playerAuraController: {fileID: 1207329388}
+  enemyAuraController: {fileID: 812210743}
+  playerSpellManager: {fileID: 1333177304}
+  enemySpellManager: {fileID: 1187845566}
+  playerDeckManager: {fileID: 748154134}
+  enemyDeckManager: {fileID: 121888402}
   opponentAI: {fileID: 428874319}
 --- !u!4 &2067252101
 Transform:
@@ -5649,7 +6019,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4969080651349973788, guid: e67f610d42a32084dabe9efe2397ad8c, type: 3}
       propertyPath: m_Name
-      value: Enemy Aura Tower
+      value: EnemyLifeTower
       objectReference: {fileID: 0}
     - target: {fileID: 5746144708217471398, guid: e67f610d42a32084dabe9efe2397ad8c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5964,7 +6334,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8610094679731809834, guid: f9cbc8a3538510c49ae0dde4c7d72569, type: 3}
       propertyPath: m_Name
-      value: Player Aura Tower
+      value: PlayerLifeTower
       objectReference: {fileID: 0}
     - target: {fileID: 8950591803369026704, guid: f9cbc8a3538510c49ae0dde4c7d72569, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6034,3 +6404,5 @@ SceneRoots:
   - {fileID: 6462131599133745470}
   - {fileID: 813570861}
   - {fileID: 1750550767}
+  - {fileID: 1207329392}
+  - {fileID: 812210747}

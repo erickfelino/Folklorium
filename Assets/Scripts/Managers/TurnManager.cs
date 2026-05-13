@@ -15,7 +15,19 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private HandManager playerHandManager;
     [SerializeField] private HandManager enemyHandManager;
 
-    [Header("Outros Gerenciadores")]
+    [Header("Gerenciadores de Aura")]
+    [SerializeField] private BattleAuraController playerAuraController;
+    [SerializeField] private BattleAuraController enemyAuraController;
+
+    [Header("Gerenciadores de Magia")]
+    [SerializeField] private SpellManager playerSpellManager;
+    [SerializeField] private SpellManager enemySpellManager;
+
+    [Header("Gerenciadores de Deck")]
+    [SerializeField] private DeckManager playerDeckManager;
+    [SerializeField] private DeckManager enemyDeckManager;
+
+    [Header("Gerenciadores de IA")]
     [SerializeField] private OpponentAI opponentAI;
     
     public bool IsPlayerTurn { get; private set; }
@@ -26,7 +38,6 @@ public class TurnManager : MonoBehaviour
     {
         get { return pendingLocks > 0; }
     }
-
     // Tranca a porta (+1)
     public static void LockTurn() 
     { 
@@ -62,10 +73,10 @@ public class TurnManager : MonoBehaviour
 
         bool playerGoesFirst = UnityEngine.Random.value > 0.5f;
 
-        // 3. Distribui as cartas ANTES do turno começar, aplicando a vantagem do 2º jogador
         yield return StartCoroutine(DealStartingHands(playerGoesFirst));
 
-        // 4. Inicia a partida de fato
+        yield return StartCoroutine(SetupBattle());
+
         if (playerGoesFirst)
         {
             Debug.Log("O Jogador ganhou no cara ou coroa! Você começa.");
@@ -78,6 +89,21 @@ public class TurnManager : MonoBehaviour
             IsPlayerTurn = false;
             StartCoroutine(SimulateOpponentTurn());
         }
+    }
+
+    private IEnumerator SetupBattle()
+    {
+        if (playerAuraController != null && playerDeckManager != null)
+        {
+            playerAuraController.SetupFromDeck(playerDeckManager.allCards, false, playerSpellManager != null ? playerSpellManager.GetSpellSlots() : null);
+        }
+
+        if (enemyAuraController != null && enemyDeckManager != null)
+        {
+            enemyAuraController.SetupFromDeck(enemyDeckManager.allCards, true, enemySpellManager != null ? enemySpellManager.GetSpellSlots() : null);
+        }
+
+        yield return null;
     }
 
     // ==========================================

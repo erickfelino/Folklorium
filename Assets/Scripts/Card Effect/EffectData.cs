@@ -71,8 +71,8 @@ public class DestroyEffectData : EffectData
 [Serializable]
 public class SummonAuraEffectData : EffectData
 {
-    public int attackBonus = 1;
-    public int healthBonus = 1;
+    public int attackBonus;
+    public int healthBonus;
     public bool affectOnlyOwnSide = true;
 }
 
@@ -89,10 +89,10 @@ public class AoEEffectData : EffectData
 
     public AoEMode mode = AoEMode.Damage;
 
-    public int damageAmount = 1;
-    public int healAmount = 1;
-    public int buffAttack = 1;
-    public int buffHealth = 1;
+    public int damageAmount;
+    public int healAmount;
+    public int buffAttack;
+    public int buffHealth;
 
     public List<AoETargetType> targetGroups = new List<AoETargetType>();
 

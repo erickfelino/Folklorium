@@ -34,3 +34,4 @@ MonoBehaviour:
         attack: 1
         health: 1
         excludeSelf: 1
+        randomTarget: 0
