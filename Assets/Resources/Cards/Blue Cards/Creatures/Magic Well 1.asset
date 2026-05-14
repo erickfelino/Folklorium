@@ -37,5 +37,5 @@ MonoBehaviour:
           delayTurns: 1
           lifetimeMode: 1
           lifetimeScope: 0
-          durationTurns: 1
+          durationTurns: 2
         manaDelta: 1

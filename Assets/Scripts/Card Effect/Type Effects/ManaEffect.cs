@@ -31,7 +31,7 @@ public class ManaEffect : CardEffect
             manaManager,
             manaData.manaDelta,
             isTemporary,
-            rawData.timing != null ? rawData.timing.durationTurns : 0,
+            rawData.timing != null ? rawData.timing.durationTurns + rawData.timing.delayTurns: 0,
             rawData.timing != null ? rawData.timing.lifetimeScope : EffectTurnScope.OwnerTurns
         );
 

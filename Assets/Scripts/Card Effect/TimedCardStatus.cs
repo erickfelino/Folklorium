@@ -74,7 +74,7 @@ public class TimedCardStatus : MonoBehaviour
             return;
         }
 
-        bool currentSideIsEnemy = !isPlayerTurn;
+        bool sideThatJustEndedIsEnemy = isPlayerTurn;
 
         for (int i = stacks.Count - 1; i >= 0; i--)
         {
@@ -82,14 +82,14 @@ public class TimedCardStatus : MonoBehaviour
 
             bool countsThisTurn =
                 stack.scope == EffectTurnScope.GlobalTurns ||
-                target.isEnemy == currentSideIsEnemy;
+                target.isEnemy == sideThatJustEndedIsEnemy;
 
             if (!countsThisTurn)
                 continue;
 
             stack.remainingTurns--;
 
-            if (stack.remainingTurns > 0)
+            if (stack.remainingTurns >= 0)
                 continue;
 
             if (stack.attackDelta != 0 || stack.lifeDelta != 0)
