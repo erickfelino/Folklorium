@@ -34,8 +34,8 @@ MonoBehaviour:
       data:
         timing:
           resolutionTiming: 1
-          resolutionScope: 1
-          delayTurns: 4
+          resolutionScope: 0
+          delayTurns: 1
           lifetimeMode: 0
           lifetimeScope: 0
           durationTurns: 1

@@ -36,7 +36,7 @@ MonoBehaviour:
           resolutionScope: 0
           delayTurns: 0
           lifetimeMode: 1
-          lifetimeScope: 0
+          lifetimeScope: 1
           durationTurns: 2
         attack: -2
         health: 0

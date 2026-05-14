@@ -166,3 +166,10 @@ public class ReactivateSpentSpellEffectData : EffectData
 {
     
 }
+
+[Serializable]
+public class FreezeEffectData : EffectData
+{
+    [Min(1)]
+    public int freezeTurns;
+}

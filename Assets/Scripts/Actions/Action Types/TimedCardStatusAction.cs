@@ -39,7 +39,15 @@ public class TimedCardStatusAction : GameAction
         if (status == null)
             status = targetCard.gameObject.AddComponent<TimedCardStatus>();
 
-        status.Initialize(attackDelta, lifeDelta, applyAsBuff, attackLockDelta, durationTurns, scope);
+        status.AddStack(
+            attackDelta,
+            lifeDelta,
+            applyAsBuff,
+            attackLockDelta,
+            durationTurns,
+            scope
+        );
+
         yield break;
     }
 }

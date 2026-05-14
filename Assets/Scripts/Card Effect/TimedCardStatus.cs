@@ -1,18 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Folklorium;
 
 public class TimedCardStatus : MonoBehaviour
 {
+    private class StatusStack
+    {
+        public int attackDelta;
+        public int lifeDelta;
+        public bool applyAsBuff;
+        public int attackLockDelta;
+        public int remainingTurns;
+        public EffectTurnScope scope;
+    }
+
     private CardCombat target;
     private TurnManager turnManager;
-
-    private int attackDelta;
-    private int lifeDelta;
-    private bool applyAsBuff;
-    private int attackLockDelta;
-    private int remainingTurns;
-    private EffectTurnScope scope;
-    private bool initialized;
+    private readonly List<StatusStack> stacks = new List<StatusStack>();
 
     private void Awake()
     {
@@ -32,18 +36,28 @@ public class TimedCardStatus : MonoBehaviour
             turnManager.OnTurnChanged -= HandleTurnChanged;
     }
 
-    public void Initialize(int attackDelta, int lifeDelta, bool applyAsBuff, int attackLockDelta, int durationTurns, EffectTurnScope scope)
+    public void AddStack(
+        int attackDelta,
+        int lifeDelta,
+        bool applyAsBuff,
+        int attackLockDelta,
+        int durationTurns,
+        EffectTurnScope scope)
     {
-        if (initialized || target == null || target.isDead)
+        if (target == null || target.isDead)
             return;
 
-        this.attackDelta = attackDelta;
-        this.lifeDelta = lifeDelta;
-        this.applyAsBuff = applyAsBuff;
-        this.attackLockDelta = attackLockDelta;
-        this.remainingTurns = Mathf.Max(1, durationTurns);
-        this.scope = scope;
-        initialized = true;
+        var stack = new StatusStack
+        {
+            attackDelta = attackDelta,
+            lifeDelta = lifeDelta,
+            applyAsBuff = applyAsBuff,
+            attackLockDelta = attackLockDelta,
+            remainingTurns = Mathf.Max(1, durationTurns),
+            scope = scope
+        };
+
+        stacks.Add(stack);
 
         if (attackDelta != 0 || lifeDelta != 0)
             target.ApplyRawStateChange(attackDelta, lifeDelta, applyAsBuff);
@@ -54,28 +68,40 @@ public class TimedCardStatus : MonoBehaviour
 
     private void HandleTurnChanged(bool isPlayerTurn)
     {
-        if (!initialized || target == null || target.isDead)
+        if (target == null || target.isDead)
+        {
+            Destroy(this);
             return;
+        }
 
         bool currentSideIsEnemy = !isPlayerTurn;
-        bool countsThisTurn =
-            scope == EffectTurnScope.GlobalTurns ||
-            target.isEnemy == currentSideIsEnemy;
 
-        if (!countsThisTurn)
-            return;
+        for (int i = stacks.Count - 1; i >= 0; i--)
+        {
+            StatusStack stack = stacks[i];
 
-        remainingTurns--;
+            bool countsThisTurn =
+                stack.scope == EffectTurnScope.GlobalTurns ||
+                target.isEnemy == currentSideIsEnemy;
 
-        if (remainingTurns > 0)
-            return;
+            if (!countsThisTurn)
+                continue;
 
-        if (attackDelta != 0 || lifeDelta != 0)
-            target.ApplyRawStateChange(-attackDelta, -lifeDelta, applyAsBuff);
+            stack.remainingTurns--;
 
-        if (attackLockDelta > 0)
-            target.RemoveTemporaryAttackLock(attackLockDelta);
+            if (stack.remainingTurns > 0)
+                continue;
 
-        Destroy(this);
+            if (stack.attackDelta != 0 || stack.lifeDelta != 0)
+                target.ApplyRawStateChange(-stack.attackDelta, -stack.lifeDelta, stack.applyAsBuff);
+
+            if (stack.attackLockDelta > 0)
+                target.RemoveTemporaryAttackLock(stack.attackLockDelta);
+
+            stacks.RemoveAt(i);
+        }
+
+        if (stacks.Count == 0)
+            Destroy(this);
     }
 }
