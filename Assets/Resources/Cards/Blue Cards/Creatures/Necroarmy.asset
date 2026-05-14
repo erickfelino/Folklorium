@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
+  m_Name: Necroarmy
+  m_EditorClassIdentifier: 
+  cardName: Necroarmy
+  cardBody: "Mobilizar: No final pr\xF3ximo turno do seu oponente, invoque 7 soldados
+    1/1 no seu lado do campo"
+  cardColorGroup: 1
+  cardRole: 2
+  mana: 6
+  attack: 2
+  life: 2
+  art: {fileID: 21300000, guid: 5635846e8f4ee6047af511e2bc1dd19f, type: 3}
+  effects:
+  - effectSO: {fileID: 11400000, guid: cdf80184b41976d48a95554ccde1e490, type: 2}
+    trigger: 0
+    parameters:
+      rid: 347702166048211026
+  references:
+    version: 2
+    RefIds:
+    - rid: 347702166048211026
+      type: {class: SummonEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        timing:
+          resolutionTiming: 1
+          resolutionScope: 1
+          delayTurns: 4
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
+        attack: 1
+        health: 1
+        Quantity: 7
+        boardSide: 0

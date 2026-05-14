@@ -31,6 +31,13 @@ MonoBehaviour:
     - rid: 2886593648273129533
       type: {class: BuffEffectData, ns: , asm: Assembly-CSharp}
       data:
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
         attack: 1
         health: 1
         excludeSelf: 1

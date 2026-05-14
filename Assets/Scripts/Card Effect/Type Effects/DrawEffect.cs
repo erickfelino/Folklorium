@@ -8,28 +8,35 @@ public class DrawEffect : CardEffect
     {
         return typeof(DrawCardEffectData);
     }
+
     public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
-        // Magias de comprar cartas geralmente não precisam que você clique em um alvo na mesa.
-        // Então, ela sempre é um alvo válido ao ser jogada!
-        return true; 
+        return true;
     }
 
     public override GameAction CreateAction(CardEffectContext context, EffectData rawData)
     {
-        HandManager handToDraw = context.playerHand;
-        
-        int amountToDraw = 1; // Valor padrão de segurança
+        int amountToDraw = 1;
 
-        // 👇 A MÁGICA DO CASTING: Tentamos transformar o pacote genérico no pacote específico!
         if (rawData is DrawCardEffectData drawData)
         {
-            // Se deu certo, agora temos acesso ao "amountToDraw" que você criou no EffectData.cs!
             amountToDraw = drawData.amount > 0 ? drawData.amount : 1;
         }
         else
         {
             Debug.LogWarning("O pacote de dados passado para o DrawEffect não é um DrawCardEffectData!");
+        }
+
+        HandManager handToDraw = context.playerHand;
+        if (handToDraw == null)
+        {
+            handToDraw = HandManager.GetForSide(context.IsEnemySource);
+        }
+
+        if (handToDraw == null)
+        {
+            Debug.LogWarning("[DrawEffect] Não foi possível encontrar a mão correta para comprar cartas.");
+            return null;
         }
 
         return new DrawAction(handToDraw, amountToDraw, context.IsEnemySource);

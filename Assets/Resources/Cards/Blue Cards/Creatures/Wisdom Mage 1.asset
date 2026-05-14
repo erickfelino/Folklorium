@@ -31,4 +31,11 @@ MonoBehaviour:
     - rid: 347702166048210946
       type: {class: DrawCardEffectData, ns: , asm: Assembly-CSharp}
       data:
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
         amount: 2

@@ -9,6 +9,10 @@ public class HandManager : MonoBehaviour
     public GameObject cardPrefab;
     public Transform handTransform;
 
+    [Header("Lado da Mão")]
+    [SerializeField] private bool isEnemySide;
+    public bool IsEnemySide => isEnemySide;
+
     [Header("Configurações 3D da Mão")]
     public float fanSpread = -7.5f;
     public float cardSpacing = 8f;
@@ -17,8 +21,9 @@ public class HandManager : MonoBehaviour
 
     [Header("Configurações do DOTween")]
     public float animDuration = 0.3f; // Nova variável que substitui a MoveSpeed
-    public bool isEnemyHand = false;
     public ManaManager myManaManager;
+    private static readonly List<HandManager> instances = new List<HandManager>();
+    
     public List<GameObject> cardsInHand = new List<GameObject>();
 
     private List<Vector3> targetPositions = new List<Vector3>();
@@ -47,7 +52,7 @@ public class HandManager : MonoBehaviour
         if (drag != null)
         {
             drag.SetManagers(this, myManaManager); 
-            if (isEnemyHand)
+            if (isEnemySide)
             {
                 drag.enabled = false;
         
@@ -100,7 +105,7 @@ public class HandManager : MonoBehaviour
             
             float rotationAngle = fanSpread * normalizedPosition;
 
-            if (isEnemyHand)
+            if (isEnemySide)
             {
                 targetRotations[i] = Quaternion.Euler(-89.98f, 0f, 180f + rotationAngle); 
             }
@@ -159,5 +164,20 @@ public class HandManager : MonoBehaviour
         Quaternion hoverRot = Quaternion.Euler(-90f, 0f, 0f);
         card.transform.DOLocalRotateQuaternion(hoverRot, 0.1f);
         card.transform.DOScale(new Vector3(10f, 10f, 10f), 0.1f);
+    }
+    private void OnEnable()
+    {
+        if (!instances.Contains(this))
+            instances.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        instances.Remove(this);
+    }
+
+    public static HandManager GetForSide(bool enemySide)
+    {
+        return instances.Find(h => h != null && h.isEnemySide == enemySide);
     }
 }

@@ -1222,14 +1222,15 @@ Transform:
   - {fileID: 428874320}
   - {fileID: 1103161210}
   - {fileID: 2067252101}
-  - {fileID: 1642706680}
   - {fileID: 915040654}
+  - {fileID: 1642706680}
   - {fileID: 1837242349}
   - {fileID: 291544425}
   - {fileID: 1056582159}
   - {fileID: 1918692356}
   - {fileID: 141069881}
   - {fileID: 1853536768}
+  - {fileID: 682596826}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &618027083
@@ -1680,6 +1681,52 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   acceptedRole: 0
   isEnemySide: 1
+--- !u!1 &682596825
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 682596826}
+  - component: {fileID: 682596827}
+  m_Layer: 0
+  m_Name: BattleEffectScheduler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &682596826
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682596825}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 605788074}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &682596827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682596825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a1012f092a446f458deb4a3effbbf67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnManager: {fileID: 2067252100}
+  boardManager: {fileID: 1918692357}
 --- !u!114 &748154134 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
@@ -2067,6 +2114,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2330570353867373546}
     - target: {fileID: 1878087847712310585, guid: 43de1e1554eca014fa75d91d6ff950a3, type: 3}
+      propertyPath: spellManager
+      value: 
+      objectReference: {fileID: 1187845566}
+    - target: {fileID: 1878087847712310585, guid: 43de1e1554eca014fa75d91d6ff950a3, type: 3}
       propertyPath: effectTargetManager
       value: 
       objectReference: {fileID: 1837242350}
@@ -2256,12 +2307,12 @@ MonoBehaviour:
   deckManager: {fileID: 748154134}
   cardPrefab: {fileID: 478714304680186784, guid: 189fc320ff3e9e74b851cdde00ce7544, type: 3}
   handTransform: {fileID: 915040654}
+  isEnemySide: 0
   fanSpread: 10
   cardSpacing: 0.5
   verticalSpacing: 0.1
   depthSpacing: 0.05
   animDuration: 0.8
-  isEnemyHand: 0
   myManaManager: {fileID: 2330570353800790985}
   cardsInHand: []
 --- !u!1 &992351872
@@ -2725,9 +2776,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ca5cded824ffa409bd54e06f786081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEnemySide: 1
   spellSlot1: {fileID: 870237834}
   spellSlot2: {fileID: 1626904936}
   manaManager: {fileID: 2330570353867373546}
+  targetingArrow: {fileID: 0}
 --- !u!1 &1192132293
 GameObject:
   m_ObjectHideFlags: 0
@@ -3762,9 +3815,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ca5cded824ffa409bd54e06f786081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEnemySide: 0
   spellSlot1: {fileID: 60879965}
   spellSlot2: {fileID: 1098606517}
   manaManager: {fileID: 2330570353800790985}
+  targetingArrow: {fileID: 0}
 --- !u!1 &1343544092
 GameObject:
   m_ObjectHideFlags: 0
@@ -4794,12 +4849,12 @@ MonoBehaviour:
   deckManager: {fileID: 121888402}
   cardPrefab: {fileID: 478714304680186784, guid: 189fc320ff3e9e74b851cdde00ce7544, type: 3}
   handTransform: {fileID: 1642706680}
+  isEnemySide: 1
   fanSpread: 5
   cardSpacing: 0.5
   verticalSpacing: 0
   depthSpacing: 0
   animDuration: 0.8
-  isEnemyHand: 1
   myManaManager: {fileID: 2330570353867373546}
   cardsInHand: []
 --- !u!4 &1642706680
@@ -4829,6 +4884,10 @@ PrefabInstance:
       propertyPath: manaManager
       value: 
       objectReference: {fileID: 2330570353867373546}
+    - target: {fileID: 647173019842083937, guid: 022b7cd48b2c578418b93fa35b130e84, type: 3}
+      propertyPath: spellManager
+      value: 
+      objectReference: {fileID: 1187845566}
     - target: {fileID: 647173019842083937, guid: 022b7cd48b2c578418b93fa35b130e84, type: 3}
       propertyPath: effectTargetManager
       value: 
@@ -6117,6 +6176,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7113979807205263921, guid: 4ba10e4f9b1f13540bc9a0443bd83779, type: 3}
+      propertyPath: isEnemySide
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9172077878342439005, guid: 4ba10e4f9b1f13540bc9a0443bd83779, type: 3}
       propertyPath: m_Name
       value: EnemyManaManager
@@ -6187,7 +6250,7 @@ PrefabInstance:
       objectReference: {fileID: 915040655}
     - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
       propertyPath: deckFolderPath
-      value: Cards/Red Cards/Creatures
+      value: Cards/Blue Cards/Creatures
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6247,9 +6310,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1878087847712310585, guid: 46ceafb773d79a6478ae6ecc59dd1f09, type: 3}
+      propertyPath: spellData
+      value: 
+      objectReference: {fileID: 11400000, guid: 446c1ba0ae74e94438a3be01ab753a83, type: 2}
+    - target: {fileID: 1878087847712310585, guid: 46ceafb773d79a6478ae6ecc59dd1f09, type: 3}
       propertyPath: manaManager
       value: 
       objectReference: {fileID: 2330570353800790985}
+    - target: {fileID: 1878087847712310585, guid: 46ceafb773d79a6478ae6ecc59dd1f09, type: 3}
+      propertyPath: spellManager
+      value: 
+      objectReference: {fileID: 1333177304}
     - target: {fileID: 1878087847712310585, guid: 46ceafb773d79a6478ae6ecc59dd1f09, type: 3}
       propertyPath: effectTargetManager
       value: 
@@ -6268,9 +6339,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 647173019842083937, guid: e3122606756a9944d80fb8845c0c4b85, type: 3}
+      propertyPath: spellData
+      value: 
+      objectReference: {fileID: 11400000, guid: 2fb5c91e6f4586b4f8f7af3e6615c263, type: 2}
+    - target: {fileID: 647173019842083937, guid: e3122606756a9944d80fb8845c0c4b85, type: 3}
       propertyPath: manaManager
       value: 
       objectReference: {fileID: 2330570353800790985}
+    - target: {fileID: 647173019842083937, guid: e3122606756a9944d80fb8845c0c4b85, type: 3}
+      propertyPath: spellManager
+      value: 
+      objectReference: {fileID: 1333177304}
     - target: {fileID: 647173019842083937, guid: e3122606756a9944d80fb8845c0c4b85, type: 3}
       propertyPath: effectTargetManager
       value: 

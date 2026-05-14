@@ -12,15 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
   m_Name: Thunder Clap
   m_EditorClassIdentifier: 
-  cardName: 
-  cardBody: 
-  cardColorGroup: 0
-  cardRole: 0
-  mana: 0
+  cardName: Thunder Clap
+  cardBody: "D\xEA 4 de dano"
+  cardColorGroup: 1
+  cardRole: 3
+  mana: 3
   attack: 0
   life: 0
   art: {fileID: 0}
-  effects: []
+  effects:
+  - effectSO: {fileID: 11400000, guid: d8c21618d6c428341ba866db93749eda, type: 2}
+    trigger: 0
+    parameters:
+      rid: 347702166048211032
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 347702166048211032
+      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
+        damage: 4
+        excludeSelf: 0
+        randomTarget: 0
