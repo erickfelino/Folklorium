@@ -1,7 +1,7 @@
 using UnityEngine;
 using Folklorium;
 
-public class TimedCardModifier : MonoBehaviour
+public class TimedCardStatus : MonoBehaviour
 {
     private CardCombat target;
     private TurnManager turnManager;
@@ -9,6 +9,7 @@ public class TimedCardModifier : MonoBehaviour
     private int attackDelta;
     private int lifeDelta;
     private bool applyAsBuff;
+    private int attackLockDelta;
     private int remainingTurns;
     private EffectTurnScope scope;
     private bool initialized;
@@ -31,7 +32,7 @@ public class TimedCardModifier : MonoBehaviour
             turnManager.OnTurnChanged -= HandleTurnChanged;
     }
 
-    public void Initialize(int attackDelta, int lifeDelta, bool applyAsBuff, int durationTurns, EffectTurnScope scope)
+    public void Initialize(int attackDelta, int lifeDelta, bool applyAsBuff, int attackLockDelta, int durationTurns, EffectTurnScope scope)
     {
         if (initialized || target == null || target.isDead)
             return;
@@ -39,11 +40,16 @@ public class TimedCardModifier : MonoBehaviour
         this.attackDelta = attackDelta;
         this.lifeDelta = lifeDelta;
         this.applyAsBuff = applyAsBuff;
+        this.attackLockDelta = attackLockDelta;
         this.remainingTurns = Mathf.Max(1, durationTurns);
         this.scope = scope;
         initialized = true;
 
-        target.ApplyRawStateChange(attackDelta, lifeDelta, applyAsBuff);
+        if (attackDelta != 0 || lifeDelta != 0)
+            target.ApplyRawStateChange(attackDelta, lifeDelta, applyAsBuff);
+
+        if (attackLockDelta > 0)
+            target.AddTemporaryAttackLock(attackLockDelta);
     }
 
     private void HandleTurnChanged(bool isPlayerTurn)
@@ -64,7 +70,12 @@ public class TimedCardModifier : MonoBehaviour
         if (remainingTurns > 0)
             return;
 
-        target.ApplyRawStateChange(-attackDelta, -lifeDelta, applyAsBuff);
+        if (attackDelta != 0 || lifeDelta != 0)
+            target.ApplyRawStateChange(-attackDelta, -lifeDelta, applyAsBuff);
+
+        if (attackLockDelta > 0)
+            target.RemoveTemporaryAttackLock(attackLockDelta);
+
         Destroy(this);
     }
 }

@@ -24,12 +24,14 @@ public class CardCombat : MonoBehaviour, IEffectSource
     private TurnManager turnManager;
     private bool isPerformingAttack = false;
     private bool pendingDeath = false;
+    private int temporaryAttackLocks = 0;
 
     [Header("Status de Combate")]
     public int currentAttack;
     public int currentLife;
     public int maxLife;
     public bool canAttackThisTurn = false;
+    public bool CanAttackNow => canAttackThisTurn && temporaryAttackLocks <= 0;
     public bool isEnemy;
     public bool isDead = false;
 
@@ -167,9 +169,21 @@ public class CardCombat : MonoBehaviour, IEffectSource
         display.UpdateStatusText(currentLife, currentAttack);
     }
 
+    public void AddTemporaryAttackLock(int amount = 1)
+    {
+        temporaryAttackLocks += Mathf.Max(1, amount);
+        RefreshGlowState();
+    }
+
+    public void RemoveTemporaryAttackLock(int amount = 1)
+    {
+        temporaryAttackLocks = Mathf.Max(0, temporaryAttackLocks - Mathf.Max(1, amount));
+        RefreshGlowState();
+    }
+
     public void Attack(CardCombat targetCard)
     {
-        if (!canAttackThisTurn)
+        if (!CanAttackNow)
         {
             Debug.Log("Esta criatura não pode atacar neste turno!");
             return;
@@ -179,6 +193,8 @@ public class CardCombat : MonoBehaviour, IEffectSource
         RefreshGlowState();
         StartCoroutine(AttackChoreography(targetCard));
     }
+
+
 
     private IEnumerator AttackChoreography(CardCombat targetCard)
     {
@@ -280,7 +296,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
             return;
         }
 
-        if (!isEnemy && canAttackThisTurn)
+        if (!isEnemy && CanAttackNow)
         {
             dragObj.SetGlow(true, Color.green);
         }

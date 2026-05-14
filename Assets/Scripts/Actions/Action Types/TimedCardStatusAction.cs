@@ -2,21 +2,30 @@ using System.Collections;
 using UnityEngine;
 using Folklorium;
 
-public class TimedCardModifierAction : GameAction
+public class TimedCardStatusAction : GameAction
 {
     private readonly CardCombat targetCard;
     private readonly int attackDelta;
     private readonly int lifeDelta;
     private readonly bool applyAsBuff;
+    private readonly int attackLockDelta;
     private readonly int durationTurns;
     private readonly EffectTurnScope scope;
 
-    public TimedCardModifierAction(CardCombat targetCard, int attackDelta, int lifeDelta, bool applyAsBuff, int durationTurns, EffectTurnScope scope)
+    public TimedCardStatusAction(
+        CardCombat targetCard,
+        int attackDelta,
+        int lifeDelta,
+        bool applyAsBuff,
+        int attackLockDelta,
+        int durationTurns,
+        EffectTurnScope scope)
     {
         this.targetCard = targetCard;
         this.attackDelta = attackDelta;
         this.lifeDelta = lifeDelta;
         this.applyAsBuff = applyAsBuff;
+        this.attackLockDelta = attackLockDelta;
         this.durationTurns = durationTurns;
         this.scope = scope;
     }
@@ -26,11 +35,11 @@ public class TimedCardModifierAction : GameAction
         if (targetCard == null || targetCard.isDead)
             yield break;
 
-        TimedCardModifier modifier = targetCard.GetComponent<TimedCardModifier>();
-        if (modifier == null)
-            modifier = targetCard.gameObject.AddComponent<TimedCardModifier>();
+        TimedCardStatus status = targetCard.GetComponent<TimedCardStatus>();
+        if (status == null)
+            status = targetCard.gameObject.AddComponent<TimedCardStatus>();
 
-        modifier.Initialize(attackDelta, lifeDelta, applyAsBuff, durationTurns, scope);
+        status.Initialize(attackDelta, lifeDelta, applyAsBuff, attackLockDelta, durationTurns, scope);
         yield break;
     }
 }

@@ -19,13 +19,14 @@ public class BuffEffect : CardEffect
         if (context.targetCard == null)
             return null;
 
-        if (rawData.timing.lifetimeMode == EffectLifetimeMode.Temporary)
+        if (rawData.timing != null && rawData.timing.lifetimeMode == EffectLifetimeMode.Temporary)
         {
-            return new TimedCardModifierAction(
+            return new TimedCardStatusAction(
                 context.targetCard,
                 buffData.attack,
                 buffData.health,
                 true,
+                0,
                 rawData.timing.durationTurns,
                 rawData.timing.lifetimeScope
             );
