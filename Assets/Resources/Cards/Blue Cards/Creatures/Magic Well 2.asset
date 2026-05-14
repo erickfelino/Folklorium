@@ -17,8 +17,8 @@ MonoBehaviour:
   cardColorGroup: 1
   cardRole: 1
   mana: 3
-  attack: 2
-  life: 2
+  attack: 1
+  life: 1
   art: {fileID: 21300000, guid: 3d9c36c75e4f80342a1bf23f2c09fbf2, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: ad87e2480c7a36346951d0e78037995b, type: 2}
@@ -37,5 +37,5 @@ MonoBehaviour:
           delayTurns: 1
           lifetimeMode: 1
           lifetimeScope: 0
-          durationTurns: 2
+          durationTurns: 1
         manaDelta: 1

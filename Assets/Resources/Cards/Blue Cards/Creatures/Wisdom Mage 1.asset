@@ -17,8 +17,8 @@ MonoBehaviour:
   cardColorGroup: 1
   cardRole: 1
   mana: 4
-  attack: 3
-  life: 3
+  attack: 2
+  life: 2
   art: {fileID: 21300000, guid: 0bff25a3e25cd784f9e419be587f6066, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: 4b894bf942d15f047b14fa240fb0cd1c, type: 2}

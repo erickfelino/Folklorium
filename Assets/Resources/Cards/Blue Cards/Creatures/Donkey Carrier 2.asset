@@ -17,8 +17,8 @@ MonoBehaviour:
   cardColorGroup: 1
   cardRole: 0
   mana: 2
-  attack: 2
-  life: 1
+  attack: 1
+  life: 2
   art: {fileID: 21300000, guid: 85cd5a5188fd34a45a65ee0594df0f0d, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: 4b894bf942d15f047b14fa240fb0cd1c, type: 2}
@@ -31,4 +31,11 @@ MonoBehaviour:
     - rid: 347702166048210947
       type: {class: DrawCardEffectData, ns: , asm: Assembly-CSharp}
       data:
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
         amount: 1

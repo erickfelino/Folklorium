@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: Necroarmy
   m_EditorClassIdentifier: 
   cardName: Necroarmy
-  cardBody: "Mobilizar: No final pr\xF3ximo turno do seu oponente, invoque 7 soldados
-    1/1 no seu lado do campo"
+  cardBody: 'Mobilizar:  Invoque 7 soldados 1/1 no seu lado do campo'
   cardColorGroup: 1
   cardRole: 2
   mana: 6
-  attack: 2
-  life: 2
+  attack: 1
+  life: 1
   art: {fileID: 21300000, guid: 5635846e8f4ee6047af511e2bc1dd19f, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: cdf80184b41976d48a95554ccde1e490, type: 2}
@@ -33,7 +32,7 @@ MonoBehaviour:
       type: {class: SummonEffectData, ns: , asm: Assembly-CSharp}
       data:
         timing:
-          resolutionTiming: 1
+          resolutionTiming: 0
           resolutionScope: 0
           delayTurns: 1
           lifetimeMode: 0

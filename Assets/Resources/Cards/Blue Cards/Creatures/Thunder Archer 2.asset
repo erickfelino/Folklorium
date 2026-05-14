@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Thunder Archer 2
   m_EditorClassIdentifier: 
   cardName: Thunder Archer
-  cardBody: 'Mobilizar: Cause 2 de dano a um lacaio'
+  cardBody: 'Mobilizar: Cause 1 de dano a um lacaio'
   cardColorGroup: 1
   cardRole: 0
   mana: 2
@@ -31,6 +31,13 @@ MonoBehaviour:
     - rid: 347702166048210945
       type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
       data:
-        damage: 2
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
+        damage: 1
         excludeSelf: 0
         randomTarget: 0

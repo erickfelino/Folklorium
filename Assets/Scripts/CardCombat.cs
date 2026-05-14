@@ -189,6 +189,12 @@ public class CardCombat : MonoBehaviour, IEffectSource
             return;
         }
 
+        if (currentAttack == 0)
+        {
+            Debug.Log("Criatuas com zero de ataque não podem atacar!");
+            return;
+        }
+
         canAttackThisTurn = false;
         RefreshGlowState();
         StartCoroutine(AttackChoreography(targetCard));
@@ -236,6 +242,12 @@ public class CardCombat : MonoBehaviour, IEffectSource
         if (!canAttackThisTurn)
         {
             Debug.Log("Esta criatura não pode atacar neste turno!");
+            return;
+        }
+
+        if (currentAttack == 0)
+        {
+            Debug.Log("Criatuas com zero de ataque não podem atacar!");
             return;
         }
 
@@ -296,7 +308,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
             return;
         }
 
-        if (!isEnemy && CanAttackNow)
+        if (!isEnemy && CanAttackNow && currentAttack != 0)
         {
             dragObj.SetGlow(true, Color.green);
         }

@@ -21,18 +21,29 @@ MonoBehaviour:
   life: 0
   art: {fileID: 0}
   effects:
+  - effectSO: {fileID: 11400000, guid: 42e7f39ec4d2b8a4ca28e4c05010f9ae, type: 2}
+    trigger: 0
+    parameters:
+      rid: 347702188142231616
   - effectSO: {fileID: 11400000, guid: 6d429725c1d7a48469628fbe962a98dd, type: 2}
     trigger: 0
     parameters:
-      rid: 347702166048211029
-  - effectSO: {fileID: 11400000, guid: cdf80184b41976d48a95554ccde1e490, type: 2}
-    trigger: 0
-    parameters:
-      rid: 347702166048211031
+      rid: 347702188142231618
   references:
     version: 2
     RefIds:
-    - rid: 347702166048211029
+    - rid: 347702188142231616
+      type: {class: FreezeEffectData, ns: , asm: Assembly-CSharp}
+      data:
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
+        freezeTurns: 1
+    - rid: 347702188142231618
       type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
       data:
         timing:
@@ -45,17 +56,3 @@ MonoBehaviour:
         damage: 1
         excludeSelf: 0
         randomTarget: 0
-    - rid: 347702166048211031
-      type: {class: SummonEffectData, ns: , asm: Assembly-CSharp}
-      data:
-        timing:
-          resolutionTiming: 0
-          resolutionScope: 0
-          delayTurns: 0
-          lifetimeMode: 0
-          lifetimeScope: 0
-          durationTurns: 1
-        attack: 1
-        health: 1
-        Quantity: 1
-        boardSide: 0

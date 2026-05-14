@@ -18,7 +18,7 @@ MonoBehaviour:
   cardRole: 0
   mana: 1
   attack: 1
-  life: 2
+  life: 1
   art: {fileID: 21300000, guid: 287a208f02087b844b1cf48531ebebda, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: 1e6a857d2029df047a645a23eb8186a1, type: 2}

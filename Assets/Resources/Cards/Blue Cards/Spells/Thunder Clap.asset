@@ -16,7 +16,7 @@ MonoBehaviour:
   cardBody: "D\xEA 4 de dano"
   cardColorGroup: 1
   cardRole: 3
-  mana: 3
+  mana: 4
   attack: 0
   life: 0
   art: {fileID: 0}
