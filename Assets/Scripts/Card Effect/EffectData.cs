@@ -1,11 +1,54 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
+[Serializable]
+public enum EffectResolutionTiming
+{
+    Instant,
+    Delayed
+}
+
+[Serializable]
+public enum EffectTurnScope
+{
+    OwnerTurns,
+    GlobalTurns
+}
+
+[Serializable]
+public enum EffectLifetimeMode
+{
+    Permanent,
+    Temporary
+}
+
+[Serializable]
+public class EffectTimingData
+{
+    [Tooltip("Instant = resolve agora. Delayed = esperar x turnos.")]
+    public EffectResolutionTiming resolutionTiming = EffectResolutionTiming.Instant;
+
+    [Tooltip("OwnerTurns = conta só os turnos do dono da fonte. GlobalTurns = conta qualquer troca de turno.")]
+    public EffectTurnScope resolutionScope = EffectTurnScope.OwnerTurns;
+
+    [Min(0)]
+    public int delayTurns = 0;
+
+    [Tooltip("Permanent = o efeito aplicado não expira. Temporary = dura x turnos.")]
+    public EffectLifetimeMode lifetimeMode = EffectLifetimeMode.Permanent;
+
+    [Tooltip("OwnerTurns = expira nos turnos do dono. GlobalTurns = expira em turnos globais.")]
+    public EffectTurnScope lifetimeScope = EffectTurnScope.OwnerTurns;
+
+    [Min(1)]
+    public int durationTurns = 1;
+}
 // A classe pai. 
 [Serializable]
 public abstract class EffectData 
 { 
-    // Por padrão, ninguém exclui a si mesmo.
+    public EffectTimingData timing = new EffectTimingData();
     public virtual bool GetExcludeSelf() { return false; }
     public virtual bool RandomizeTarget() { return false; }
 }
@@ -98,4 +141,35 @@ public class AoEEffectData : EffectData
 
     public bool excludeSelf;
     public override bool GetExcludeSelf() { return excludeSelf; }
+}
+
+[Serializable]
+public class ManaEffectData : EffectData
+{
+    public int manaDelta;
+}
+
+[Serializable]
+public class SpellDamageAuraEffectData : EffectData
+{
+    public int bonusDamage;
+}
+
+[Serializable]
+public class FreeSpellCastEffectData : EffectData
+{
+    
+}
+
+[Serializable]
+public class ReactivateSpentSpellEffectData : EffectData
+{
+    
+}
+
+[Serializable]
+public class FreezeEffectData : EffectData
+{
+    [Min(1)]
+    public int freezeTurns;
 }

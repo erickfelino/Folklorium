@@ -1,7 +1,7 @@
 using UnityEngine;
 using Folklorium;
 
-[CreateAssetMenu(fileName = "NewHealEffect", menuName = "Card Effects/Destroy")]
+[CreateAssetMenu(fileName = "NewDestroyEffect", menuName = "Card Effects/Destroy")]
 public class DestroyEffect : CardEffect
 {
 

@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40eea50d90af8d49b5397f455b8cc2f, type: 3}
   m_Name: Draw Card
   m_EditorClassIdentifier: 
-  trigger: 0
   requiresTarget: 0
-  validTargets: 0
+  validTargets: 4
   description: Compra de card quando jogado
-  cardsToDraw: 1

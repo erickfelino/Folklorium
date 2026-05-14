@@ -22,12 +22,16 @@ public class CardCombat : MonoBehaviour, IEffectSource
         }
     }
     private TurnManager turnManager;
+    private bool isPerformingAttack = false;
+    private bool pendingDeath = false;
+    private int temporaryAttackLocks = 0;
 
     [Header("Status de Combate")]
     public int currentAttack;
     public int currentLife;
     public int maxLife;
     public bool canAttackThisTurn = false;
+    public bool CanAttackNow => canAttackThisTurn && temporaryAttackLocks <= 0;
     public bool isEnemy;
     public bool isDead = false;
 
@@ -165,11 +169,29 @@ public class CardCombat : MonoBehaviour, IEffectSource
         display.UpdateStatusText(currentLife, currentAttack);
     }
 
+    public void AddTemporaryAttackLock(int amount = 1)
+    {
+        temporaryAttackLocks += Mathf.Max(1, amount);
+        RefreshGlowState();
+    }
+
+    public void RemoveTemporaryAttackLock(int amount = 1)
+    {
+        temporaryAttackLocks = Mathf.Max(0, temporaryAttackLocks - Mathf.Max(1, amount));
+        RefreshGlowState();
+    }
+
     public void Attack(CardCombat targetCard)
     {
-        if (!canAttackThisTurn)
+        if (!CanAttackNow)
         {
             Debug.Log("Esta criatura não pode atacar neste turno!");
+            return;
+        }
+
+        if (currentAttack == 0)
+        {
+            Debug.Log("Criatuas com zero de ataque não podem atacar!");
             return;
         }
 
@@ -178,8 +200,15 @@ public class CardCombat : MonoBehaviour, IEffectSource
         StartCoroutine(AttackChoreography(targetCard));
     }
 
+
+
     private IEnumerator AttackChoreography(CardCombat targetCard)
     {
+        if (targetCard == null)
+            yield break;
+
+        isPerformingAttack = true;
+
         Vector3 originalPos = transform.position;
 
         yield return transform.DOMove(targetCard.transform.position, 0.15f).WaitForCompletion();
@@ -194,9 +223,17 @@ public class CardCombat : MonoBehaviour, IEffectSource
 
         yield return new WaitForSeconds(0.35f);
 
-        if (this != null && transform != null)
+        if (this != null && gameObject != null && transform != null)
         {
             yield return transform.DOMove(originalPos, 0.5f).SetEase(Ease.OutQuart).WaitForCompletion();
+        }
+
+        isPerformingAttack = false;
+
+        if (pendingDeath)
+        {
+            pendingDeath = false;
+            StartCoroutine(DeathSequence());
         }
     }
 
@@ -208,6 +245,12 @@ public class CardCombat : MonoBehaviour, IEffectSource
             return;
         }
 
+        if (currentAttack == 0)
+        {
+            Debug.Log("Criatuas com zero de ataque não podem atacar!");
+            return;
+        }
+
         canAttackThisTurn = false;
         RefreshGlowState();
         StartCoroutine(AttackChoreographyPlayer(targetHealth));
@@ -215,23 +258,33 @@ public class CardCombat : MonoBehaviour, IEffectSource
 
     private IEnumerator AttackChoreographyPlayer(PlayerHealth targetHealth)
     {
+        if (targetHealth == null)
+            yield break;
+
+        isPerformingAttack = true;
+
         Vector3 originalPos = transform.position;
 
         yield return transform.DOMove(targetHealth.transform.position, 0.15f).WaitForCompletion();
 
         int myDamage = this.currentAttack;
 
-        if (targetHealth != null)
-        {
-            ActionSystem.Instance.AddAction(new DamageAction(null, targetHealth, myDamage));
-            TriggerEffects(Folklorium.EffectTriggerType.OnAttack, null, targetHealth);
-        }
+        ActionSystem.Instance.AddAction(new DamageAction(null, targetHealth, myDamage));
+        TriggerEffects(Folklorium.EffectTriggerType.OnAttack, null, targetHealth);
 
         yield return new WaitForSeconds(0.35f);
 
-        if (this != null)
+        if (this != null && gameObject != null && transform != null)
         {
-            transform.DOMove(originalPos, 0.75f);
+            yield return transform.DOMove(originalPos, 0.75f).WaitForCompletion();
+        }
+
+        isPerformingAttack = false;
+
+        if (pendingDeath)
+        {
+            pendingDeath = false;
+            StartCoroutine(DeathSequence());
         }
     }
 
@@ -255,7 +308,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
             return;
         }
 
-        if (!isEnemy && canAttackThisTurn)
+        if (!isEnemy && CanAttackNow && currentAttack != 0)
         {
             dragObj.SetGlow(true, Color.green);
         }
@@ -268,26 +321,42 @@ public class CardCombat : MonoBehaviour, IEffectSource
     public void Die()
     {
         if (isDead) return;
-        isDead = true;
-        StartCoroutine(DeathSequence());
-    }
-
-    private IEnumerator DeathSequence()
-    {
-        Debug.Log($"{display.cardData.cardName} foi destruído!");
 
         isDead = true;
 
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
 
+        // Se estiver no meio de um ataque, não mata agora.
+        // Só marca que a morte precisa acontecer depois do retorno.
+        if (isPerformingAttack)
+        {
+            pendingDeath = true;
+            return;
+        }
+
+        StartCoroutine(DeathSequence());
+    }
+    private IEnumerator DeathSequence()
+    {
+        if (display != null && display.cardData != null)
+            Debug.Log($"{display.cardData.cardName} foi destruído!");
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        if (transform != null)
+            transform.DOKill();
+
         BoardManager.Instance?.ReleaseCard(this);
 
         OnDeath?.Invoke(this);
         TriggerEffects(Folklorium.EffectTriggerType.OnDeath);
 
-        yield return transform.DOComplete();
-        yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
+        yield return null;
+
+        if (ActionSystem.Instance != null)
+            yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
 
         Destroy(gameObject);
     }

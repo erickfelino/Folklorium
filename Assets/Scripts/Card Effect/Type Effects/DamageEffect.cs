@@ -1,4 +1,5 @@
 using UnityEngine;
+using Folklorium;
 
 [CreateAssetMenu(menuName = "Card Effects/Damage Effect")]
 public class DamageEffect : CardEffect
@@ -10,18 +11,35 @@ public class DamageEffect : CardEffect
 
     public override GameAction CreateAction(CardEffectContext context, EffectData rawData)
     {
-        // 1. Lemos a caixa misteriosa (rawData) e checamos se ela é uma caixa de Dano
-        if (rawData is DamageEffectData damageData)
+        if (rawData is not DamageEffectData damageData)
         {
-            // 2. Pegamos o valor que você configurou lá no Inspector da carta!
-            int damageToDeal = damageData.damage;
-
-            // 3. Cospe o ticket pronto
-            return new DamageAction(context.targetCard, context.targetPlayer, damageToDeal);
+            Debug.LogError($"[DamageEffect] Dados inválidos para '{context.source.SourceName}'.");
+            return null;
         }
 
-        // Sistema anti-falhas: se o designer arrastou o efeito de dano, mas escolheu "BuffData" na Unity
-        Debug.LogError($"[DamageEffect] ERRO: A carta '{context.source.SourceName}' tentou usar o DamageEffect, mas os dados passados não são DamageEffectData!");
-        return null;
+        int damageToDeal = damageData.damage;
+
+        if (context.source is SpellSlot)
+        {
+            damageToDeal += BattleAuraQuery.GetSpellDamageBonusForSide(context.IsEnemySource);
+        }
+
+        GameAction instantAction = new DamageAction(context.targetCard, context.targetPlayer, damageToDeal);
+
+        if (rawData.timing != null && rawData.timing.resolutionTiming == EffectResolutionTiming.Delayed)
+        {
+            return new DeferredEffectAction(
+                context.source,
+                rawData.timing.delayTurns,
+                rawData.timing.resolutionScope,
+                () =>
+                {
+                    if (ActionSystem.Instance != null)
+                        ActionSystem.Instance.AddAction(instantAction);
+                }
+            );
+        }
+
+        return instantAction;
     }
 }

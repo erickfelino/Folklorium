@@ -11,20 +11,16 @@ public class SummonEffect : CardEffect
 
     public override bool IsValidTarget(IEffectSource source, CardCombat targetCard, PlayerHealth targetPlayer, EffectData rawData)
     {
-        // No futuro, podemos checar se o lado do campo tem slots vazios.
-        // Por enquanto, sempre podemos tentar invocar.
-        return true; 
+        return true;
     }
 
     public override GameAction CreateAction(CardEffectContext context, EffectData rawData)
     {
-        // Valores padrão de segurança (caso o designer esqueça de preencher)
         int atk = 1;
         int hp = 1;
         int qty = 1;
-        int side = 0; // 0 = Lado de quem jogou, 1 = Lado do oponente
+        int side = 0;
 
-        // Abrindo o pacote de dados!
         if (rawData is SummonEffectData summonData)
         {
             atk = summonData.attack;
@@ -37,7 +33,23 @@ public class SummonEffect : CardEffect
             Debug.LogWarning("O pacote de dados passado para SummonEffect não é um SummonEffectData!");
         }
 
-        // Criamos o Ticket de Invocação, passando os atributos do Token e quem jogou a carta
-        return new SummonAction(atk, hp, qty, side, context.IsEnemySource);
+        GameAction summonAction = new SummonAction(atk, hp, qty, side, context.IsEnemySource);
+
+        if (rawData.timing != null &&
+            rawData.timing.resolutionTiming == EffectResolutionTiming.Delayed)
+        {
+            return new DeferredEffectAction(
+                context.source,
+                rawData.timing.delayTurns,
+                rawData.timing.resolutionScope,
+                () =>
+                {
+                    if (ActionSystem.Instance != null)
+                        ActionSystem.Instance.AddAction(summonAction);
+                }
+            );
+        }
+
+        return summonAction;
     }
 }

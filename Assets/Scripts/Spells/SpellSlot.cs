@@ -7,25 +7,57 @@ public class SpellSlot : MonoBehaviour, IEffectSource
     [SerializeField] private CardData spellData;
     [SerializeField] private ManaManager manaManager;
     [SerializeField] private EffectTargetManager effectTargetManager;
+    [SerializeField] private SpellManager spellManager;
+
     private TurnManager turnManager;
     private bool isEnemy;
     private int manaCostModifier;
+
+    private int maxUses = 1;
     private int remainingUses = 1;
     private int extraUsesBonus = 0;
-    
-    // 1. Mudamos para um array, pois agora temos vários sub-objetos (cilindros)
+
     private Renderer[] _renderers;
+    private Color[] originalColors;
+    private Color[] originalEmissionColors;
 
     public bool IsEnemy => isEnemy;
     public Transform EffectTransform => transform;
     public GameObject EffectGameObject => gameObject;
     public string SourceName => spellData != null ? spellData.cardName : gameObject.name;
+    public bool IsSpent => remainingUses <= 0;
 
-    private void Awake() 
+    private void Awake()
     {
-        // 2. Buscamos todos os renderers nos filhos (pCylinder1, pCylinder2, etc)
         _renderers = GetComponentsInChildren<Renderer>();
         turnManager = FindFirstObjectByType<TurnManager>();
+
+        if (spellManager == null)
+            spellManager = GetComponentInParent<SpellManager>();
+
+        CacheOriginalVisuals();
+    }
+
+    private void CacheOriginalVisuals()
+    {
+        if (_renderers == null)
+            return;
+
+        originalColors = new Color[_renderers.Length];
+        originalEmissionColors = new Color[_renderers.Length];
+
+        for (int i = 0; i < _renderers.Length; i++)
+        {
+            if (_renderers[i] == null)
+                continue;
+
+            originalColors[i] = _renderers[i].material.color;
+
+            if (_renderers[i].material.HasProperty("_EmissionColor"))
+            {
+                originalEmissionColors[i] = _renderers[i].material.GetColor("_EmissionColor");
+            }
+        }
     }
 
     public void Configure(CardData data, bool enemySide, ManaManager mana)
@@ -34,38 +66,57 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         isEnemy = enemySide;
         manaManager = mana;
 
+        maxUses = Mathf.Max(1, 1 + extraUsesBonus);
+        remainingUses = maxUses;
+
         RefreshVisual();
     }
 
     private void OnMouseDown()
     {
+        if (spellManager != null && spellManager.IsReactivateSelectionActive)
+        {
+            if (IsSpent)
+                spellManager.ChooseReactivateSlot(this);
+
+            return;
+        }
+
         TryCast();
+    }
+
+    private void OnMouseEnter()
+    {
+        if (spellManager != null && spellManager.IsReactivateSelectionActive)
+        {
+            spellManager.SetHoveredReactivateSlot(this);
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (spellManager != null && spellManager.IsReactivateSelectionActive)
+        {
+            spellManager.ClearHoveredReactivateSlot(this);
+        }
     }
 
     private void TryCast()
     {
-        // --- AS NOVAS TRAVAS DE SEGURANÇA ---
-        
-        // 1. Se já foi usada ou dados estão faltando
         if (remainingUses <= 0 || spellData == null || manaManager == null || turnManager == null)
-        return;
+            return;
 
-        // 2. Se for uma magia do inimigo, o jogador não pode clicar para usar
         if (isEnemy)
             return;
 
-        // 3. Se não for o turno do jogador
         if (!turnManager.IsPlayerTurn)
         {
             Debug.Log("Não é seu turno!");
             return;
         }
 
-        // 4. Se o jogo estiver ocupado resolvendo outro efeito (evita spam de cliques)
         if (TurnManager.IsResolvingEffect)
             return;
-
-        // --- FIM DAS TRAVAS ---
 
         if (!manaManager.HasEnoughMana(GetEffectiveManaCost()))
         {
@@ -97,7 +148,12 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         if (spellData == null || spellData.effects == null)
             return;
 
+        int baseCost = Mathf.Max(0, spellData.mana + manaCostModifier);
+
         manaManager.SpendMana(GetEffectiveManaCost());
+
+        if (spellManager != null)
+            spellManager.TryConsumeFreeCastIfApplied(baseCost);
 
         foreach (var entry in spellData.effects)
         {
@@ -125,7 +181,9 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         manaCostModifier = manaDiscount;
         extraUsesBonus = extraUses;
 
-        remainingUses = Mathf.Max(1, 1 + extraUsesBonus);
+        maxUses = Mathf.Max(1, 1 + extraUsesBonus);
+        remainingUses = maxUses;
+
         RefreshVisual();
     }
 
@@ -134,7 +192,8 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         if (spellData == null)
             return 0;
 
-        return Mathf.Max(0, spellData.mana + manaCostModifier);
+        int baseCost = Mathf.Max(0, spellData.mana + manaCostModifier);
+        return spellManager != null ? spellManager.PeekCost(baseCost) : baseCost;
     }
 
     public void ConsumeUse()
@@ -146,22 +205,47 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         RefreshVisual();
     }
 
+    public void RestoreOneUse()
+    {
+        if (remainingUses < maxUses)
+            remainingUses++;
+
+        RefreshVisual();
+    }
+
     private void RefreshVisual()
     {
-        if (_renderers == null || _renderers.Length == 0) return;
+        if (_renderers == null || _renderers.Length == 0)
+            return;
 
         bool isAvailable = remainingUses > 0;
 
-        Color finalColor = isAvailable ? Color.white : Color.gray;
-        Color emissionColor = isAvailable ? Color.white : Color.black;
-
-        foreach (var r in _renderers)
+        for (int i = 0; i < _renderers.Length; i++)
         {
-            if (!isAvailable)
+            Renderer r = _renderers[i];
+            if (r == null) continue;
+
+            if (isAvailable)
             {
-                r.material.color = finalColor;
-                r.material.SetColor("_EmissionColor", emissionColor);
-                
+                r.material.color = originalColors != null && i < originalColors.Length ? originalColors[i] : Color.white;
+
+                if (r.material.HasProperty("_EmissionColor"))
+                {
+                    Color emission = originalEmissionColors != null && i < originalEmissionColors.Length
+                        ? originalEmissionColors[i]
+                        : Color.white;
+
+                    r.material.SetColor("_EmissionColor", emission);
+                }
+            }
+            else
+            {
+                r.material.color = Color.gray;
+
+                if (r.material.HasProperty("_EmissionColor"))
+                {
+                    r.material.SetColor("_EmissionColor", Color.black);
+                }
             }
         }
     }

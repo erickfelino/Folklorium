@@ -130,7 +130,6 @@ public class CardTargeting : MonoBehaviour
                 if (role == roleToCheck)
                 {
                     // Se o bug acontecer de novo, olhe o Console. Ele vai te dizer exatamente O NOME da carta fantasma!
-                    Debug.Log($"[Radar] Bloqueio ativo! O inimigo ainda tem um {roleToCheck} protegendo a mesa: {card.gameObject.name} (Vida: {card.currentLife})");
                     return true;
                 }
             }
