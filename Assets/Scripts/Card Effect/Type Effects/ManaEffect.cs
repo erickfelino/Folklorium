@@ -24,7 +24,16 @@ public class ManaEffect : CardEffect
             return null;
         }
 
-        GameAction instantAction = new ModifyManaAction(manaManager, manaData.manaDelta);
+        bool isTemporary = rawData.timing != null &&
+                           rawData.timing.lifetimeMode == EffectLifetimeMode.Temporary;
+
+        GameAction manaAction = new ModifyManaAction(
+            manaManager,
+            manaData.manaDelta,
+            isTemporary,
+            rawData.timing != null ? rawData.timing.durationTurns : 0,
+            rawData.timing != null ? rawData.timing.lifetimeScope : EffectTurnScope.OwnerTurns
+        );
 
         if (rawData.timing != null && rawData.timing.resolutionTiming == EffectResolutionTiming.Delayed)
         {
@@ -35,11 +44,11 @@ public class ManaEffect : CardEffect
                 () =>
                 {
                     if (ActionSystem.Instance != null)
-                        ActionSystem.Instance.AddAction(instantAction);
+                        ActionSystem.Instance.AddAction(manaAction);
                 }
             );
         }
 
-        return instantAction;
+        return manaAction;
     }
 }
