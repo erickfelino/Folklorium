@@ -239,7 +239,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
 
     public void Attack(PlayerHealth targetHealth)
     {
-        if (!canAttackThisTurn)
+        if (!CanAttackNow)
         {
             Debug.Log("Esta criatura não pode atacar neste turno!");
             return;
