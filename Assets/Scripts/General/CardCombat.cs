@@ -191,7 +191,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
 
         if (currentAttack == 0)
         {
-            Debug.Log("Criatuas com zero de ataque não podem atacar!");
+            Debug.Log("Criatuars com zero de ataque não podem atacar!");
             return;
         }
 
@@ -247,7 +247,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
 
         if (currentAttack == 0)
         {
-            Debug.Log("Criatuas com zero de ataque não podem atacar!");
+            Debug.Log("Criaturas com zero de ataque não podem atacar!");
             return;
         }
 

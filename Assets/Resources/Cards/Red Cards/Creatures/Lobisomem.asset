@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lobisomem
   m_EditorClassIdentifier: 
   cardName: Lobisomem
-  cardBody: 'Mobilizar: Compre 2 cards'
+  cardBody: 
   cardColorGroup: 0
   cardRole: 2
   mana: 6
