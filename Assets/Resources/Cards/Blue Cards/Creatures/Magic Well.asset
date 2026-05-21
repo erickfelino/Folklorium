@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Magic Well 2
+  m_Name: Magic Well
   m_EditorClassIdentifier: 
   cardName: Magic Well
   cardBody: "Mobilizar: Ganhe 1 de mana adicional tempor\xE1ria no pr\xF3ximo turno"

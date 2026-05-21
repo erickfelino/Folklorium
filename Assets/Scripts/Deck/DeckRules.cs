@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Folklorium;
 
@@ -29,8 +30,8 @@ public static class DeckRules
     {
         if (spell == null || selectedSpells == null || mainDeck == null)
             return false;
-
-        if (selectedSpells.Count >= MaxSpellSlots)
+        
+        if (selectedSpells.Count > MaxSpellSlots)
             return false;
 
         if (spell.cardRole != CardData.CardRole.Spell)

@@ -181,7 +181,11 @@ public class DeckEditorController : MonoBehaviour
             }
             return;
         }
-
+        else if (selectedSpells.Count >= DeckRules.MaxSpellSlots)
+            {
+                SetStatus("Os 2 slots de magia já estão cheios. Remova uma magia antes.");
+                return;
+            }
         selectedSpells.Add(spell);
         SetStatus($"{spell.cardName} adicionado a uma magia.");
     }

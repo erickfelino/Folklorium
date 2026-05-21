@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Donkey Carrier 1
+  m_Name: Capelobo
   m_EditorClassIdentifier: 
-  cardName: Donkey Carrier
-  cardBody: 'Legado: Compre 1 card'
-  cardColorGroup: 1
+  cardName: Capelobo
+  cardBody: "Mobilizar: D\xEA +1/+1 para um lacaio aliado"
+  cardColorGroup: 0
   cardRole: 0
-  mana: 2
+  mana: 1
   attack: 1
-  life: 2
-  art: {fileID: 21300000, guid: 85cd5a5188fd34a45a65ee0594df0f0d, type: 3}
+  life: 1
+  art: {fileID: 21300000, guid: 1ba0261a0802bca4ca27a44052c1c8cb, type: 3}
   effects:
-  - effectSO: {fileID: 11400000, guid: 4b894bf942d15f047b14fa240fb0cd1c, type: 2}
-    trigger: 3
+  - effectSO: {fileID: 11400000, guid: 1d89d0e848136764fa921eb48812344e, type: 2}
+    trigger: 0
     parameters:
-      rid: 347702166048210947
+      rid: 2886593648273129533
   references:
     version: 2
     RefIds:
-    - rid: 347702166048210947
-      type: {class: DrawCardEffectData, ns: , asm: Assembly-CSharp}
+    - rid: 2886593648273129533
+      type: {class: BuffEffectData, ns: , asm: Assembly-CSharp}
       data:
         timing:
           resolutionTiming: 0
@@ -38,4 +38,7 @@ MonoBehaviour:
           lifetimeMode: 0
           lifetimeScope: 0
           durationTurns: 1
-        amount: 1
+        attack: 1
+        health: 1
+        excludeSelf: 1
+        randomTarget: 0

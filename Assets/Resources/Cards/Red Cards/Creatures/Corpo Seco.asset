@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Corpo Seco 2
+  m_Name: Corpo Seco
   m_EditorClassIdentifier: 
   cardName: Corpo Seco
   cardBody: 'Legado: Invoque outro corpo seco 1/1'
@@ -24,11 +24,11 @@ MonoBehaviour:
   - effectSO: {fileID: 11400000, guid: cdf80184b41976d48a95554ccde1e490, type: 2}
     trigger: 3
     parameters:
-      rid: 2886593678062125117
+      rid: 2886593678062125116
   references:
     version: 2
     RefIds:
-    - rid: 2886593678062125117
+    - rid: 2886593678062125116
       type: {class: SummonEffectData, ns: , asm: Assembly-CSharp}
       data:
         attack: 1

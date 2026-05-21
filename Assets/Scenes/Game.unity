@@ -1820,6 +1820,7 @@ Transform:
   - {fileID: 1853536768}
   - {fileID: 682596826}
   - {fileID: 295073508}
+  - {fileID: 1084858142}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &618027083
@@ -3251,6 +3252,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 478714304680186784, guid: 189fc320ff3e9e74b851cdde00ce7544, type: 3}
   tokenArt: {fileID: 21300000, guid: 2abcd7ffd44187b47bde421305bf1272, type: 3}
+--- !u!1 &1084858141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1084858142}
+  - component: {fileID: 1084858143}
+  m_Layer: 0
+  m_Name: CardCatalogManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1084858142
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084858141}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 605788074}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1084858143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084858141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b73bbe1df5d06c74c99e94124f18ca1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resourcesPath: Cards
 --- !u!114 &1098606517 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 647173019842083937, guid: e3122606756a9944d80fb8845c0c4b85, type: 3}
@@ -7637,6 +7683,10 @@ PrefabInstance:
     - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
       propertyPath: deckFolderPath
       value: Cards/Blue Cards/Creatures
+      objectReference: {fileID: 0}
+    - target: {fileID: 5968376905630455534, guid: 8bd7a22e531535f44b86f566901ef229, type: 3}
+      propertyPath: loadFromSavedDeck
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
