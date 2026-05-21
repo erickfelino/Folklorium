@@ -19,7 +19,7 @@ MonoBehaviour:
   mana: 4
   attack: 0
   life: 0
-  art: {fileID: 0}
+  art: {fileID: 21300000, guid: c1073028faea5c14192b7ac7831dd8fd, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: d8c21618d6c428341ba866db93749eda, type: 2}
     trigger: 0

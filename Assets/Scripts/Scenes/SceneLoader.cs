@@ -15,6 +15,12 @@ public static class SceneLoader
         SceneManager.LoadScene("HowToPlay");
     }
 
+    public static void LoadDeckEditor()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("DeckEditor");
+    }
+
     public static void LoadGame()
     {
         Time.timeScale = 1f;

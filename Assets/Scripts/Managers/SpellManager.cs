@@ -66,6 +66,19 @@ public class SpellManager : MonoBehaviour
         }
     }
 
+    public void SetupSpellsFromSave(bool enemySide)
+    {
+        if (CardCatalog.Instance == null)
+            return;
+
+        DeckSaveData save = DeckSaveService.Load();
+
+        CardData spell1 = save.selectedSpells.Count > 0 ? CardCatalog.Instance.GetByName(save.selectedSpells[0]) : null;
+        CardData spell2 = save.selectedSpells.Count > 1 ? CardCatalog.Instance.GetByName(save.selectedSpells[1]) : null;
+
+        SetupSpells(spell1, spell2, enemySide);
+    }
+
     public void SetupSpells(CardData spell1, CardData spell2, bool enemySide)
     {
         isEnemySide = enemySide;

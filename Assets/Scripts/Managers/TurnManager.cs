@@ -103,6 +103,12 @@ public class TurnManager : MonoBehaviour
             enemyAuraController.SetupFromDeck(enemyDeckManager.allCards, true, enemySpellManager != null ? enemySpellManager.GetSpellSlots() : null);
         }
 
+        if (playerSpellManager != null)
+            playerSpellManager.SetupSpellsFromSave(false);
+
+        if (enemySpellManager != null)
+            enemySpellManager.SetupSpells(null, null, true); // ou seus spells padrão de IA, se tiver
+
         yield return null;
     }
 

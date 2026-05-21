@@ -19,7 +19,7 @@ MonoBehaviour:
   mana: 1
   attack: 0
   life: 0
-  art: {fileID: 0}
+  art: {fileID: 21300000, guid: c1073028faea5c14192b7ac7831dd8fd, type: 3}
   effects:
   - effectSO: {fileID: 11400000, guid: 6d429725c1d7a48469628fbe962a98dd, type: 2}
     trigger: 0
@@ -31,6 +31,13 @@ MonoBehaviour:
     - rid: 347702123080450125
       type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
       data:
+        timing:
+          resolutionTiming: 0
+          resolutionScope: 0
+          delayTurns: 0
+          lifetimeMode: 0
+          lifetimeScope: 0
+          durationTurns: 1
         damage: 1
         excludeSelf: 0
         randomTarget: 0

@@ -7,6 +7,11 @@ public class MainMenuUI : MonoBehaviour
         SceneLoader.LoadGame();
     }
 
+    public void EditDeck()
+    {
+        SceneLoader.LoadDeckEditor();
+    }
+
     public void HowToPlay()
     {
         SceneLoader.LoadHowToPlay();
