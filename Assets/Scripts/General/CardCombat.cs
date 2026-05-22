@@ -22,8 +22,6 @@ public class CardCombat : MonoBehaviour, IEffectSource
         }
     }
     private TurnManager turnManager;
-    private bool isPerformingAttack = false;
-    private bool pendingDeath = false;
     private int temporaryAttackLocks = 0;
 
     [Header("Status de Combate")]
@@ -33,6 +31,11 @@ public class CardCombat : MonoBehaviour, IEffectSource
     public bool canAttackThisTurn = false;
     public bool CanAttackNow => canAttackThisTurn && temporaryAttackLocks <= 0;
     public bool isEnemy;
+    private bool isPerformingAttack = false;
+    public bool IsPerformingAttack => isPerformingAttack;
+    private bool isDying = false;
+    public bool IsDying => isDying;
+    public bool IsTargetable => !isDead && !isDying && currentLife > 0;
     public bool isDead = false;
 
     private CardDisplay display;
@@ -199,10 +202,7 @@ public class CardCombat : MonoBehaviour, IEffectSource
         RefreshGlowState();
         StartCoroutine(AttackChoreography(targetCard));
     }
-
-
-
-    private IEnumerator AttackChoreography(CardCombat targetCard)
+   private IEnumerator AttackChoreography(CardCombat targetCard)
     {
         if (targetCard == null)
             yield break;
@@ -229,12 +229,6 @@ public class CardCombat : MonoBehaviour, IEffectSource
         }
 
         isPerformingAttack = false;
-
-        if (pendingDeath)
-        {
-            pendingDeath = false;
-            StartCoroutine(DeathSequence());
-        }
     }
 
     public void Attack(PlayerHealth targetHealth)
@@ -280,12 +274,6 @@ public class CardCombat : MonoBehaviour, IEffectSource
         }
 
         isPerformingAttack = false;
-
-        if (pendingDeath)
-        {
-            pendingDeath = false;
-            StartCoroutine(DeathSequence());
-        }
     }
 
     public void RefreshGlowState(bool isTargetingMode = false, bool isValidTarget = false)
@@ -320,44 +308,38 @@ public class CardCombat : MonoBehaviour, IEffectSource
 
     public void Die()
     {
-        if (isDead) return;
+        if (isDead || isDying)
+            return;
 
         isDead = true;
+        isDying = true;
 
         Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        if (col != null)
+            col.enabled = false;
 
-        // Se estiver no meio de um ataque, não mata agora.
-        // Só marca que a morte precisa acontecer depois do retorno.
-        if (isPerformingAttack)
-        {
-            pendingDeath = true;
-            return;
-        }
+        BoardManager.Instance?.ReleaseCard(this);
 
-        StartCoroutine(DeathSequence());
+        if (CardDeathQueue.Instance != null)
+            CardDeathQueue.Instance.Enqueue(this);
+        else
+            StartCoroutine(PlayDeathSequenceVisual());
     }
-    private IEnumerator DeathSequence()
+
+    public IEnumerator PlayDeathSequenceVisual()
     {
         if (display != null && display.cardData != null)
             Debug.Log($"{display.cardData.cardName} foi destruído!");
 
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        transform.DOKill();
 
-        if (transform != null)
-            transform.DOKill();
-
-        BoardManager.Instance?.ReleaseCard(this);
+        yield return transform.DOShakePosition(0.20f, 0.10f, 10, 90f).WaitForCompletion();
+        yield return transform.DOPunchScale(Vector3.one * 0.12f, 0.18f, 8, 0.9f).WaitForCompletion();
 
         OnDeath?.Invoke(this);
         TriggerEffects(Folklorium.EffectTriggerType.OnDeath);
 
         yield return null;
-
-        if (ActionSystem.Instance != null)
-            yield return new WaitWhile(() => ActionSystem.Instance.IsGameBusy());
-
         Destroy(gameObject);
     }
 }

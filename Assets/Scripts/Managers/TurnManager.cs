@@ -38,6 +38,12 @@ public class TurnManager : MonoBehaviour
     {
         get { return pendingLocks > 0; }
     }
+
+    private void Awake()
+    {
+        pendingLocks = 0;
+        IsPlayerTurn = false;
+    }
     // Tranca a porta (+1)
     public static void LockTurn() 
     { 
@@ -45,10 +51,15 @@ public class TurnManager : MonoBehaviour
     }
 
     // Destranca a porta (-1)
-    public static void UnlockTurn() 
-    { 
-        pendingLocks--; 
-        if (pendingLocks < 0) pendingLocks = 0; 
+    public static void UnlockTurn()
+    {
+        pendingLocks--;
+        if (pendingLocks < 0) pendingLocks = 0;
+    }
+
+    private void OnDisable()
+    {
+        pendingLocks = 0;
     }
 
     private void Start()

@@ -66,9 +66,7 @@ public class SpellSlot : MonoBehaviour, IEffectSource
         isEnemy = enemySide;
         manaManager = mana;
 
-        maxUses = Mathf.Max(1, 1 + extraUsesBonus);
-        remainingUses = maxUses;
-
+        remainingUses = Mathf.Max(1, 1 + extraUsesBonus);
         RefreshVisual();
     }
 

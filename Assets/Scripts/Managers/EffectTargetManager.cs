@@ -138,29 +138,33 @@ public class EffectTargetManager : MonoBehaviour
     private void TrySelectTarget()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
-            PlayerHealth targetPlayer = hit.collider.GetComponent<PlayerHealth>();
 
-            if (currentPendingEffect.IsValidTarget(currentSource, targetCard, targetPlayer, currentPendingData))
-            {
-                CardEffectContext context = new CardEffectContext
-                {
-                    source = currentSource,
-                    targetCard = targetCard,
-                    targetPlayer = targetPlayer,
-                    
-                };
-                
-                ExecuteAndFinish(context); 
-            }
-            else
-            {
-                Debug.Log("Alvo bloqueado pelas regras do Efeito!");
-            }
+        if (!Physics.Raycast(ray, out RaycastHit hit))
+            return;
+
+        CardCombat targetCard = hit.collider.GetComponent<CardCombat>();
+        PlayerHealth targetPlayer = hit.collider.GetComponent<PlayerHealth>();
+
+        if (targetCard != null && !targetCard.IsTargetable)
+        {
+            Debug.Log("Alvo bloqueado: carta morta ou morrendo.");
+            return;
         }
+
+        if (!currentPendingEffect.IsValidTarget(currentSource, targetCard, targetPlayer, currentPendingData))
+        {
+            Debug.Log("Alvo bloqueado pelas regras do Efeito!");
+            return;
+        }
+
+        CardEffectContext context = new CardEffectContext
+        {
+            source = currentSource,
+            targetCard = targetCard,
+            targetPlayer = targetPlayer
+        };
+
+        ExecuteAndFinish(context);
     }
 
     // 👇 NOVO: Método para limpar a sujeira caso o jogador cancele com botão direito
@@ -203,7 +207,10 @@ public class EffectTargetManager : MonoBehaviour
         CardCombat[] allCards = FindObjectsByType<CardCombat>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         foreach (var c in allCards)
         {
-            if (c != null && c.GetComponent<CardDrag>() != null && c.GetComponent<CardDrag>().isPlayed && c.currentLife > 0)
+            if (c != null &&
+                c.GetComponent<CardDrag>() != null &&
+                c.GetComponent<CardDrag>().isPlayed &&
+                c.IsTargetable)
             {
                 if (effect.IsValidTarget(source, c, null, data))
                 {

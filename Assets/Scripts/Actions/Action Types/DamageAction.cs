@@ -18,29 +18,19 @@ public class DamageAction : GameAction
 
     public override IEnumerator Perform()
     {
-        // 1. Se o alvo for uma CARTA
         if (targetCard != null)
         {
-            if (targetCard.isDead) yield break; // Ignora se já está morta
+            if (!targetCard.IsTargetable)
+                yield break;
 
-            // 👇 A CARTA APENAS OBEDECE A MATEMÁTICA BRUTA (Vamos criar essa função)
-            targetCard.ApplyRawStateChange(0, -finalDamage); 
-            
-            // Feedback visual e tempo de espera (vamos tirar isso da carta)
-            yield return targetCard.transform.DOShakePosition(0.3f, 0.2f, 10, 90f).WaitForCompletion();
-
-            // Morte Lógica (se precisar)
-            if (targetCard.currentLife <= 0 && !targetCard.isDead)
-            {
-                targetCard.Die(); // Chama sua rotina de morte
-            }
+            targetCard.ApplyRawStateChange(0, -finalDamage, false);
+            yield break;
         }
-        // 2. Se o alvo for o JOGADOR
-        else if (targetPlayer != null)
+
+        if (targetPlayer != null)
         {
-            // O pipeline de dano no jogador
-            targetPlayer.ApplyRawStateChange(-finalDamage); 
-            yield return new WaitForSeconds(0.4f); // Tempo do feedback visual
+            targetPlayer.ApplyRawStateChange(-finalDamage);
+            yield break;
         }
     }
 }
