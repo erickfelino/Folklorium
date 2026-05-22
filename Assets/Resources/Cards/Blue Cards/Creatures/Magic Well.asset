@@ -10,34 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 178c7df55ced2cd4297b5364e4df4001, type: 3}
-  m_Name: Thunder Clap
+  m_Name: Magic Well
   m_EditorClassIdentifier: 
-  cardName: Thunder Clap
-  cardBody: "D\xEA 4 de dano"
+  cardName: Magic Well
+  cardBody: "Mobilizar: Ganhe 1 de mana adicional tempor\xE1ria no pr\xF3ximo turno"
   cardColorGroup: 1
-  cardRole: 3
-  mana: 4
-  attack: 0
-  life: 0
-  art: {fileID: 21300000, guid: c1073028faea5c14192b7ac7831dd8fd, type: 3}
+  cardRole: 1
+  mana: 3
+  attack: 1
+  life: 1
+  art: {fileID: 21300000, guid: 3d9c36c75e4f80342a1bf23f2c09fbf2, type: 3}
   effects:
-  - effectSO: {fileID: 11400000, guid: d8c21618d6c428341ba866db93749eda, type: 2}
+  - effectSO: {fileID: 11400000, guid: ad87e2480c7a36346951d0e78037995b, type: 2}
     trigger: 0
     parameters:
-      rid: 347702166048211032
+      rid: 347702166048211020
   references:
     version: 2
     RefIds:
-    - rid: 347702166048211032
-      type: {class: DamageEffectData, ns: , asm: Assembly-CSharp}
+    - rid: 347702166048211020
+      type: {class: ManaEffectData, ns: , asm: Assembly-CSharp}
       data:
         timing:
-          resolutionTiming: 0
+          resolutionTiming: 1
           resolutionScope: 0
-          delayTurns: 0
-          lifetimeMode: 0
+          delayTurns: 1
+          lifetimeMode: 1
           lifetimeScope: 0
           durationTurns: 1
-        damage: 4
-        excludeSelf: 0
-        randomTarget: 0
+        manaDelta: 1

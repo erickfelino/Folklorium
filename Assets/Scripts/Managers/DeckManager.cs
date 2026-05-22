@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using Folklorium;
 using UnityEngine;
 
 public class DeckManager : MonoBehaviour
 {
     [Header("Deck Settings")]
-    [Tooltip("Nome da pasta dentro de Resources onde estão os ScriptableObjects deste deck.")]
+    [SerializeField] private bool loadFromSavedDeck = false;
     [SerializeField] private string deckFolderPath = "Cards/Red Cards/Creatures";
 
     public List<CardData> allCards = new List<CardData>();
@@ -13,18 +14,45 @@ public class DeckManager : MonoBehaviour
 
     void Start()
     {
-        // 👇 Agora ele carrega da pasta que você escrever no Inspector!
+        allCards.Clear();
+
+        if (loadFromSavedDeck)
+        {
+            LoadFromSavedDeck();
+        }
+        else
+        {
+            LoadFromResources();
+        }
+
+        ShuffleDeck();
+    }
+
+    private void LoadFromSavedDeck()
+    {
+        DeckSaveData save = DeckSaveService.Load();
+        if (CardCatalog.Instance == null)
+            return;
+
+        foreach (string cardName in save.mainDeckCards)
+        {
+            CardData card = CardCatalog.Instance.GetByName(cardName);
+            if (card != null)
+                allCards.Add(card);
+        }
+    }
+
+    private void LoadFromResources()
+    {
         CardData[] cards = Resources.LoadAll<CardData>(deckFolderPath);
 
         if (cards.Length == 0)
         {
-            Debug.LogWarning($"Nenhuma carta encontrada na pasta Resources/{deckFolderPath}! Verifique o nome.");
+            Debug.LogWarning($"Nenhuma carta encontrada na pasta Resources/{deckFolderPath}!");
+            return;
         }
-        else
-        {
-            allCards.AddRange(cards);
-            ShuffleDeck();
-        }
+
+        allCards.AddRange(cards);
     }
 
     public CardData DrawCard()
@@ -32,12 +60,12 @@ public class DeckManager : MonoBehaviour
         if (allCards.Count == 0 || currentIndex >= allCards.Count)
         {
             Debug.Log($"Acabaram as cartas do baralho ({deckFolderPath})!");
-            return null; 
+            return null;
         }
 
         CardData nextCard = allCards[currentIndex];
         currentIndex++;
-        return nextCard; 
+        return nextCard;
     }
 
     private void ShuffleDeck()
